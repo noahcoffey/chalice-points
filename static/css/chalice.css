@@ -1,0 +1,27 @@
+body {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+#circle circle {
+    fill: none;
+    pointer-events: all;
+}
+
+.group path {
+    fill-opacity: 0.5;
+}
+
+path.chord {
+    stroke: #000;
+    stroke-width: 0.25px;
+}
+
+#circle:hover path.fade {
+    display: none;
+}
+
+.dataLabel {
+    width: 100px;
+    display: inline-block;
+}
+

@@ -1,0 +1,40 @@
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12"><h2>Leaderboard</h2></div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <form name="addPointsForm">
+                <div class="control-group" ng-class="{error: addPointsForm.source.$invalid}">
+                <select name="source" ng-model="pointsSource" ng-options="u.name for u in users" required>
+                    <option value="">-- From --</option>
+                </select>
+                <select name="target" ng-model="pointsTarget" ng-options="u.name for u in users" required>
+                    <option value="">-- To --</option>
+                </select>
+                <input type="number" name="amount" ng-model="pointsAmount" min="1" max="5" required>
+                <button ng-click="addPoints()" ng-disabled="addPointsForm.$invalid" class="btn btn-primary">CHALICE!</button>
+            </form>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span6">
+            <h3>Received</h3>
+            <ul class="unstyled">
+                <li ng-repeat="receiver in receivers | orderBy:['-amount','name']">
+                    <div class="dataLabel">{{receiver.name}}</div>
+                    <div class="dataValue">{{receiver.amount}}</div>
+                </li>
+            </ul>
+        </div>
+        <div class="span6">
+            <h3>Given</h3>
+            <ul class="unstyled">
+                <li ng-repeat="giver in givers | orderBy:['-amount','name']">
+                    <div class="dataLabel">{{giver.name}}</div>
+                    <div class="dataValue">{{giver.amount}}</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
