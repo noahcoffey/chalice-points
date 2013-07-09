@@ -22,12 +22,12 @@ angular.module('cpPoints', ['cpPointsServices'])
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider
             .when('/', {
-                templateUrl: 'static/partials/leaderboard.html',
+                templateUrl: 'public/partials/leaderboard.html',
                 controller: LeaderboardCtrl,
                 resolve: LeaderboardCtrl.resolve
             })
             .when('/chart', {
-                templateUrl: 'static/partials/chart.html',
+                templateUrl: 'public/partials/chart.html',
                 controller: ChartCtrl
             })
             .otherwise({
