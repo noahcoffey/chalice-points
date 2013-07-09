@@ -175,6 +175,11 @@ def savePoint():
 
     return jsonify(success=1)
 
+@app.route('/robots.txt')
+def robots():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+        'robots.txt', mimetype='text/plain')
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
