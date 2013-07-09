@@ -23,8 +23,15 @@ class BadRequest(Exception):
         rv['message'] = self.message
         return rv
 
-app = Flask(__name__)
-r = redis.StrictRedis(host='localhost', port=6379, db=0)
+PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
+
+app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'public'),
+        static_url_path='/public')
+
+app.config.from_pyfile('FlaskConfig.py')
+
+redis_url = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
+r = redis.from_url(redis_url)
 
 def points_given(username):
     key = 'cpPoints' + string.translate(username, None, ' ')
@@ -177,12 +184,12 @@ def savePoint():
 
 @app.route('/robots.txt')
 def robots():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
+    return send_from_directory(os.path.join(app.root_path, 'public'),
         'robots.txt', mimetype='text/plain')
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
+    return send_from_directory(os.path.join(app.root_path, 'public'),
         'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.errorhandler(BadRequest)
