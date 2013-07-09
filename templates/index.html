@@ -1,18 +1,38 @@
 <!DOCTYPE html>
-<html ng-app="cpPoints">
+<html class="no-js" lang="en" ng-app="cpPoints">
     <head>
         <title>Chalice Points</title>
         <meta charset="utf-8" />
-        <script src="http://d3js.org/d3.v3.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular-resource.js"></script>
-        <script src="static/js/chalice.js"></script>
+        <meta name="viewport" content="width=device-width" />
+        <link rel="stylesheet" href="static/css/normalize.css" />
+        <link rel="stylesheet" href="static/css/foundation.min.css" />
         <link rel="stylesheet" href="static/css/chalice.css" />
         <link rel="shortcut icon" href="static/favicon.ico" />
     </head>
     <body>
-        <a href="#/leaderboard">Leaderboard</a>
-        <a href="#/chart">Chart</a>
-        <div ng-view></div>
+        <div class="contain-to-grid">
+            <nav class="top-bar">
+                <ul class="title-area">
+                    <li class="name">
+                        <h1><a href="#/">Chalice Points</a></h1>
+                    </li>
+                    <li class="toggle-topbar menu-icon"></li>
+                </ul>
+                <section class="top-bar-section">
+                    <ul class="right">
+                        <li><a href="#/leaderboard">Leaderboard</a></li>
+                        <li><a href="#/chart">Chart</a></li>
+                    </ul>
+                </section>
+            </nav>
+        </div>
+        <div class="content" ng-view></div>
+        <script src="static/js/vendor/custom.modernizr.js"></script>
+        <script src="static/js/vendor/d3.v3.js"></script>
+        <script src="static/js/vendor/angular.js"></script>
+        <script src="static/js/vendor/angular-resource.js"></script>
+        <script src="static/js/vendor/jquery.js"></script>
+        <script src="static/js/foundation.min.js"></script>
+        <script src="static/js/chalice.js"></script>
     </body>
 </html>
