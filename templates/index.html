@@ -4,10 +4,10 @@
         <title>Chalice Points</title>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width" />
-        <link rel="stylesheet" href="static/css/normalize.css" />
-        <link rel="stylesheet" href="static/css/foundation.min.css" />
-        <link rel="stylesheet" href="static/css/chalice.css" />
-        <link rel="shortcut icon" href="static/favicon.ico" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/normalize.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/foundation.min.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/chalice.css')}}" />
+        <link rel="shortcut icon" href="{{url_for('static', filename='favicon.ico')}}" />
     </head>
     <body>
         <div class="contain-to-grid">
@@ -27,12 +27,12 @@
             </nav>
         </div>
         <div class="content" ng-view></div>
-        <script src="static/js/vendor/custom.modernizr.js"></script>
-        <script src="static/js/vendor/d3.v3.js"></script>
-        <script src="static/js/vendor/angular.js"></script>
-        <script src="static/js/vendor/angular-resource.js"></script>
-        <script src="static/js/vendor/jquery.js"></script>
-        <script src="static/js/foundation.min.js"></script>
-        <script src="static/js/chalice.js"></script>
+        <script src="{{url_for('static', filename='js/vendor/custom.modernizr.js')}}"></script>
+        <script src="{{url_for('static', filename='js/vendor/d3.v3.js')}}"></script>
+        <script src="{{url_for('static', filename='js/vendor/angular.js')}}"></script>
+        <script src="{{url_for('static', filename='js/vendor/angular-resource.js')}}"></script>
+        <script src="{{url_for('static', filename='js/vendor/jquery.js')}}"></script>
+        <script src="{{url_for('static', filename='js/foundation.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js/chalice.js')}}"></script>
     </body>
 </html>
