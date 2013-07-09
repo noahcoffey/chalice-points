@@ -21,7 +21,26 @@ path.chord {
 }
 
 .dataLabel {
-    width: 100px;
+    width: 200px;
     display: inline-block;
 }
 
+.dataValue {
+    width: 95px;
+    display: inline-block;
+    text-align: right;
+}
+
+.leaderboard ul li {
+    list-style: none;
+    border-bottom: 1px solid #888;
+}
+
+.chord svg {
+    margin: 0 auto 50px auto;
+    display: block;
+}
+
+.content {
+    margin-top: 30px;
+}
