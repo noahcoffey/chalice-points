@@ -1,5 +1,7 @@
 "use strict";
 
+$(document).foundation();
+
 angular.module('cpPointsServices', ['ngResource'])
     .factory('Leaderboard', function($resource) {
         return $resource('api/1.0/leaderboard.json', {});
@@ -21,7 +23,8 @@ angular.module('cpPoints', ['cpPointsServices'])
         $routeProvider
             .when('/', {
                 templateUrl: 'static/partials/leaderboard.html',
-                controller: LeaderboardCtrl
+                controller: LeaderboardCtrl,
+                resolve: LeaderboardCtrl.resolve
             })
             .when('/chart', {
                 templateUrl: 'static/partials/chart.html',
@@ -32,18 +35,14 @@ angular.module('cpPoints', ['cpPointsServices'])
             });
     }]);
 
-function LeaderboardCtrl($scope, Leaderboard, User, Point) {
-    $scope.receivers = {};
-    $scope.givers = {};
+var LeaderboardCtrl = ['$scope', 'leaderboard', 'users', 'Point', function($scope, leaderboard, users, Point) {
+    console.log(leaderboard);
 
-    $scope.assignLeaderboard = function() {
-        $scope.givers = $scope.leaderboard.given;
-        $scope.receivers = $scope.leaderboard.received;
-    };
+    $scope.leaderboard = leaderboard;
+    $scope.givers = $scope.leaderboard.given;
+    $scope.receivers = $scope.leaderboard.received;
 
-    $scope.leaderboard = Leaderboard.get($scope.assignLeaderboard);
-
-    $scope.users = User.query();
+    $scope.users = users;
 
     $scope.addPoints = function() {
         var point = new Point({
@@ -55,13 +54,29 @@ function LeaderboardCtrl($scope, Leaderboard, User, Point) {
             $scope.leaderboard = Leaderboard.get($scope.assignLeaderboard);
         });
     };
-}
-//LeaderboardCtrl.$inject = ['$scope', 'Leaderboard', 'User', 'Point'];
+}];
 
-function ChartCtrl($scope) {
+LeaderboardCtrl.resolve = {
+    leaderboard: function($q, Leaderboard) {
+        var deferred = $q.defer();
+        var res = Leaderboard.get(function() {
+            deferred.resolve(res);
+        });
+        return deferred.promise;
+    },
+    users: function($q, User) {
+        var deferred = $q.defer();
+        var res = User.query(function() {
+            deferred.resolve(res);
+        });
+        return deferred.promise;
+    }
+};
+
+var ChartCtrl = ['$scope', function($scope) {
+    $scope.mode = 'Received';
     ChalicePoints.Chord('received');
-}
-//ChartCtrl.$inject = ['$scope'];
+}];
 
 var ChalicePoints = {
     type: 'received'
@@ -114,10 +129,13 @@ ChalicePoints.Chord = function(type) {
                 .data(layout.groups)
             .enter().append('g')
                 .attr('class', 'group')
+                .attr('title', function(d, i) {
+                    return users[i].name + ': ' + Math.round(d.value);
+                })
                 .on('mouseover', mouseover);
 
             group.append('title').text(function(d, i) {
-                return users[i].name  + ': ' + Math.round(d.value);
+                return users[i].name + ': ' + Math.round(d.value);
             });
 
             var groupPath = group.append('path')
@@ -130,8 +148,8 @@ ChalicePoints.Chord = function(type) {
                 });
 
             var groupText = group.append('text')
-                .attr('x', 0)
-                .attr('dy', 16);
+                .attr('x', 10)
+                .attr('dy', 20);
 
             groupText.append('textPath')
                 .attr('xlink:href', function(d, i) {
@@ -142,7 +160,7 @@ ChalicePoints.Chord = function(type) {
                 });
 
             groupText.filter(function(d, i) {
-                return groupPath[0][i].getTotalLength() / 2 - 16 < this.getComputedTextLength();
+                return groupPath[0][i].getTotalLength() / 2 - 10 < this.getComputedTextLength();
             }).remove();
 
             var chord = svg.selectAll('.chord')
