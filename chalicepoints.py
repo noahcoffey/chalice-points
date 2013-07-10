@@ -121,7 +121,7 @@ def leaderboard():
 
     return jsonify(success=1, given=given, received=received)
 
-@app.route('/api/1.0/users.json', methods=['GET'])
+@app.route('/api/1.0/user.json', methods=['GET'])
 def users():
     users = []
     userList = userlist()
@@ -133,6 +133,37 @@ def users():
         users.append(entry)
 
     return Response(json.dumps(users), mimetype='application/json')
+
+@app.route('/api/1.0/user/<name>.json', methods=['GET'])
+def user(name):
+    if name == 'list':
+        return users()
+
+    key = string.translate(name.encode('ascii'), None, ' ')
+
+    userKey = 'cpUser' + key
+    if not r.exists(userKey):
+        abort(404)
+
+    user = r.hgetall(userKey)
+
+    eventKey = 'cpEvents' + key
+    user['events'] = []
+
+    if r.exists(eventKey):
+        user['events'] = r.hgetall(eventKey)
+
+    givenDict, receivedDict, givenTotals, receivedTotals = points()
+
+    user['given'] = 0
+    if user['name'] in givenTotals:
+        user['given'] = givenTotals[user['name']]
+
+    user['received'] = 0
+    if user['name'] in receivedTotals:
+        user['received'] = receivedTotals[user['name']]
+
+    return Response(json.dumps(user), mimetype='application/json')
 
 @app.route('/api/1.0/matrix.json', methods=['GET'])
 def matrix():
@@ -184,24 +215,6 @@ def savePoint():
 
     return jsonify(success=1)
 
-@app.route('/api/1.0/user/<name>.json', methods=['GET'])
-def user(name):
-    key = string.translate(name, None, ' ')
-
-    userKey = 'cpUser' + key
-    if not r.exists(userKey):
-        abort(404)
-
-    user = r.hgetall(userKey)
-
-    eventKey = 'cpEvents' + key
-    events = []
-
-    if r.exists(eventKey):
-        events = r.hgetall(eventKey)
-
-    return jsonify(success=1, user=user, events=events)
-
 @app.route('/robots.txt')
 def robots():
     return send_from_directory(os.path.join(app.root_path, 'public'),
@@ -220,4 +233,5 @@ def handle_bad_request(error):
 
 if __name__ == "__main__":
     port = random.randrange(9888, 9999)
+    port = 9898
     app.run(host='0.0.0.0', port=port, debug=True)
