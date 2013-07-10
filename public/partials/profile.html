@@ -1,0 +1,37 @@
+<div class="profile row">
+    <div class="meta small-12 columns">
+        <img src="{{user.gravatar}}" class="picture" alt="{{user.name}}" />
+        <div class="name">{{user.name}}</div>
+        <div class="received total noradius" title="Points Received" data-tooltip data-width="130">{{user.received}}</div>
+        <div class="given total noradius" title="Points Given" data-tooltip data-width="105">{{user.given}}</div>
+    </div>
+</div>
+<div class="events row">
+    <div class="event small-6 small-centered columns">
+        <span class="type given">Gave</span>
+        <span class="amount">1</span> Point to
+        <span class="user"><a href="#/user/BrianGraham">Brian Graham</a></span> at
+        <span class="date">7/8/13 5:03pm</span>
+
+        <div class="message">Cool Story Bro</div>
+    </div>
+    <div class="event small-6 small-centered columns">
+        <span class="type received">Received</span>
+        <span class="amount">4</span> Points from 
+        <span class="user"><a href="#/user/NoahCoffey">Noah Coffey</a></span> at
+        <span class="date">7/12/13 10:10am</span>
+
+        <div class="message">TWIX!!1one!</div>
+    </div>
+
+    <div ng-repeat="event in events | orderBy:'date'">
+        <div class="event small-6 small-centered columns">
+            <span class="type">{{event.type}}</span>
+            <span class="amount">{{event.amount}}</span> Points to
+            <span class="user">{{event.user}}</span> on
+            <span class="date">{{event.date}}</span>
+
+            <div class="message">{{event.message}}</div>
+        </div>
+    </div>
+</div>
