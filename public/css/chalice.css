@@ -21,19 +21,27 @@ path.chord {
 }
 
 .dataLabel {
-    width: 200px;
     display: inline-block;
 }
 
 .dataValue {
-    width: 95px;
     display: inline-block;
     text-align: right;
+    float: right;
 }
 
 .leaderboard ul li {
     list-style: none;
     border-bottom: 1px solid #888;
+}
+
+.leaderboard div:first-child li:first-child {
+    background-image: url('../images/chalice.png');
+    background-repeat: no-repeat;
+    background-position: left center;
+    padding-left: 20px;
+    font-weight: bold;
+    padding-top: 3px;
 }
 
 .chord svg {
