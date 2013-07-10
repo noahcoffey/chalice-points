@@ -44,3 +44,62 @@ path.chord {
 .content {
     margin-top: 30px;
 }
+
+.profile .meta {
+    text-align: center;
+}
+
+.profile .picture {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #888;
+    vertical-align: text-bottom;
+}
+
+.profile .name {
+    font-size: 3em;
+    font-weight: 300;
+    line-height: 50px;
+    display: inline-block;
+}
+
+.profile .total {
+    display: inline-block;
+    font-size: 1.1em;
+    font-weight: 550;
+    line-height: 50px;
+    vertical-align: text-bottom;
+}
+
+.received {
+    color: #E33605;
+}
+
+.given {
+    color: #5DA423;
+}
+
+.events {
+    margin-top: 20px;
+}
+
+.events .event {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #888;
+    -moz-box-shadow: 5px 5px 10px #333;
+    -webkit-box-shadow: 5px 5px 10px #333;
+    box-shadow: 5px 5px 10px #333;
+    margin: 20px inherit;
+}
+
+.event .amount {
+    font-weight: 600;
+}
+
+.event .message {
+    font-size: 1.2em;
+    font-style: italic;
+    font-weight: 300;
+    padding-top: 10px;
+}
