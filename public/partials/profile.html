@@ -1,0 +1,26 @@
+<div class="profile row">
+    <div class="small-4 columns">
+        <img src="{{user.gravatar}}" class="picture" alt="{{user.name}}" />
+    </div>
+    <div class="small-8 columns">
+        <div class="name">{{user.name}}</div>
+        <div class="received total">{{user.received}}</div>
+        <div class="given total">{{user.given}}</div>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns">
+        <div ng-repeat="event in events | orderBy:'date'">
+            <div class="action">
+                <span class="type">{{event.type}}</span>
+                &nbsp;
+                <span class="amount">{{event.amount}}</span> Points to
+                &nbsp;
+                <span class="user">{{event.user}}</span> on
+                &nbsp;
+                <span class="date">{{event.date}}</span>
+            </div>
+            <div class="message">{{event.message}}</div>
+        </div>
+    </div>
+</div>
