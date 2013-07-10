@@ -7,11 +7,8 @@ angular.module('cpPointsServices', ['ngResource'])
         return $resource('api/1.0/leaderboard.json', {});
     })
     .factory('User', function($resource) {
-        return $resource('api/1.0/users.json', {}, {
-            query: {
-                method: 'GET',
-                isArray: true
-            }
+        return $resource('api/1.0/user/:userId.json', {
+            userId: 'list'
         });
     })
     .factory('Point', function($resource) {
@@ -29,6 +26,11 @@ angular.module('cpPoints', ['cpPointsServices'])
             .when('/chart', {
                 templateUrl: 'public/partials/chart.html',
                 controller: ChartCtrl
+            })
+            .when('/user/:userId', {
+                templateUrl: 'public/partials/profile.html',
+                controller: UserCtrl,
+                resolve: UserCtrl.resolve
             })
             .otherwise({
                 redirectTo: '/'
@@ -79,6 +81,23 @@ var ChartCtrl = ['$scope', function($scope) {
     ChalicePoints.Chord('received');
 }];
 
+var UserCtrl = ['$scope', 'user', function($scope, user) {
+    user.gravatar += '?s=50&d=mm';
+    $scope.user = user;
+}];
+
+UserCtrl.resolve = {
+    user: function($q, User, $route) {
+        var deferred = $q.defer();
+        var res = User.get({
+            userId: $route.current.params.userId
+        }, function() {
+            deferred.resolve(res);
+        });
+        return deferred.promise;
+    }
+};
+
 var ChalicePoints = {
     type: 'received'
 };
@@ -122,7 +141,7 @@ ChalicePoints.Chord = function(type) {
 
     var colors = d3.scale.category20();
 
-    d3.json('api/1.0/users.json', function(users) {
+    d3.json('api/1.0/user.json', function(users) {
         d3.json('api/1.0/matrix/' + ChalicePoints.type + '.json', function(matrix) {
             layout.matrix(matrix);
 

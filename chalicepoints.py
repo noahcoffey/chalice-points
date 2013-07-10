@@ -1,6 +1,8 @@
+#!/usr/bin/env python
 import os, sys, string
 import redis
 import json
+import random
 from flask import Flask, request, redirect, url_for, \
     abort, render_template, jsonify, send_from_directory, \
     Response
@@ -119,7 +121,7 @@ def leaderboard():
 
     return jsonify(success=1, given=given, received=received)
 
-@app.route('/api/1.0/users.json', methods=['GET'])
+@app.route('/api/1.0/user.json', methods=['GET'])
 def users():
     users = []
     userList = userlist()
@@ -131,6 +133,38 @@ def users():
         users.append(entry)
 
     return Response(json.dumps(users), mimetype='application/json')
+
+@app.route('/api/1.0/user/<name>.json', methods=['GET'])
+def user(name):
+    if name == 'list':
+        return users()
+
+    key = string.translate(name.encode('ascii'), None, ' ')
+    key = string.translate(key, None, '-')
+
+    userKey = 'cpUser' + key
+    if not r.exists(userKey):
+        abort(404)
+
+    user = r.hgetall(userKey)
+
+    eventKey = 'cpEvents' + key
+    user['events'] = []
+
+    if r.exists(eventKey):
+        user['events'] = r.hgetall(eventKey)
+
+    givenDict, receivedDict, givenTotals, receivedTotals = points()
+
+    user['given'] = 0
+    if user['name'] in givenTotals:
+        user['given'] = givenTotals[user['name']]
+
+    user['received'] = 0
+    if user['name'] in receivedTotals:
+        user['received'] = receivedTotals[user['name']]
+
+    return Response(json.dumps(user), mimetype='application/json')
 
 @app.route('/api/1.0/matrix.json', methods=['GET'])
 def matrix():
@@ -182,6 +216,11 @@ def savePoint():
 
     return jsonify(success=1)
 
+@app.route('/humans.txt')
+def humans():
+    return send_from_directory(os.path.join(app.root_path, 'public'),
+        'humans.txt', mimetype='text/plain')
+
 @app.route('/robots.txt')
 def robots():
     return send_from_directory(os.path.join(app.root_path, 'public'),
@@ -199,4 +238,6 @@ def handle_bad_request(error):
     return response
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=9898, debug=True)
+    port = random.randrange(9888, 9999)
+    port = 9898
+    app.run(host='0.0.0.0', port=port, debug=True)
