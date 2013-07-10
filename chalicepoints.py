@@ -140,6 +140,7 @@ def user(name):
         return users()
 
     key = string.translate(name.encode('ascii'), None, ' ')
+    key = string.translate(key, None, '-')
 
     userKey = 'cpUser' + key
     if not r.exists(userKey):
