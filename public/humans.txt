@@ -1,0 +1,16 @@
+/* Chalice Points was made by Brandon Peters as a side project for Formstack */
+/* formstack.com */
+/* humanstxt.org */
+
+/* TEAM */
+Creator: Brandon Peters
+Twitter: @cisox
+
+/* THANKS */
+Michael Mattax: Motivating the move to Flask and AngularJS
+Noah Coffey: UI cleanup
+
+/* SITE */
+Standards: HTML5, CSS3
+Components: Modernizr, jQuery, Foundation 4, AngularJS
+Software: Vim, Compass, Sass, Git, Heroku, Redis, Flask
