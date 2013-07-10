@@ -156,8 +156,6 @@ def user(name):
             event = r.lindex(eventKey, idx)
             user['events'].append(json.loads(event))
 
-            user['events'] = r.hgetall(eventKey)
-
     givenDict, receivedDict, givenTotals, receivedTotals = points()
 
     user['given'] = 0
