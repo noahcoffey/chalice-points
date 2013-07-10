@@ -147,12 +147,16 @@ def user(name):
         abort(404)
 
     user = r.hgetall(userKey)
-
-    eventKey = 'cpEvents' + key
     user['events'] = []
 
+    eventKey = 'cpEvents' + key
     if r.exists(eventKey):
-        user['events'] = r.hgetall(eventKey)
+        eventsLen = r.llen(eventKey)
+        for idx in range(eventsLen):
+            event = r.lindex(eventKey, idx)
+            user['events'].append(json.loads(event))
+
+            user['events'] = r.hgetall(eventKey)
 
     givenDict, receivedDict, givenTotals, receivedTotals = points()
 
