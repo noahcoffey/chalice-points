@@ -184,6 +184,24 @@ def savePoint():
 
     return jsonify(success=1)
 
+@app.route('/api/1.0/user/<name>.json', methods=['GET'])
+def user(name):
+    key = string.translate(name, None, ' ')
+
+    userKey = 'cpUser' + key
+    if not r.exists(userKey):
+        abort(404)
+
+    user = r.hgetall(userKey)
+
+    eventKey = 'cpEvents' + key
+    events = []
+
+    if r.exists(eventKey):
+        events = r.hgetall(eventKey)
+
+    return jsonify(success=1, user=user, events=events)
+
 @app.route('/robots.txt')
 def robots():
     return send_from_directory(os.path.join(app.root_path, 'public'),
