@@ -84,6 +84,10 @@ var ChartCtrl = ['$scope', function($scope) {
 var UserCtrl = ['$scope', 'user', function($scope, user) {
     user.gravatar += '?s=50&d=mm';
     $scope.user = user;
+    $scope.types = {
+        given: 'Gave',
+        received: 'Received',
+    };
 }];
 
 UserCtrl.resolve = {
