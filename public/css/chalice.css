@@ -57,14 +57,11 @@ path.chord {
 }
 /* line 39, ../sass/chalice.scss */
 .leaderboard div:first-child li:first-child {
+  background-image: url("../images/chalice.png");
+  background-repeat: no-repeat;
+  background-position: left center;
   padding-left: 20px;
   font-weight: bold;
-}
-/* line 40, ../sass/chalice.scss */
-.leaderboard div:first-child li:first-child background {
-  image: url("../images/chalice.png");
-  repeat: no-repeat;
-  position: left center;
 }
 
 /* line 50, ../sass/chalice.scss */
