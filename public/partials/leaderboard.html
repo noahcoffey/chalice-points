@@ -33,7 +33,7 @@
         <h3>Received</h3>
         <ul>
             <li ng-repeat="receiver in receivers | orderBy:['-amount','name']">
-                <div class="dataLabel">{{receiver.name}}</div>
+                <div class="dataLabel"><a href="#/user/{{receiver.name}}">{{receiver.name}}</a></div>
                 <div class="dataValue">{{receiver.amount}}</div>
             </li>
         </ul>
@@ -42,7 +42,7 @@
         <h3>Given</h3>
         <ul>
             <li ng-repeat="giver in givers | orderBy:['-amount','name']">
-                <div class="dataLabel">{{giver.name}}</div>
+                <div class="dataLabel"><a href="#/user/{{giver.name}}">{{giver.name}}</a></div>
                 <div class="dataValue">{{giver.amount}}</div>
             </li>
         </ul>

@@ -1,0 +1,99 @@
+/* chalice.scss */
+
+@import "chart";
+@import "compass/css3/box-shadow";
+
+$received-color: #E33605;
+$given-color: #5DA423;
+
+$gravatar-size: 50px;
+
+$weight-light: 300;
+$weight-heavy: 600;
+
+.received {
+    color: $received-color;
+}
+
+.given {
+    color: $given-color;
+}
+
+.dataLabel {
+    width: 200px;
+    display: inline-block;
+}
+
+.dataValue {
+    width: 95px;
+    display: inline-block;
+    text-align: right;
+}
+
+.leaderboard ul li {
+    list-style: none;
+    border-bottom: 1px solid #888;
+}
+
+.content {
+    margin-top: 30px;
+}
+
+.profile {
+    .meta {
+        text-align: center;
+    }
+
+    .picture {
+        width: $gravatar-size;
+        height: $gravatar-size;
+        border: 1px solid #888;
+        vertical-align: text-bottom;
+    }
+
+    .name {
+        font: {
+            size: 3em;
+            weight: $weight-light;
+        }
+        line-height: $gravatar-size;
+        display: inline-block;
+    }
+
+    .total {
+        display: inline-block;
+        font: {
+            size: 1.1em;
+            weight: $weight-heavy;
+        }
+        line-height: $gravatar-size;
+        vertical-align: text-bottom;
+    }
+}
+
+.events {
+    margin-top: 20px;
+
+    .event {
+        padding: 10px;
+        margin: 20px inherit;
+
+        text-align: center;
+        border: 1px solid #888;
+
+        @include single-box-shadow(#333, 5px, 5px, 10px);
+
+        .amount {
+            font-weight: $weight-heavy;
+        }
+
+        .message {
+            font: {
+                size: 1.2em;
+                style: italic;
+                weight: $weight-light;
+            }
+            padding-top: 10px;
+        }
+    }
+}
