@@ -1,23 +1,26 @@
+/* chalice.scss */
+
+@import "chart";
+@import "compass/css3/box-shadow";
+
+$received-color: #E33605;
+$given-color: #5DA423;
+
+$gravatar-size: 50px;
+
+$weight-light: 300;
+$weight-heavy: 600;
+
 body {
     font-family: Helvetica, Arial, sans-serif;
 }
 
-#circle circle {
-    fill: none;
-    pointer-events: all;
+.received {
+    color: $received-color;
 }
 
-.group path {
-    fill-opacity: 0.5;
-}
-
-path.chord {
-    stroke: #000;
-    stroke-width: 0.25px;
-}
-
-#circle:hover path.fade {
-    display: none;
+.given {
+    color: $given-color;
 }
 
 .dataLabel {
@@ -36,70 +39,65 @@ path.chord {
     border-bottom: 1px solid #888;
 }
 
-.chord svg {
-    margin: 0 auto 50px auto;
-    display: block;
-}
-
 .content {
     margin-top: 30px;
 }
 
-.profile .meta {
-    text-align: center;
-}
+.profile {
+    .meta {
+        text-align: center;
+    }
 
-.profile .picture {
-    width: 50px;
-    height: 50px;
-    border: 1px solid #888;
-    vertical-align: text-bottom;
-}
+    .picture {
+        width: $gravatar-size;
+        height: $gravatar-size;
+        border: 1px solid #888;
+        vertical-align: text-bottom;
+    }
 
-.profile .name {
-    font-size: 3em;
-    font-weight: 300;
-    line-height: 50px;
-    display: inline-block;
-}
+    .name {
+        font: {
+            size: 3em;
+            weight: $weight-light;
+        }
+        line-height: $gravatar-size;
+        display: inline-block;
+    }
 
-.profile .total {
-    display: inline-block;
-    font-size: 1.1em;
-    font-weight: 550;
-    line-height: 50px;
-    vertical-align: text-bottom;
-}
-
-.received {
-    color: #E33605;
-}
-
-.given {
-    color: #5DA423;
+    .total {
+        display: inline-block;
+        font: {
+            size: 1.1em;
+            weight: $weight-heavy;
+        }
+        line-height: $gravatar-size;
+        vertical-align: text-bottom;
+    }
 }
 
 .events {
     margin-top: 20px;
-}
 
-.events .event {
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #888;
-    -moz-box-shadow: 5px 5px 10px #333;
-    -webkit-box-shadow: 5px 5px 10px #333;
-    box-shadow: 5px 5px 10px #333;
-    margin: 20px inherit;
-}
+    .event {
+        padding: 10px;
+        margin: 20px inherit;
 
-.event .amount {
-    font-weight: 600;
-}
+        text-align: center;
+        border: 1px solid #888;
 
-.event .message {
-    font-size: 1.2em;
-    font-style: italic;
-    font-weight: 300;
-    padding-top: 10px;
+        @include single-box-shadow(#333, 5px, 5px, 10px);
+
+        .amount {
+            font-weight: $weight-heavy;
+        }
+
+        .message {
+            font: {
+                size: 1.2em;
+                style: italic;
+                weight: $weight-light;
+            }
+            padding-top: 10px;
+        }
+    }
 }
