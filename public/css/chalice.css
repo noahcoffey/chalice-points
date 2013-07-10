@@ -39,61 +39,58 @@ path.chord {
 
 /* line 22, ../sass/chalice.scss */
 .dataLabel {
-    display: inline-block;
   width: 200px;
   display: inline-block;
 }
 
 /* line 27, ../sass/chalice.scss */
 .dataValue {
-    display: inline-block;
-    text-align: right;
-    float: right;
+  display: inline-block;
+  text-align: right;
+  float: right;
 }
 
-/* line 33, ../sass/chalice.scss */
+/* line 34, ../sass/chalice.scss */
 .leaderboard ul li {
   list-style: none;
   border-bottom: 1px solid #888;
 }
-
+/* line 39, ../sass/chalice.scss */
 .leaderboard div:first-child li:first-child {
-    background-image: url('../images/chalice.png');
-    background-repeat: no-repeat;
-    background-position: left center;
-    padding-left: 20px;
-    font-weight: bold;
+  padding-left: 20px;
+  font-weigth: bold;
+}
+/* line 40, ../sass/chalice.scss */
+.leaderboard div:first-child li:first-child background {
+  image: url("../imges/chalice.png");
+  repeat: no-repeat;
+  position: left center;
 }
 
-.chord svg {
-    margin: 0 auto 50px auto;
-    display: block;
-}
-
-/* line 38, ../sass/chalice.scss */
+/* line 50, ../sass/chalice.scss */
 .content {
   margin-top: 30px;
 }
 
-/* line 43, ../sass/chalice.scss */
+/* line 55, ../sass/chalice.scss */
 .profile .meta {
   text-align: center;
 }
-/* line 47, ../sass/chalice.scss */
+/* line 59, ../sass/chalice.scss */
 .profile .picture {
   width: 50px;
   height: 50px;
   border: 1px solid #888;
   vertical-align: text-bottom;
 }
-/* line 54, ../sass/chalice.scss */
+/* line 66, ../sass/chalice.scss */
 .profile .name {
   font-size: 3em;
   font-weight: 300;
   line-height: 50px;
   display: inline-block;
 }
-/* line 63, ../sass/chalice.scss */
+/* line 75, ../sass/chalice.scss */
 .profile .total {
   display: inline-block;
   font-size: 1.1em;
@@ -102,11 +99,11 @@ path.chord {
   vertical-align: text-bottom;
 }
 
-/* line 74, ../sass/chalice.scss */
+/* line 86, ../sass/chalice.scss */
 .events {
   margin-top: 20px;
 }
-/* line 77, ../sass/chalice.scss */
+/* line 89, ../sass/chalice.scss */
 .events .event {
   padding: 10px;
   margin: 20px inherit;
@@ -116,11 +113,11 @@ path.chord {
   -moz-box-shadow: 5px 5px 10px #333333;
   box-shadow: 5px 5px 10px #333333;
 }
-/* line 86, ../sass/chalice.scss */
+/* line 98, ../sass/chalice.scss */
 .events .event .amount {
   font-weight: 600;
 }
-/* line 90, ../sass/chalice.scss */
+/* line 102, ../sass/chalice.scss */
 .events .event .message {
   font-size: 1.2em;
   font-style: italic;
