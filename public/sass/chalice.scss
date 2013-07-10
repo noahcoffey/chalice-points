@@ -25,14 +25,26 @@ $weight-heavy: 600;
 }
 
 .dataValue {
-    width: 95px;
     display: inline-block;
     text-align: right;
+    float: right;
 }
 
-.leaderboard ul li {
-    list-style: none;
-    border-bottom: 1px solid #888;
+.leaderboard {
+    ul li {
+        list-style: none;
+        border-bottom: 1px solid #888;
+    }
+
+    div:first-child li:first-child {
+        background {
+            image: url('../imges/chalice.png');
+            repeat: no-repeat;
+            position: left center;
+        }
+        padding-left: 20px;
+        font-weigth: bold;
+    }
 }
 
 .content {
