@@ -24,14 +24,12 @@
         <div class="message">TWIX!!1one!</div>
     </div>
 
-    <div ng-repeat="event in events | orderBy:'date'">
-        <div class="event small-6 small-centered columns">
-            <span class="type">{{event.type}}</span>
-            <span class="amount">{{event.amount}}</span> Points to
-            <span class="user">{{event.user}}</span> on
-            <span class="date">{{event.date}}</span>
+    <div class="event small-6 small-centered columns" ng-repeat="event in user.events | orderBy:'date'">
+        <span class="type {{event.type}}">{{event.types[event.type]}}</span>
+        <span class="amount">{{event.amount}}</span> Point(s) to
+        <span class="user">{{event.user}}</span> on
+        <span class="date">{{event.date}}</span>
 
-            <div class="message">{{event.message}}</div>
-        </div>
+        <div class="message">{{event.message}}</div>
     </div>
 </div>
