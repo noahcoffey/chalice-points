@@ -216,6 +216,11 @@ def savePoint():
 
     return jsonify(success=1)
 
+@app.route('/humans.txt')
+def humans():
+    return send_from_directory(os.path.join(app.root_path, 'public'),
+        'humans.txt', mimetype='text/plain')
+
 @app.route('/robots.txt')
 def robots():
     return send_from_directory(os.path.join(app.root_path, 'public'),
