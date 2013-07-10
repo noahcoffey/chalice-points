@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os, sys, string
 import redis
 import json
