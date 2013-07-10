@@ -35,9 +35,7 @@ angular.module('cpPoints', ['cpPointsServices'])
             });
     }]);
 
-var LeaderboardCtrl = ['$scope', 'leaderboard', 'users', 'Point', function($scope, leaderboard, users, Point) {
-    console.log(leaderboard);
-
+var LeaderboardCtrl = ['$scope', 'leaderboard', 'users', 'Point', 'Leaderboard', function($scope, leaderboard, users, Point, Leaderboard) {
     $scope.leaderboard = leaderboard;
     $scope.givers = $scope.leaderboard.given;
     $scope.receivers = $scope.leaderboard.received;
@@ -51,7 +49,10 @@ var LeaderboardCtrl = ['$scope', 'leaderboard', 'users', 'Point', function($scop
             amount: $scope.pointsAmount
         });
         point.$save(function(data) {
-            $scope.leaderboard = Leaderboard.get($scope.assignLeaderboard);
+            $scope.leaderboard = Leaderboard.get(function() {
+                $scope.givers = $scope.leaderboard.given;
+                $scope.receivers = $scope.leaderboard.received;
+            });
         });
     };
 }];
