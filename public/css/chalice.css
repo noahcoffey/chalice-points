@@ -39,21 +39,35 @@ path.chord {
 
 /* line 22, ../sass/chalice.scss */
 .dataLabel {
+    display: inline-block;
   width: 200px;
   display: inline-block;
 }
 
 /* line 27, ../sass/chalice.scss */
 .dataValue {
-  width: 95px;
-  display: inline-block;
-  text-align: right;
+    display: inline-block;
+    text-align: right;
+    float: right;
 }
 
 /* line 33, ../sass/chalice.scss */
 .leaderboard ul li {
   list-style: none;
   border-bottom: 1px solid #888;
+}
+
+.leaderboard div:first-child li:first-child {
+    background-image: url('../images/chalice.png');
+    background-repeat: no-repeat;
+    background-position: left center;
+    padding-left: 20px;
+    font-weight: bold;
+}
+
+.chord svg {
+    margin: 0 auto 50px auto;
+    display: block;
 }
 
 /* line 38, ../sass/chalice.scss */
