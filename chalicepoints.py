@@ -1,6 +1,7 @@
 import os, sys, string
 import redis
 import json
+import random
 from flask import Flask, request, redirect, url_for, \
     abort, render_template, jsonify, send_from_directory, \
     Response
@@ -199,4 +200,5 @@ def handle_bad_request(error):
     return response
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=9898, debug=True)
+    port = random.randrange(9888, 9999)
+    app.run(host='0.0.0.0', port=port, debug=True)
