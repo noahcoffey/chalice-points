@@ -3,17 +3,17 @@
         <form name="addPointsForm">
             <div class="row">
                 <div class="small-5 columns">
-                    <div class="styled-select">
+                    <!--div class="styled-select">
                         <div class="base">
                             <div class="active">-- From --</div>
                             <div class="list">
                                 <ul>
-                                    <li class="item" ng-repeat="user in users">{user.name}</li>
+                                    <li class="item" ng-repeat="user in users">{{user.name}}</li>
                                 </ul>
                             </div>
                             <div style="clear: both;"></div>
                         </div>
-                    </div>
+                    </div-->
 
                     <select name="source" ng-model="pointsSource" ng-options="u.name for u in users" required>
                         <option value="">-- From --</option>
