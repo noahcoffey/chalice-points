@@ -110,6 +110,19 @@ $weight-heavy: 600;
                 weight: $weight-light;
             }
             padding-top: 10px;
+            line-height: 1.3;
         }
+    }
+}
+
+.add-points {
+    button {
+        margin-right: 0;
+        margin-left: auto;
+        display: block;
+    }
+
+    input[name="message"] {
+        height: 3em;
     }
 }
