@@ -58,13 +58,6 @@ var LeaderboardCtrl = ['$scope', '$cookieStore', 'leaderboard', 'users', 'Point'
     $scope.addPoints = function() {
         $cookieStore.put('source', $scope.pointsSource.name);
 
-        var point = new Point({
-            source: $scope.pointsSource.name,
-            target: $scope.pointsTarget.name,
-            amount: $scope.pointsAmount,
-            message: $scope.pointsMessage
-        });
-
         if ($scope.pointsAmount > 5) {
             $scope.pointsAmount = 5;
         }
@@ -73,7 +66,14 @@ var LeaderboardCtrl = ['$scope', '$cookieStore', 'leaderboard', 'users', 'Point'
             $scope.pointsAmount = 1;
         }
 
-        point.$save(function(data) {
+        var point = new Point({
+            source: $scope.pointsSource.name,
+            target: $scope.pointsTarget.name,
+            amount: $scope.pointsAmount,
+            message: $scope.pointsMessage
+        });
+
+       point.$save(function(data) {
             $scope.leaderboard = Leaderboard.get(function() {
                 $scope.givers = $scope.leaderboard.given;
                 $scope.receivers = $scope.leaderboard.received;
