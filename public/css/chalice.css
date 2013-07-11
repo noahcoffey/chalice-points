@@ -124,4 +124,16 @@ path.chord {
   font-style: italic;
   font-weight: 300;
   padding-top: 10px;
+  line-height: 1.3;
+}
+
+/* line 119, ../sass/chalice.scss */
+.add-points button {
+  margin-right: 0;
+  margin-left: auto;
+  display: block;
+}
+/* line 125, ../sass/chalice.scss */
+.add-points input[name="message"] {
+  height: 3em;
 }
