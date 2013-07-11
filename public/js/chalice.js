@@ -64,6 +64,15 @@ var LeaderboardCtrl = ['$scope', '$cookieStore', 'leaderboard', 'users', 'Point'
             amount: $scope.pointsAmount,
             message: $scope.pointsMessage
         });
+
+        if ($scope.pointsAmount > 5) {
+            $scope.pointsAmount = 5;
+        }
+
+        if ($scope.pointsAmount < 1) {
+            $scope.pointsAmount = 1;
+        }
+
         point.$save(function(data) {
             $scope.leaderboard = Leaderboard.get(function() {
                 $scope.givers = $scope.leaderboard.given;
