@@ -25,8 +25,15 @@
     </div>
 
     <div class="event small-6 small-centered columns" ng-repeat="event in user.events | orderBy:'date'">
-        <span class="type {{event.type}}">{{event.types[event.type]}}</span>
-        <span class="amount">{{event.amount}}</span> Point(s) to
+        <span class="type {{event.type}}" ng-switch on="event.type">
+            <span ng-switch-when="given">Gave</span>
+            <span ng-switch-when="received">Received</span>
+        </span>
+        <span class="amount">{{event.amount}}</span> Point(s)
+        <span ng-switch on="event.type">
+            <span ng-switch-when="given">to</span>
+            <span ng-switch-when="received">from</span>
+        </span>
         <span class="user">{{event.user}}</span> on
         <span class="date">{{event.date}}</span>
 
