@@ -11,7 +11,7 @@ angular.module('cpPointsFilters', [])
         };
     });
 
-angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters'])
+angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters', 'ngCookies'])
     .factory('Leaderboard', function($resource) {
         return $resource('api/1.0/leaderboard.json', {});
     })
@@ -46,14 +46,18 @@ angular.module('cpPoints', ['cpPointsServices'])
             });
     }]);
 
-var LeaderboardCtrl = ['$scope', 'leaderboard', 'users', 'Point', 'Leaderboard', function($scope, leaderboard, users, Point, Leaderboard) {
+var LeaderboardCtrl = ['$scope', '$cookieStore', 'leaderboard', 'users', 'Point', 'Leaderboard', function($scope, $cookieStore, leaderboard, users, Point, Leaderboard) {
     $scope.leaderboard = leaderboard;
     $scope.givers = $scope.leaderboard.given;
     $scope.receivers = $scope.leaderboard.received;
-
     $scope.users = users;
 
+    $scope.pointsAmount = 1;
+    $scope.pointsSource = $cookieStore.get('source');
+
     $scope.addPoints = function() {
+        $cookieStore.put('source', $scope.pointsSource.name);
+
         var point = new Point({
             source: $scope.pointsSource.name,
             target: $scope.pointsTarget.name,
