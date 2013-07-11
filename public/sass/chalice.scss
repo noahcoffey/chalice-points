@@ -2,9 +2,6 @@
 
 @import "chart";
 @import "compass/css3/box-shadow";
-@import "compass/css3/box-sizing";
-@import "compass/css3/appearance";
-@import "compass/css3/border-radius";
 
 $received-color: #E33605;
 $given-color: #5DA423;
@@ -140,32 +137,39 @@ $weight-heavy: 600;
 }
 
 .styled-select {
-    height: 42px;
-    overflow: hidden;
-    background: {
-        image: url("../images/selector.png");
-        repeat: no-repeat;
-        position: right;
-        color: white;
-    }
-
     border: 1px solid #ccc;
+    padding: 0.5em;
     margin: 0 0 1em 0;
-    padding-left: 0.5em;
-
-    -webkit-transition: -webkit-box-shadow 0.45s, border-color 0.45s ease-in-out;
-
-    @include single-box-shadow(rgba(0, 0, 0, 0.1), 0, 1px, 2px, false, true);
-    @include box-sizing(border-box);
-}
-
-.styled-select select {
-    background: transparent;
-    font-size: 0.875em;
-    line-height: 1;
-    border: 0;
     height: 3em;
+    float: left;
 
-    @include border-radius(0, 0);
-    @include appearance(none);
+    .base {
+        float: left;
+
+        .active {
+            background-color: white;
+            border: 1px solid #ccc;
+            font-size: 0.875em;
+            padding: 0.5em;
+            background: {
+                image: url("../images/selector.png");
+                repeat: no-repeat;
+                position: 98% center;
+            }
+        }
+
+        .list {
+            display: none;
+
+            ul {
+                margin: 0 0 1em 0;
+                padding: 0;
+                overflow: hidden;
+                position: absolute;
+                z-index: 10;
+
+                @include box-shadow(0 -5px 0 #fff, 0 0 0 1px #ddd);
+            }
+        }
+    }
 }
