@@ -213,6 +213,11 @@ def savePoint():
     target = request.json['target'].encode('ascii')
     amount = request.json['amount']
 
+    if amount < 1:
+        amount = 1
+    elif amount > 5:
+        amount = 5
+
     message = 'None'
     if 'message' in request.json and request.json['message']:
         message = request.json['message'].encode('ascii')
