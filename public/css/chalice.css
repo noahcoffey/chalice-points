@@ -27,17 +27,17 @@ path.chord {
   display: block;
 }
 
-/* line 14, ../sass/chalice.scss */
+/* line 17, ../sass/chalice.scss */
 .received {
   color: #e33605;
 }
 
-/* line 18, ../sass/chalice.scss */
+/* line 21, ../sass/chalice.scss */
 .given {
   color: #5da423;
 }
 
-/* line 22, ../sass/chalice.scss */
+/* line 25, ../sass/chalice.scss */
 .name {
   background-image: url("../images/chalice.png");
   background-repeat: no-repeat;
@@ -45,25 +45,25 @@ path.chord {
   padding-left: 5px;
 }
 
-/* line 31, ../sass/chalice.scss */
+/* line 34, ../sass/chalice.scss */
 .dataLabel {
   width: 200px;
   display: inline-block;
 }
 
-/* line 36, ../sass/chalice.scss */
+/* line 39, ../sass/chalice.scss */
 .dataValue {
   display: inline-block;
   text-align: right;
   float: right;
 }
 
-/* line 43, ../sass/chalice.scss */
+/* line 46, ../sass/chalice.scss */
 .leaderboard ul li {
   list-style: none;
   border-bottom: 1px solid #888;
 }
-/* line 48, ../sass/chalice.scss */
+/* line 51, ../sass/chalice.scss */
 .leaderboard div:first-child li:first-child {
   background-image: url("../images/chalice.png");
   background-repeat: no-repeat;
@@ -71,35 +71,35 @@ path.chord {
   padding-left: 20px;
   font-weight: bold;
 }
-/* line 58, ../sass/chalice.scss */
+/* line 61, ../sass/chalice.scss */
 .leaderboard h3 {
   font-weight: 300;
 }
 
-/* line 63, ../sass/chalice.scss */
+/* line 66, ../sass/chalice.scss */
 .content {
   margin-top: 30px;
 }
 
-/* line 68, ../sass/chalice.scss */
+/* line 71, ../sass/chalice.scss */
 .profile .meta {
   text-align: center;
 }
-/* line 72, ../sass/chalice.scss */
+/* line 75, ../sass/chalice.scss */
 .profile .picture {
   width: 50px;
   height: 50px;
   border: 1px solid #888;
   vertical-align: text-bottom;
 }
-/* line 79, ../sass/chalice.scss */
+/* line 82, ../sass/chalice.scss */
 .profile .name {
   font-size: 3em;
   font-weight: 300;
   line-height: 50px;
   display: inline-block;
 }
-/* line 88, ../sass/chalice.scss */
+/* line 91, ../sass/chalice.scss */
 .profile .total {
   display: inline-block;
   font-size: 1.1em;
@@ -108,11 +108,11 @@ path.chord {
   vertical-align: text-bottom;
 }
 
-/* line 99, ../sass/chalice.scss */
+/* line 102, ../sass/chalice.scss */
 .events {
   margin-top: 20px;
 }
-/* line 102, ../sass/chalice.scss */
+/* line 105, ../sass/chalice.scss */
 .events .event {
   padding: 10px;
   margin: 20px inherit;
@@ -122,11 +122,11 @@ path.chord {
   -moz-box-shadow: 5px 5px 10px #333333;
   box-shadow: 5px 5px 10px #333333;
 }
-/* line 111, ../sass/chalice.scss */
+/* line 114, ../sass/chalice.scss */
 .events .event .amount {
   font-weight: 600;
 }
-/* line 115, ../sass/chalice.scss */
+/* line 118, ../sass/chalice.scss */
 .events .event .message {
   font-size: 1.2em;
   font-style: italic;
@@ -135,36 +135,48 @@ path.chord {
   line-height: 1.3;
 }
 
-/* line 128, ../sass/chalice.scss */
+/* line 131, ../sass/chalice.scss */
 .add-points button {
   margin-right: 0;
   margin-left: auto;
   display: block;
 }
-/* line 134, ../sass/chalice.scss */
+/* line 137, ../sass/chalice.scss */
 .add-points input[name="message"] {
   height: 3em;
 }
 
-/* line 139, ../sass/chalice.scss */
+/* line 142, ../sass/chalice.scss */
 .styled-select {
-  height: 34px;
+  height: 42px;
   overflow: hidden;
   background-image: url("../images/new-arrow.png");
   background-repeat: no-repeat;
   background-position: right;
-  background-color: #ddd;
-  border: 1px solid #888;
+  background-color: white;
+  border: 1px solid #ccc;
+  margin: 0 0 1em 0;
+  padding-left: 0.5em;
+  -webkit-transition: -webkit-box-shadow 0.45s, border-color 0.45s ease-in-out;
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-/* line 151, ../sass/chalice.scss */
+/* line 162, ../sass/chalice.scss */
 .styled-select select {
   background: transparent;
-  padding: 5px;
-  font-size: 16px;
+  font-size: 0.875em;
   line-height: 1;
   border: 0;
-  border-radius: 0;
-  height: 34px;
+  height: 3em;
+  -webkit-border-radius: 0 0;
+  -moz-border-radius: 0 / 0;
+  border-radius: 0 / 0;
   -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
