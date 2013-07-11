@@ -2,12 +2,12 @@
 
 $(document).foundation();
 
-angular.module('cpPointsFilters', ['filter'])
-    .filter('dateMoment', function() {
+angular.module('cpPointsFilters', [])
+    .filter('dateMoment', function($filter) {
+        var dateFilter = $filter('date');
         return function(dateString, format) {
-            var date = moment(dateString);
-            var timestamp = date.unix();
-            return $filter('date')(timestamp, format);
+            var momentDate = moment(dateString).toDate()
+            return dateFilter(momentDate, format);
         };
     });
 
