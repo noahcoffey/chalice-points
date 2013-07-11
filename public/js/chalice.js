@@ -2,7 +2,7 @@
 
 $(document).foundation();
 
-angular.module('cpPointsFilters', [])
+angular.module('cpPointsFilters', ['filter'])
     .filter('dateMoment', function() {
         return function(dateString, format) {
             var date = moment(dateString);
