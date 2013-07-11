@@ -2,25 +2,21 @@
     <div class="small-12 columns">
         <form name="addPointsForm">
             <div class="control-group row" ng-class="{error: addPointsForm.source.$invalid}">
-                <div class="small-4 small-offset-2 columns">
+                <div class="small-6 small-centered columns">
                     <div>
                         <select name="source" ng-model="pointsSource" ng-options="u.name for u in users" required>
                             <option value="">-- From --</option>
                         </select>
-                    </div>
-                    <div>
                         <select name="target" ng-model="pointsTarget" ng-options="u.name for u in users" required>
                             <option value="">-- To --</option>
                         </select>
+                        <input type="number" name="amount" value="1" ng-model="pointsAmount" min="1" max="5" required>
+                    </div>
+                    <div>
+                        <input type="text" name="message" placeholder="The reason for giving points">
+                        <button ng-click="addPoints()" ng-disabled="addPointsForm.$invalid" class="button success">CHALICE!</button>
                     </div>
                 </div>
-                <div class="small-2 columns">
-                    <input type="number" name="amount" value="1" ng-model="pointsAmount" min="1" max="5" required>
-                </div>
-                <div class="small-2 columns">
-                    <button ng-click="addPoints()" ng-disabled="addPointsForm.$invalid" class="button success">CHALICE!</button>
-                </div>
-                <div class="small-2 columns"></div>
             </div>
         </form>
     </div>
