@@ -160,6 +160,9 @@ def user(name):
         eventsLen = r.llen(eventKey)
         for idx in range(eventsLen):
             event = r.lindex(eventKey, idx)
+            if '__deleted' in event:
+                continue
+
             user['events'].append(json.loads(event))
 
     givenDict, receivedDict, givenTotals, receivedTotals = points()
@@ -255,6 +258,62 @@ def savePoint():
         'date': eventDate,
     }
     r.lpush(receivedKey, json.dumps(received))
+
+    return jsonify(success=1)
+
+@app.route('/api/1.0/event.json', methods=['GET'])
+def events():
+    events = {}
+
+    users = userlist()
+    for user in users:
+        key = string.translate(user, None, ' ')
+
+        eventsKey = 'cpEvents' + key;
+        if r.exists(eventskey):
+            events['user'] = []
+
+            eventsLen = r.llen(eventsKey)
+            for idx in range(eventsLen):
+                eventJSON = r.lindex(key, idx)
+                event = json.loads(eventJSON)
+
+                events['user'].append(event)
+
+    return jsonify(success=1, events=events)
+
+@app.route('/api/1.0/event/<source>/<target>/<date>.json', methods=['DELETE'])
+def deleteEvent(source, target, date):
+    source = source.encode('ascii')
+    target = target.encode('ascii')
+    date = date.encode('ascii')
+
+    givenKey = 'cpEvents' + sourceKey
+    eventsLen = r.llen(givenKey)
+    for idx in range(eventsLen):
+        eventJSON = r.lindex(givenKey, idx)
+        event = json.loads(eventJSON)
+
+        if event.source == source and \
+           event.target == target and \
+           event.date == date:
+
+           event['__deleted'] = 1
+           r.lset(givenKey, idx, json.dumps(event))
+
+    receivedKey = 'cpEvents' + targetKey
+    eventsLen = r.llen(receivedKey)
+    for idx in range(eventsLen):
+        eventJSON = r.lindex(givenKey, idx)
+        event = json.loads(eventJSON)
+
+        if event.source == source and \
+           event.target == target and \
+           event.date == date:
+
+           event['__deleted'] = 1
+
+           r.lset(receivedKey, idx, json.dumps(event))
 
     return jsonify(success=1)
 
