@@ -2,7 +2,16 @@
 
 $(document).foundation();
 
-angular.module('cpPointsServices', ['ngResource'])
+angular.module('cpPointsFilters', [])
+    .filter('dateMoment', function() {
+        return function(dateString, format) {
+            var date = moment(dateString);
+            var timestamp = date.unix();
+            return $filter('date')(timestamp, format);
+        };
+    });
+
+angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters'])
     .factory('Leaderboard', function($resource) {
         return $resource('api/1.0/leaderboard.json', {});
     })
