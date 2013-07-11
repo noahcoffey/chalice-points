@@ -240,6 +240,5 @@ def handle_bad_request(error):
     return response
 
 if __name__ == "__main__":
-    port = random.randrange(9888, 9999)
-    port = 9898
+    port = random.randrange(9880, 9890)
     app.run(host='0.0.0.0', port=port, debug=True)
