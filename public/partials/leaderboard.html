@@ -3,9 +3,11 @@
         <form name="addPointsForm">
             <div class="row">
                 <div class="small-5 columns">
-                    <select name="source" ng-model="pointsSource" ng-options="u.name for u in users" required>
-                        <option value="">-- From --</option>
-                    </select>
+                    <div class="styled-selected">
+                        <select name="source" ng-model="pointsSource" ng-options="u.name for u in users" required>
+                            <option value="">-- From --</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="small-5 columns">
                     <select name="target" ng-model="pointsTarget" ng-options="u.name for u in users" required>
