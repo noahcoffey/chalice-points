@@ -38,7 +38,7 @@ path.chord {
 }
 
 /* line 22, ../sass/chalice.scss */
-.name {
+.top-bar .name {
   background-image: url("../images/chalice.png");
   background-repeat: no-repeat;
   background-position: left center;
