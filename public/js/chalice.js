@@ -67,13 +67,13 @@ var LeaderboardCtrl = ['$scope', '$cookieStore', 'leaderboard', 'users', 'Point'
         }
 
         var point = new Point({
-            source: $scope.pointsSource.name,
-            target: $scope.pointsTarget.name,
+            source: $scope.pointsSource,
+            target: $scope.pointsTarget,
             amount: $scope.pointsAmount,
             message: $scope.pointsMessage
         });
 
-       point.$save(function(data) {
+        point.$save(function(data) {
             $scope.leaderboard = Leaderboard.get(function() {
                 $scope.givers = $scope.leaderboard.given;
                 $scope.receivers = $scope.leaderboard.received;
