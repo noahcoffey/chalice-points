@@ -3,6 +3,7 @@ import os, sys, string
 import redis
 import json
 import random
+from datetime import datetime
 from flask import Flask, request, redirect, url_for, \
     abort, render_template, jsonify, send_from_directory, \
     Response
@@ -212,9 +213,38 @@ def savePoint():
     target = request.json['target'].encode('ascii')
     amount = request.json['amount']
 
-    key = 'cpPoints' + string.translate(source, None, ' ')
+    message = 'None'
+    if 'message' in request.json and request.json['message']:
+        message = request.json['message'].encode('ascii')
+
+    sourceKey = string.translate(source, None, ' ')
+    targetKey = string.translate(target, None, ' ')
+
+    pointsKey = 'cpPoints' + sourceKey
     field = string.replace(target, ' ', '_')
-    r.hincrby(key, field, amount)
+    r.hincrby(pointsKey, field, amount)
+
+    eventDate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    givenKey = 'cpEvents' + sourceKey
+    given = {
+        'type': 'given',
+        'user': target,
+        'amount': amount,
+        'reason': message,
+        'date': eventDate,
+    };
+    r.lpush(givenKey, json.dumps(given))
+
+    receivedKey = 'cpEvents' + targetKey
+    received = {
+        'type': 'received',
+        'user': source,
+        'amount': amount,
+        'reason': message,
+        'date': eventDate,
+    }
+    r.lpush(receivedKey, json.dumps(received))
 
     return jsonify(success=1)
 
@@ -240,5 +270,8 @@ def handle_bad_request(error):
     return response
 
 if __name__ == "__main__":
-    port = random.randrange(9880, 9890)
+    port = 9896
+    if len(sys.argv) == 2:
+        port = int(sys.argv[1])
+
     app.run(host='0.0.0.0', port=port, debug=True)
