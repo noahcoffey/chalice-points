@@ -124,9 +124,14 @@ def leaderboard():
 
 @app.route('/api/1.0/user.json', methods=['GET'])
 def users():
+    skip = ['Duane Hunt'];
+
     users = []
     userList = userlist()
     for name in userList:
+        if name in skip:
+            continue
+
         entry = {
             'name': name,
         }
