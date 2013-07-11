@@ -150,7 +150,7 @@ path.chord {
 .styled-select {
   height: 42px;
   overflow: hidden;
-  background-image: url("../images/new-arrow.png");
+  background-image: url("../images/selector.png");
   background-repeat: no-repeat;
   background-position: right;
   background-color: white;
