@@ -2,6 +2,9 @@
 
 @import "chart";
 @import "compass/css3/box-shadow";
+@import "compass/css3/box-sizing";
+@import "compass/css3/appearance";
+@import "compass/css3/border-radius";
 
 $received-color: #E33605;
 $given-color: #5DA423;
@@ -137,24 +140,32 @@ $weight-heavy: 600;
 }
 
 .styled-select {
-    height: 34px;
+    height: 42px;
     overflow: hidden;
     background: {
         image: url("../images/new-arrow.png");
         repeat: no-repeat;
         position: right;
-        color: #ddd;
+        color: white;
     }
-    border: 1px solid #888;
+
+    border: 1px solid #ccc;
+    margin: 0 0 1em 0;
+    padding-left: 0.5em;
+
+    -webkit-transition: -webkit-box-shadow 0.45s, border-color 0.45s ease-in-out;
+
+    @include single-box-shadow(rgba(0, 0, 0, 0.1), 0, 1px, 2px, false, true);
+    @include box-sizing(border-box);
 }
 
 .styled-select select {
     background: transparent;
-    padding: 5px;
-    font-size: 16px;
+    font-size: 0.875em;
     line-height: 1;
     border: 0;
-    border-radius: 0;
-    height: 34px;
-    -webkit-appearance: none;
+    height: 3em;
+
+    @include border-radius(0, 0);
+    @include appearance(none);
 }
