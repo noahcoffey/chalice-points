@@ -57,7 +57,8 @@ var LeaderboardCtrl = ['$scope', 'leaderboard', 'users', 'Point', 'Leaderboard',
         var point = new Point({
             source: $scope.pointsSource.name,
             target: $scope.pointsTarget.name,
-            amount: $scope.pointsAmount
+            amount: $scope.pointsAmount,
+            message: $scope.pointsMessage
         });
         point.$save(function(data) {
             $scope.leaderboard = Leaderboard.get(function() {
