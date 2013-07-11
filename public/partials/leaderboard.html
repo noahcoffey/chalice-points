@@ -15,12 +15,12 @@
                         </div>
                     </div-->
 
-                    <select name="source" ng-model="pointsSource" ng-options="u.name for u in users" required>
+                    <select name="source" ng-model="pointsSource" ng-options="u.name as u.name for u in users" required>
                         <option value="">-- From --</option>
                     </select>
                 </div>
                 <div class="small-5 columns">
-                    <select name="target" ng-model="pointsTarget" ng-options="u.name for u in users" required>
+                    <select name="target" ng-model="pointsTarget" ng-options="u.name as u.name for u in users" required>
                         <option value="">-- To --</option>
                     </select>
                 </div>
