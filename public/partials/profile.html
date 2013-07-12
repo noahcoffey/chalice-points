@@ -1,16 +1,16 @@
 <div class="profile row">
     <div class="meta small-12 columns">
-        <img src="{{user.gravatar}}" class="picture" alt="{{user.name}}" />
+        <img ng-src="http://gravatar.com/avatar/{{user.gravatar}}?s=50&d=mm" class="picture" alt="{{user.name}}" />
         <div class="name">{{user.name}}</div>
-        <div class="received total noradius" title="Points Received" data-tooltip data-width="130">{{user.received}}</div>
-        <div class="given total noradius" title="Points Given" data-tooltip data-width="105">{{user.given}}</div>
+        <div class="receive total noradius" title="Points Received" data-tooltip data-width="130">{{user.received}}</div>
+        <div class="give total noradius" title="Points Given" data-tooltip data-width="105">{{user.given}}</div>
     </div>
 </div>
 <div class="events row">
     <div class="event small-6 small-centered columns" ng-repeat="event in user.events | orderBy:'date'">
         <span class="type {{event.type}}" ng-switch on="event.type">
-            <span ng-switch-when="given">Gave</span>
-            <span ng-switch-when="received">Received</span>
+            <span ng-switch-when="give">Gave</span>
+            <span ng-switch-when="receive">Received</span>
         </span>
         <span class="amount">{{event.amount}}</span>
         <span ng-switch on="event.amount">
@@ -18,12 +18,13 @@
             <span ng-switch-default>Points</span>
         </span>
         <span ng-switch on="event.type">
-            <span ng-switch-when="given">to</span>
-            <span ng-switch-when="received">from</span>
+            <span ng-switch-when="give">to</span>
+            <span ng-switch-when="receive">from</span>
         </span>
         <span class="user"><a href="#/user/{{event.user}}">{{event.user}}</a></span> at
         <span class="date">{{event.date | dateMoment:'M/d/yyyy h:mma'}}</span>
 
-        <div class="message">{{event.reason}}</div>
+        <div class="message">{{event.message}}</div>
+        <div ng-hide="admin != 1"><button class="small alert button" ng-click="removeEvent(event.type, event.user, event.date)">Delete</button></div>
     </div>
 </div>
