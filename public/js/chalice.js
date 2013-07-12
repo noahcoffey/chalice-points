@@ -11,7 +11,7 @@ angular.module('cpPointsFilters', [])
         };
     });
 
-angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters', 'ngCookies'])
+angular.module('cpPointsServices', ['ngResource', 'ngCookies', 'cpPointsFilters'])
     .factory('Leaderboard', function($resource) {
         return $resource('api/1.0/leaderboard.json', {});
     })
@@ -20,8 +20,28 @@ angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters', 'ngCookies'
             userId: 'list'
         });
     })
-    .factory('Point', function($resource) {
-        return $resource('api/1.0/point.json', {});
+    .factory('CPEvent', function($resource) {
+        return $resource('api/1.0/event.json', {});
+    })
+    .factory('flash', function($rootScope, $timeout) {
+        $rootScope.message = {};
+
+        var reset;
+        var cleanup = function() {
+            $timeout.cancel(reset);
+            reset = $timeout(function() {
+                $rootScope.message = {};
+            }, 2000);
+        };
+
+        return function(level, text) {
+            $rootScope.message = {
+                level: level,
+                text: text
+            };
+
+            cleanup();
+        };
     });
 
 angular.module('cpPoints', ['cpPointsServices'])
@@ -36,6 +56,10 @@ angular.module('cpPoints', ['cpPointsServices'])
                 templateUrl: 'public/partials/chart.html',
                 controller: ChartCtrl
             })
+            .when('/chart/:mode', {
+                templateUrl: 'public/partials/chart.html',
+                controller: ChartCtrl
+            })
             .when('/user/:userId', {
                 templateUrl: 'public/partials/profile.html',
                 controller: UserCtrl,
@@ -46,7 +70,7 @@ angular.module('cpPoints', ['cpPointsServices'])
             });
     }]);
 
-var LeaderboardCtrl = ['$scope', '$cookieStore', 'leaderboard', 'users', 'Point', 'Leaderboard', function($scope, $cookieStore, leaderboard, users, Point, Leaderboard) {
+var LeaderboardCtrl = ['$scope', '$cookieStore', 'flash', 'leaderboard', 'users', 'CPEvent', 'Leaderboard', function($scope, $cookieStore, flash, leaderboard, users, CPEvent, Leaderboard) {
     $scope.leaderboard = leaderboard;
     $scope.givers = $scope.leaderboard.given;
     $scope.receivers = $scope.leaderboard.received;
@@ -55,25 +79,26 @@ var LeaderboardCtrl = ['$scope', '$cookieStore', 'leaderboard', 'users', 'Point'
     $scope.pointsAmount = 1;
     $scope.pointsSource = $cookieStore.get('source');
 
-    $scope.addPoints = function() {
+    $scope.addEvent = function() {
         $cookieStore.put('source', $scope.pointsSource.name);
 
-        if ($scope.pointsAmount > 5) {
-            $scope.pointsAmount = 5;
+        if ($scope.pointsSource == $scope.pointsTarget) {
+            flash('alert', 'Really? You can\'t give yourself points.');
+            return;
         }
 
-        if ($scope.pointsAmount < 1) {
-            $scope.pointsAmount = 1;
-        }
+        $scope.pointsAmount = Math.max(Math.min(5, $scope.pointsAmount), 1);
 
-        var point = new Point({
+        var cpEvent = new CPEvent({
             source: $scope.pointsSource,
             target: $scope.pointsTarget,
             amount: $scope.pointsAmount,
             message: $scope.pointsMessage
         });
 
-        point.$save(function(data) {
+        cpEvent.$save(function(data) {
+            flash('success', 'Chalice Point Given');
+
             $scope.leaderboard = Leaderboard.get(function() {
                 $scope.givers = $scope.leaderboard.given;
                 $scope.receivers = $scope.leaderboard.received;
@@ -99,17 +124,36 @@ LeaderboardCtrl.resolve = {
     }
 };
 
-var ChartCtrl = ['$scope', function($scope) {
-    $scope.mode = 'Received';
-    ChalicePoints.Chord('received');
+var ChartCtrl = ['$scope', '$routeParams', function($scope, $routeParams) {
+    $scope.mode = $routeParams.mode ? $routeParams.mode.toLowerCase() : 'received';
+    ChalicePoints.Chord($scope.mode);
 }];
 
-var UserCtrl = ['$scope', 'user', function($scope, user) {
+var UserCtrl = ['$scope', '$routeParams', 'CPEvent', 'User', 'user', function($scope, $routeParams, CPEvent, User, user) {
     user.gravatar += '?s=50&d=mm';
     $scope.user = user;
-    $scope.types = {
-        given: 'Gave',
-        received: 'Received',
+    $scope.admin = $routeParams.admin ? true : false;
+
+    $scope.removeEvent = function(type, user, dateTime) {
+        var source = user;
+        var target = $scope.user.name;
+
+        if (type == 'given') {
+            source = user;
+            target = $scope.user.name;
+        }
+
+        var pointEvent = new CPEvent({
+            source: source,
+            target: target,
+            'date': dateTime
+        });
+
+        pointEvent.$remove(function(data) {
+            $scope.user = User.get({
+                userId: $scope.user.name
+            });
+        });
     };
 }];
 
@@ -221,19 +265,28 @@ ChalicePoints.Chord = function(type) {
 
             chord.append('title').text(function(d) {
                 if (ChalicePoints.type == 'received') {
-                    return users[d.target.index].name
-                        + ' -> ' + users[d.source.index].name
-                        + ': ' + d.source.value;
-                } else {
                     return users[d.source.index].name
                         + ' -> ' + users[d.target.index].name
-                        + ': ' + d.source.value
+                        + ': ' + d.target.value
+                        + "\n"
+                        + users[d.target.index].name
+                        + ' -> ' + users[d.source.index].name
+                        + ': ' + d.source.value;
+
+                } else {
+                    return users[d.target.index].name
+                        + ' -> ' + users[d.source.index].name
+                        + ': ' + d.target.value
+                        + "\n"
+                        + users[d.source.index].name
+                        + ' -> ' + users[d.target.index].name
+                        + ': ' + d.source.value;
                 }
             });
 
             function mouseover(d, i) {
                 chord.classed('fade', function(p) {
-                    return p.source.index != i;
+                    return p.source.index != i && p.target.index != i;
                 });
             }
         });
