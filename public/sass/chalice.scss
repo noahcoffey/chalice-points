@@ -3,20 +3,20 @@
 @import "chart";
 @import "compass/css3/box-shadow";
 
-$received-color: #E33605;
-$given-color: #5DA423;
+$receive-color: #E33605;
+$give-color: #5DA423;
 
 $gravatar-size: 50px;
 
 $weight-light: 300;
 $weight-heavy: 600;
 
-.received {
-    color: $received-color;
+.receive {
+    color: $receive-color;
 }
 
-.given {
-    color: $given-color;
+.give {
+    color: $give-color;
 }
 
 .top-bar .name {
