@@ -36,178 +36,233 @@ app.config.from_pyfile('FlaskConfig.py')
 redis_url = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
 r = redis.from_url(redis_url)
 
-def points_given(username):
-    key = 'cpPoints' + string.translate(username, None, ' ')
-    if r.exists(key):
-        return r.hgetall(key)
+def toKey(name):
+    name = name.encode('ascii')
+    key = string.translate(name, None, ' ')
+    key = string.translate(key, None, '-')
 
-    return None
+    return key
 
-def userlist():
-    users = []
-    usersLen = r.llen('cpUsers')
-    for idx in range(usersLen):
-        user = r.lindex('cpUsers', idx)
-        users.append(user)
+def getEvents(name, deleted=None):
+    userKey = toKey(name)
+    eventsKey = 'cpEvents' + userKey
 
-    users.sort()
+    events = []
+    if r.exists(eventsKey):
+        eventsLen = r.llen(eventsKey)
+        for idx in range(eventsLen):
+            eventJSON = r.lindex(eventsKey, idx)
+            event = json.loads(eventJSON)
+
+            if not deleted and '__deleted' in event:
+                continue
+
+            events.append(event)
+
+    return events
+
+def getUsers():
+    usersKey = 'cpUsers';
+
+    users = {}
+    if r.exists(usersKey):
+        userDict = r.hgetall(usersKey)
+
+        for userKey in userDict:
+            userJSON = userDict[userKey]
+            user = json.loads(userJSON);
+            users[user['name']] = user
 
     return users
 
-def points():
-    given = {}
-    received = {}
+def getPoints():
+    points = {}
 
-    givenTotals = {}
-    receivedTotals = {}
+    users = getUsers()
+    for source in users:
+        if source not in points:
+            points[source] = {
+                'givenTotal': 0,
+                'receivedTotal': 0,
+                'given': {},
+                'received': {},
+            }
 
-    users = userlist()
-    for username in users:
-        points = points_given(username)
-        if points == None:
-            continue
+        events = getEvents(source)
+        for event in events:
+            target = event['user']
+            amount = int(event['amount'])
 
-        for key in points.keys():
-            name = string.replace(key, '_', ' ')
+            if event['type'] == 'give':
+                points[source]['givenTotal'] += amount
 
-            pointValue = int(points[key])
+                if target not in points[source]['given']:
+                    points[source]['given'][target] = 0
 
-            if username not in given:
-                given[username] = {}
+                points[source]['given'][target] += amount
+            else:
+                points[source]['receivedTotal'] += amount
 
-            given[username][name] = pointValue
+                if target not in points[source]['received']:
+                    points[source]['received'][target] = 0
 
-            if username not in givenTotals:
-                givenTotals[username] = 0
+                points[source]['received'][target] += amount
 
-            givenTotals[username] += pointValue
+    return points
 
-            if name not in received:
-                received[name] = {}
+def addEvent(source, target, eventDate, amount, message):
+    sourceKey = toKey(source)
+    givenKey = 'cpEvents' + sourceKey
+    given = {
+        'type': 'give',
+        'user': target,
+        'amount': amount,
+        'date': eventDate,
+        'message': message,
+    };
+    r.lpush(givenKey, json.dumps(given))
 
-            received[name][username] = pointValue
+    targetKey = toKey(target)
+    receivedKey = 'cpEvents' + targetKey
+    received = {
+        'type': 'receive',
+        'user': source,
+        'amount': amount,
+        'date': eventDate,
+        'message': message,
+    }
+    r.lpush(receivedKey, json.dumps(received))
 
-            if name not in receivedTotals:
-                receivedTotals[name] = 0
+'''
+def removeEvent(source, target, date):
+    source = source.encode('ascii')
+    target = target.encode('ascii')
+    date = date.encode('ascii')
 
-            receivedTotals[name] += pointValue
+    found = False
 
-    return [given, received, givenTotals, receivedTotals]
+    sourceEvents = getEvents(source)
+    for idx in range(len(sourceEvents)):
+        event = sourceEvents[idx]
+        if event['user'] == target and event['date'] == date:
+            found = True
+            setDeletedFlag(source, idx, event, True)
+
+    targetEvents = getEvents(target)
+    for idx in range(len(targetEvents)):
+        event = targetEvents[idx]
+        if event['user'] == source and event['date'] == date:
+            found = True
+            setDeletedFlag(source, idx, event, True)
+
+    return found
+
+def setDeletedFlag(key, idx, event, deleted=True):
+    if deleted:
+        event['__deleted'] = 1
+    else:
+        event.pop('__deleted', None)
+
+    r.lset(key, idx, json.dumps(event))
+'''
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/api/1.0/leaderboard.json', methods=['GET'])
-def leaderboard():
-    givenDict, receivedDict, givenTotals, receivedTotals = points()
+def leaderboardAction():
+    points = getPoints()
 
     given = []
-    for name in givenTotals.keys():
-        entry = {
-            'name': name,
-            'amount': givenTotals[name],
-        }
-
-        given.append(entry)
-
     received = []
-    for name in receivedTotals.keys():
-        entry = {
+    for name in points:
+        givenEntry = {
             'name': name,
-            'amount': receivedTotals[name],
+            'amount': points[name]['givenTotal']
         }
+        given.append(givenEntry)
 
-        received.append(entry)
+        receivedEntry = {
+            'name': name,
+            'amount': points[name]['receivedTotal']
+        }
+        received.append(receivedEntry)
 
     return jsonify(success=1, given=given, received=received)
 
 @app.route('/api/1.0/user.json', methods=['GET'])
-def users():
-    skip = ['Duane Hunt'];
+def userAction():
+    userDict = getUsers()
+    userNames = userDict.keys()
+    userNames.sort()
 
     users = []
-    userList = userlist()
-    for name in userList:
-        if name in skip:
-            continue
-
+    for name in userNames:
         entry = {
             'name': name,
         }
-
         users.append(entry)
 
     return Response(json.dumps(users), mimetype='application/json')
 
 @app.route('/api/1.0/user/<name>.json', methods=['GET'])
-def user(name):
+def userNameAction(name):
+    name = name.encode('ascii')
+
     if name == 'list':
-        return users()
+        return userAction()
 
-    key = string.translate(name.encode('ascii'), None, ' ')
-    key = string.translate(key, None, '-')
-
-    userKey = 'cpUser' + key
-    if not r.exists(userKey):
+    users = getUsers()
+    if name not in users:
         abort(404)
 
-    user = r.hgetall(userKey)
-    user['events'] = []
-
-    eventKey = 'cpEvents' + key
-    if r.exists(eventKey):
-        eventsLen = r.llen(eventKey)
-        for idx in range(eventsLen):
-            event = r.lindex(eventKey, idx)
-            if '__deleted' in event:
-                continue
-
-            user['events'].append(json.loads(event))
-
-    givenDict, receivedDict, givenTotals, receivedTotals = points()
-
+    user = users[name]
+    user['events'] = getEvents(name)
     user['given'] = 0
-    if user['name'] in givenTotals:
-        user['given'] = givenTotals[user['name']]
-
     user['received'] = 0
-    if user['name'] in receivedTotals:
-        user['received'] = receivedTotals[user['name']]
+
+    points = getPoints()
+    if name in points:
+        user['given'] = points[name]['givenTotal']
+        user['received'] = points[name]['receivedTotal']
 
     return Response(json.dumps(user), mimetype='application/json')
 
 @app.route('/api/1.0/matrix.json', methods=['GET'])
-def matrix():
+def matrixAction():
     return matrix_mode('received')
 
 @app.route('/api/1.0/matrix/<mode>.json', methods=['GET'])
-def matrix_mode(mode):
-    givenDict, receivedDict, givenTotals, receivedTotals = points()
-    users = userlist()
+def matrixModeAction(mode):
+    points = getPoints()
+    users = getUsers()
+
+    names = users.keys()
+    names.sort()
 
     if mode == 'received':
         matrix = []
-        for user in users:
+        for user in names:
             entry = []
 
-            for otherUser in users:
+            for otherUser in names:
                 value = 0
-                if user in receivedDict and otherUser in receivedDict[user]:
-                    value = receivedDict[user][otherUser]
+                if user in points and otherUser in points[user]['received']:
+                    value = points[user]['received'][otherUser]
 
                 entry.append(value)
 
             matrix.append(entry)
     else:
         matrix = []
-        for user in users:
+        for user in names:
             entry = []
 
-            for otherUser in users:
+            for otherUser in names:
                 value = 0
-                if user in givenDict and otherUser in givenDict[user]:
-                    value = givenDict[user][otherUser]
+                if user in points and otherUser in points[user]['given']:
+                    value = points[user]['given'][otherUser]
 
                 entry.append(value)
 
@@ -215,107 +270,52 @@ def matrix_mode(mode):
 
     return Response(json.dumps(matrix), mimetype='application/json')
 
-@app.route('/api/1.0/point.json', methods=['POST'])
-def savePoint():
-    source = request.json['source'].encode('ascii')
-    target = request.json['target'].encode('ascii')
-    amount = request.json['amount']
+@app.route('/api/1.0/point.json', methods=['GET'])
+def pointAction():
+    points = getPoints()
+    return jsonify(success=1, points=points)
 
-    if amount < 1:
-        amount = 1
-    elif amount > 5:
-        amount = 5
+@app.route('/api/1.0/event.json', methods=['GET', 'POST'])
+def eventAction():
+    if request.method == 'GET':
+        return eventGetAction()
+    elif request.method == 'POST':
+        return eventPostAction(request.json)
+    else:
+        abort(404)
 
-    message = 'None'
-    if 'message' in request.json and request.json['message']:
-        message = request.json['message'].encode('ascii')
-
-    sourceKey = string.translate(source, None, ' ')
-    targetKey = string.translate(target, None, ' ')
-
-    pointsKey = 'cpPoints' + sourceKey
-    field = string.replace(target, ' ', '_')
-    r.hincrby(pointsKey, field, amount)
-
-    eventDate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    givenKey = 'cpEvents' + sourceKey
-    given = {
-        'type': 'given',
-        'user': target,
-        'amount': amount,
-        'reason': message,
-        'date': eventDate,
-    };
-    r.lpush(givenKey, json.dumps(given))
-
-    receivedKey = 'cpEvents' + targetKey
-    received = {
-        'type': 'received',
-        'user': source,
-        'amount': amount,
-        'reason': message,
-        'date': eventDate,
-    }
-    r.lpush(receivedKey, json.dumps(received))
-
-    return jsonify(success=1)
-
-@app.route('/api/1.0/event.json', methods=['GET'])
-def events():
+def eventGetAction():
     events = {}
 
-    users = userlist()
-    for user in users:
-        key = string.translate(user, None, ' ')
-
-        eventsKey = 'cpEvents' + key;
-        if r.exists(eventskey):
-            events['user'] = []
-
-            eventsLen = r.llen(eventsKey)
-            for idx in range(eventsLen):
-                eventJSON = r.lindex(key, idx)
-                event = json.loads(eventJSON)
-
-                events['user'].append(event)
+    users = getUsers()
+    for name in users:
+        events[name] = getEvents(name)
 
     return jsonify(success=1, events=events)
 
-@app.route('/api/1.0/event/<source>/<target>/<date>.json', methods=['DELETE'])
-def deleteEvent(source, target, date):
-    source = source.encode('ascii')
-    target = target.encode('ascii')
-    date = date.encode('ascii')
+def eventPostAction(data):
+    source = data['source'].encode('ascii')
+    target = data['target'].encode('ascii')
+    amount = max(min(5, data['amount']), 1)
 
-    givenKey = 'cpEvents' + sourceKey
-    eventsLen = r.llen(givenKey)
-    for idx in range(eventsLen):
-        eventJSON = r.lindex(givenKey, idx)
-        event = json.loads(eventJSON)
+    message = 'None'
+    if 'message' in data and data['message']:
+        message = data['message'].encode('ascii')
 
-        if event.source == source and \
-           event.target == target and \
-           event.date == date:
+    eventDate = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+    app.logger.debug(eventDate)
 
-           event['__deleted'] = 1
-           r.lset(givenKey, idx, json.dumps(event))
-
-    receivedKey = 'cpEvents' + targetKey
-    eventsLen = r.llen(receivedKey)
-    for idx in range(eventsLen):
-        eventJSON = r.lindex(givenKey, idx)
-        event = json.loads(eventJSON)
-
-        if event.source == source and \
-           event.target == target and \
-           event.date == date:
-
-           event['__deleted'] = 1
-
-           r.lset(receivedKey, idx, json.dumps(event))
+    addEvent(source, target, eventDate, amount, message)
 
     return jsonify(success=1)
+
+'''
+@app.route('/api/1.0/event/<source>/<target>/<date>.json', methods=['DELETE'])
+def removeEventAction(source, target, date):
+    removeEvent(source, target, date)
+
+    return jsonify(success=1)
+'''
 
 @app.route('/humans.txt')
 def humans():
