@@ -1,20 +1,13 @@
 <div class="row">
     <div class="add-points small-8 small-centered columns">
-        <form name="addPointsForm">
+        <form name="addEventForm">
             <div class="row">
+                <div class="small-12 columns">
+                    <div class="alert-box {{message.level}}" ng-hide="!message.text">{{message.text}}</div>
+                </div>
+            </div>
+            <div>
                 <div class="small-5 columns">
-                    <!--div class="styled-select">
-                        <div class="base">
-                            <div class="active">-- From --</div>
-                            <div class="list">
-                                <ul>
-                                    <li class="item" ng-repeat="user in users">{{user.name}}</li>
-                                </ul>
-                            </div>
-                            <div style="clear: both;"></div>
-                        </div>
-                    </div-->
-
                     <select name="source" ng-model="pointsSource" ng-options="u.name as u.name for u in users" required>
                         <option value="">-- From --</option>
                     </select>
@@ -33,7 +26,7 @@
                     <input type="text" name="message" ng-model="pointsMessage" placeholder="The reason for giving points">
                 </div>
                 <div class="small-3 columns">
-                    <button ng-click="addPoints()" ng-disabled="addPointsForm.$invalid" class="button success">CHALICE!</button>
+                    <button ng-click="addEvent()" ng-disabled="addEventForm.$invalid" class="button success">CHALICE!</button>
                 </div>
             </div>
         </form>
