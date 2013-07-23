@@ -51,7 +51,7 @@ def updateHipchat(giver, receiver, amount, message):
     url = 'https://api.hipchat.com/v1/rooms/message?auth_token=%s' % (authToken)
 
     points = 'Point' if amount == 1 else 'Points'
-    message = '%s gave %s %d Chalice %s: %s' % (giver, receiver, amount, points, message)
+    message = '(chalicepoint) %s gave %s %d Chalice %s: %s' % (giver, receiver, amount, points, message)
 
     args = {
         'room_id': room,
