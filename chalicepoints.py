@@ -48,10 +48,10 @@ def updateHipchat(giver, receiver, amount, message):
     color = os.getenv('HIPCHAT_COLOR', 'green')
     msgFormat = os.getenv('HIPCHAT_FORMAT', 'text')
 
-    url = 'https://api.hipchat.com/v1/rooms/message?auth_token=%s' % (authToken)
 
+    url = 'http://chalicepoints.formstack.com/#/user/%s' % (urllib.quote(receiver))
     points = 'Point' if amount == 1 else 'Points'
-    message = '%s gave %s %d Chalice %s: %s' % (giver, receiver, amount, points, message)
+    message = '%s gave %s %d Chalice %s: %s (%s)' % (giver, receiver, amount, points, message, url)
 
     args = {
         'room_id': room,
@@ -63,7 +63,9 @@ def updateHipchat(giver, receiver, amount, message):
     }
 
     data = urllib.urlencode(args)
-    request = urllib2.Request(url, data)
+
+    apiUrl = 'https://api.hipchat.com/v1/rooms/message?auth_token=%s' % (authToken)
+    request = urllib2.Request(apiUrl, data)
     result = urllib2.urlopen(request)
 
 def toKey(name):
