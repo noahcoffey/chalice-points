@@ -51,7 +51,7 @@ def updateHipchat(giver, receiver, amount, message):
 
     url = 'http://chalicepoints.formstack.com/#/user/%s' % (urllib.quote(receiver))
     points = 'Point' if amount == 1 else 'Points'
-    message = '%s gave %s %d Chalice %s: %s (%s)' % (giver, receiver, amount, points, message, url)
+    message = '(chalicepoint) %s gave %s %d Chalice %s: %s (%s)' % (giver, receiver, amount, points, message, url)
 
     args = {
         'room_id': room,
