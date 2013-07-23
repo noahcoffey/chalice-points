@@ -54,7 +54,7 @@ def updateHipchat(giver, receiver, amount, message):
     message = '%s gave %s %d Chalice %s: %s' % (giver, receiver, amount, points, message)
 
     args = {
-        'room_id': '115117',
+        'room_id': room,
         'message': message,
         'from': sender,
         'color': color,
@@ -335,7 +335,6 @@ def eventPostAction(data):
         message = data['message'].encode('ascii')
 
     eventDate = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-    app.logger.debug(eventDate)
 
     addEvent(source, target, eventDate, amount, message)
 
