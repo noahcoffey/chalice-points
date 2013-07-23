@@ -3,6 +3,7 @@ import os, sys, string
 import redis
 import json
 import random
+import urllib, urllib2
 from datetime import datetime
 from flask import Flask, request, redirect, url_for, \
     abort, render_template, jsonify, send_from_directory, \
@@ -35,6 +36,35 @@ app.config.from_pyfile('FlaskConfig.py')
 
 redis_url = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
 r = redis.from_url(redis_url)
+
+def updateHipchat(giver, receiver, amount, message):
+    authToken = os.getenv('HIPCHAT_AUTH_TOKEN', None)
+    room = os.getenv('HIPCHAT_ROOM', None)
+
+    if not authToken or not room:
+        return False
+
+    sender = os.getenv('HIPCHAT_SENDER', 'ChalicePoints')
+    color = os.getenv('HIPCHAT_COLOR', 'green')
+    msgFormat = os.getenv('HIPCHAT_FORMAT', 'text')
+
+    url = 'https://api.hipchat.com/v1/rooms/message?auth_token=%s' % (authToken)
+
+    points = 'Point' if amount == 1 else 'Points'
+    message = '%s gave %s %d Chalice %s: %s' % (giver, receiver, amount, points, message)
+
+    args = {
+        'room_id': '115117',
+        'message': message,
+        'from': sender,
+        'color': color,
+        'message_format': msgFormat,
+        'notice': 0,
+    }
+
+    data = urllib.urlencode(args)
+    request = urllib2.Request(url, data)
+    result = urllib2.urlopen(request)
 
 def toKey(name):
     name = name.encode('ascii')
@@ -132,6 +162,8 @@ def addEvent(source, target, eventDate, amount, message):
         'message': message,
     }
     r.lpush(receivedKey, json.dumps(received))
+
+    updateHipchat(source, target, amount, message)
 
 '''
 def removeEvent(source, target, date):
