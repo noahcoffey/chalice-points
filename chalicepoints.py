@@ -143,6 +143,9 @@ def getPoints():
     return points
 
 def addEvent(source, target, eventDate, amount, message):
+    if source == target:
+        return False
+
     sourceKey = toKey(source)
     givenKey = 'cpEvents' + sourceKey
     given = {
