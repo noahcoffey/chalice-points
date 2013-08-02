@@ -35,5 +35,6 @@
         <script src="{{url_for('static', filename='js/vendor/moment.js')}}"></script>
         <script src="{{url_for('static', filename='js/foundation.min.js')}}"></script>
         <script src="{{url_for('static', filename='js/chalice.js')}}"></script>
+        <div id="user" style="display:none">{{ user_json | safe }}</div>
     </body>
 </html>

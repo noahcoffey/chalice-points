@@ -68,9 +68,16 @@ angular.module('cpPoints', ['cpPointsServices'])
             .otherwise({
                 redirectTo: '/'
             });
-    }]);
+    }]).run(['$rootScope', function($rootScope) {
+        
+        // Publish the user on the root scope.
+        var user_json = document.getElementById('user').innerHTML
+        $rootScope.user = angular.fromJson(user_json);
+
+    }])
 
 var LeaderboardCtrl = ['$scope', '$cookieStore', 'flash', 'leaderboard', 'users', 'CPEvent', 'Leaderboard', function($scope, $cookieStore, flash, leaderboard, users, CPEvent, Leaderboard) {
+
     $scope.leaderboard = leaderboard;
     $scope.givers = $scope.leaderboard.given;
     $scope.receivers = $scope.leaderboard.received;
