@@ -7,7 +7,11 @@ import urllib, urllib2
 from datetime import datetime
 from flask import Flask, request, redirect, url_for, \
     abort, render_template, jsonify, send_from_directory, \
-    Response
+    Response, g
+
+from flask.ext.login import LoginManager, UserMixin, login_required,\
+    login_user, current_user
+from flask.ext.openid import OpenID
 
 class BadRequest(Exception):
     message = 'Bad Request'
@@ -33,6 +37,12 @@ app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'public'),
         static_url_path='/public')
 
 app.config.from_pyfile('FlaskConfig.py')
+app.config['SECRET_KEY'] = 'G322S$Ivkze&5T]43"5[03CL/>26'
+
+login_manager = LoginManager()
+login_manager.login_view = 'login'
+login_manager.init_app(app)
+open_id = OpenID(app)
 
 redis_url = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
 r = redis.from_url(redis_url)
@@ -203,9 +213,12 @@ def setDeletedFlag(key, idx, event, deleted=True):
     r.lset(key, idx, json.dumps(event))
 '''
 
+
 @app.route('/')
+@login_required
 def index():
-    return render_template('index.html')
+    return render_template('index.html',
+        user_json=current_user.to_json(for_public=True))
 
 @app.route('/api/1.0/leaderboard.json', methods=['GET'])
 def leaderboardAction():
@@ -352,6 +365,47 @@ def removeEventAction(source, target, date):
 
     return jsonify(success=1)
 '''
+
+@app.route('/login')
+@open_id.loginhandler
+def login():
+    return open_id.try_login('https://www.google.com/accounts/o8/id', \
+        ask_for=['email', 'fullname'])
+
+@open_id.after_login
+def after_login(response):
+    user = User(response.identity_url, response.email, response.fullname)
+    user_json = user.to_json()
+    r.hset('openid', user.url, user_json)
+    login_user(user)
+
+    return redirect(url_for('index'))
+
+
+class User(UserMixin):
+    def __init__(self, url, email, name):
+        self.url = url
+        self.email = email
+        self.name = name
+
+    def get_id(self):
+        return self.url
+
+    def to_json(self, for_public=False):
+        d = { 'email' : self.email, 'name' : self.name }
+        if not for_public:
+            d['url'] = self.url
+
+        return json.dumps(d)
+
+@login_manager.user_loader
+def load_user(id):
+    user_json = r.hget('openid', id)
+    if user_json:
+        u = json.loads(user_json)
+        return User(u['url'], u['email'], u['name'])
+
+    else: return None
 
 @app.route('/humans.txt')
 def humans():
