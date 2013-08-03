@@ -229,12 +229,22 @@ ChalicePoints.Chord = function(type) {
             .enter().append('g')
                 .attr('class', 'group')
                 .attr('title', function(d, i) {
-                    return users[i].name + ': ' + Math.round(d.value);
+                    var title = 'Unknown';
+                    if (users[i]) {
+                        title = users[i].name + ': ' + Math.round(d.value);
+                    }
+                    
+                    return title;
                 })
                 .on('mouseover', mouseover);
 
             group.append('title').text(function(d, i) {
-                return users[i].name + ': ' + Math.round(d.value);
+                var title = 'Unknown';
+                if (users[i]) {
+                    title = users[i].name + ': ' + Math.round(d.value);
+                }
+
+                return title;
             });
 
             var groupPath = group.append('path')
@@ -255,7 +265,12 @@ ChalicePoints.Chord = function(type) {
                     return '#group' + i;
                 })
                 .text(function(d, i) {
-                    return users[i].name;
+                    var text = 'Unknown';
+                    if (users[i]) {
+                        text = users[i].name;
+                    }
+
+                    return text;
                 });
 
             groupText.filter(function(d, i) {
@@ -272,24 +287,30 @@ ChalicePoints.Chord = function(type) {
                 .attr('d', path);
 
             chord.append('title').text(function(d) {
+                var tooltip = 'Unknown';
                 if (ChalicePoints.type == 'received') {
-                    return users[d.source.index].name
-                        + ' -> ' + users[d.target.index].name
-                        + ': ' + d.target.value
-                        + "\n"
-                        + users[d.target.index].name
-                        + ' -> ' + users[d.source.index].name
-                        + ': ' + d.source.value;
-
+                    if (users[d.source.index] && users[d.target.index]) {
+                        tooltip = users[d.source.index].name
+                            + ' -> ' + users[d.target.index].name
+                            + ': ' + d.target.value
+                            + "\n"
+                            + users[d.target.index].name
+                            + ' -> ' + users[d.source.index].name
+                            + ': ' + d.source.value;
+                    }
                 } else {
-                    return users[d.target.index].name
-                        + ' -> ' + users[d.source.index].name
-                        + ': ' + d.target.value
-                        + "\n"
-                        + users[d.source.index].name
-                        + ' -> ' + users[d.target.index].name
-                        + ': ' + d.source.value;
+                    if (users[d.source.index] && users[d.target.index]) {
+                        tooltip = users[d.target.index].name
+                            + ' -> ' + users[d.source.index].name
+                            + ': ' + d.target.value
+                            + "\n"
+                            + users[d.source.index].name
+                            + ' -> ' + users[d.target.index].name
+                            + ': ' + d.source.value;
+                    }
                 }
+
+                return tooltip;
             });
 
             function mouseover(d, i) {
