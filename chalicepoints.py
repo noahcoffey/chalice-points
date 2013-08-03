@@ -58,7 +58,6 @@ def updateHipchat(giver, receiver, amount, message):
     color = os.getenv('HIPCHAT_COLOR', 'green')
     msgFormat = os.getenv('HIPCHAT_FORMAT', 'text')
 
-
     url = 'http://chalicepoints.formstack.com/#/user/%s' % (urllib.quote(receiver))
     points = 'Point' if amount == 1 else 'Points'
     message = '(chalicepoint) %s gave %s %d Chalice %s: %s (%s)' % (giver, receiver, amount, points, message, url)
@@ -103,16 +102,35 @@ def getEvents(name, deleted=None):
 
     return events
 
+def get_user_dict():
+    users_key = 'cpUsers';
+
+    user_dict = None
+    if r.exists(users_key):
+        user_dict = r.hgetall(users_key)
+
+    return user_dict
+
+def get_user_names():
+    names = []
+
+    user_dict = get_user_dict()
+    if user_dict != None:
+        for user_key in user_dict:
+            user_json = user_dict[user_key]
+            user = json.loads(user_json);
+            names.append(user['name'])
+
+    return names
+
 def getUsers():
-    usersKey = 'cpUsers';
-
     users = {}
-    if r.exists(usersKey):
-        userDict = r.hgetall(usersKey)
 
-        for userKey in userDict:
-            userJSON = userDict[userKey]
-            user = json.loads(userJSON);
+    user_dict = get_user_dict()
+    if user_dict != None:
+        for user_key in user_dict:
+            user_json = user_dict[user_key]
+            user = json.loads(user_json);
             users[user['name']] = user
 
     return users
@@ -221,6 +239,7 @@ def index():
         user_json=current_user.to_json(for_public=True))
 
 @app.route('/api/1.0/leaderboard.json', methods=['GET'])
+@login_required
 def leaderboardAction():
     points = getPoints()
 
@@ -242,6 +261,7 @@ def leaderboardAction():
     return jsonify(success=1, given=given, received=received)
 
 @app.route('/api/1.0/user.json', methods=['GET'])
+@login_required
 def userAction():
     userDict = getUsers()
     userNames = userDict.keys()
@@ -249,6 +269,9 @@ def userAction():
 
     users = []
     for name in userNames:
+        if name == current_user.name:
+            continue
+
         entry = {
             'name': name,
         }
@@ -257,6 +280,7 @@ def userAction():
     return Response(json.dumps(users), mimetype='application/json')
 
 @app.route('/api/1.0/user/<name>.json', methods=['GET'])
+@login_required
 def userNameAction(name):
     name = name.encode('ascii')
 
@@ -280,10 +304,12 @@ def userNameAction(name):
     return Response(json.dumps(user), mimetype='application/json')
 
 @app.route('/api/1.0/matrix.json', methods=['GET'])
+@login_required
 def matrixAction():
     return matrix_mode('received')
 
 @app.route('/api/1.0/matrix/<mode>.json', methods=['GET'])
+@login_required
 def matrixModeAction(mode):
     points = getPoints()
     users = getUsers()
@@ -321,11 +347,13 @@ def matrixModeAction(mode):
     return Response(json.dumps(matrix), mimetype='application/json')
 
 @app.route('/api/1.0/point.json', methods=['GET'])
+@login_required
 def pointAction():
     points = getPoints()
     return jsonify(success=1, points=points)
 
 @app.route('/api/1.0/event.json', methods=['GET', 'POST'])
+@login_required
 def eventAction():
     if request.method == 'GET':
         return eventGetAction()
@@ -344,9 +372,16 @@ def eventGetAction():
     return jsonify(success=1, events=events)
 
 def eventPostAction(data):
-    source = data['source'].encode('ascii')
+    source = current_user.name;
     target = data['target'].encode('ascii')
     amount = max(min(5, data['amount']), 1)
+
+    if target == current_user.name:
+        abort(403)
+
+    users = get_user_names()
+    if target not in users:
+        abort(403)
 
     message = 'None'
     if 'message' in data and data['message']:
@@ -360,6 +395,7 @@ def eventPostAction(data):
 
 '''
 @app.route('/api/1.0/event/<source>/<target>/<date>.json', methods=['DELETE'])
+@login_required
 def removeEventAction(source, target, date):
     removeEvent(source, target, date)
 
@@ -380,7 +416,6 @@ def after_login(response):
     login_user(user)
 
     return redirect(url_for('index'))
-
 
 class User(UserMixin):
     def __init__(self, url, email, name):
@@ -404,8 +439,8 @@ def load_user(id):
     if user_json:
         u = json.loads(user_json)
         return User(u['url'], u['email'], u['name'])
-
-    else: return None
+    else:
+        return None
 
 @app.route('/humans.txt')
 def humans():
