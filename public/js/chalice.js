@@ -11,7 +11,7 @@ angular.module('cpPointsFilters', [])
         };
     });
 
-angular.module('cpPointsServices', ['ngResource', 'ngCookies', 'cpPointsFilters'])
+angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters'])
     .factory('Leaderboard', function($resource) {
         return $resource('api/1.0/leaderboard.json', {});
     })
@@ -69,27 +69,21 @@ angular.module('cpPoints', ['cpPointsServices'])
                 redirectTo: '/'
             });
     }]).run(['$rootScope', function($rootScope) {
-        
         // Publish the user on the root scope.
         var user_json = document.getElementById('user').innerHTML
         $rootScope.user = angular.fromJson(user_json);
-
     }])
 
-var LeaderboardCtrl = ['$scope', '$cookieStore', 'flash', 'leaderboard', 'users', 'CPEvent', 'Leaderboard', function($scope, $cookieStore, flash, leaderboard, users, CPEvent, Leaderboard) {
-
+var LeaderboardCtrl = ['$scope', 'flash', 'leaderboard', 'users', 'CPEvent', 'Leaderboard', function($scope, flash, leaderboard, users, CPEvent, Leaderboard) {
     $scope.leaderboard = leaderboard;
     $scope.givers = $scope.leaderboard.given;
     $scope.receivers = $scope.leaderboard.received;
     $scope.users = users;
 
     $scope.pointsAmount = 1;
-    $scope.pointsSource = $cookieStore.get('source');
 
     $scope.addEvent = function() {
-        $cookieStore.put('source', $scope.pointsSource.name);
-
-        if ($scope.pointsSource == $scope.pointsTarget) {
+        if ($scope.pointsTarget == $scope.user.name) {
             flash('alert', 'Really? You can\'t give yourself points.');
             return;
         }
@@ -97,7 +91,6 @@ var LeaderboardCtrl = ['$scope', '$cookieStore', 'flash', 'leaderboard', 'users'
         $scope.pointsAmount = Math.max(Math.min(5, $scope.pointsAmount), 1);
 
         var cpEvent = new CPEvent({
-            source: $scope.pointsSource,
             target: $scope.pointsTarget,
             amount: $scope.pointsAmount,
             message: $scope.pointsMessage
