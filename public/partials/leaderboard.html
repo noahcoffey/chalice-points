@@ -6,18 +6,13 @@
                     <div class="alert-box {{message.level}}" ng-hide="!message.text">{{message.text}}</div>
                 </div>
             </div>
-            <div>
-                <div class="small-5 columns">
-                    <select name="source" ng-model="pointsSource" ng-options="u.name as u.name for u in users" required>
-                        <option value="">-- From --</option>
-                    </select>
-                </div>
-                <div class="small-5 columns">
+            <div class="row">
+                <div class="small-9 columns">
                     <select name="target" ng-model="pointsTarget" ng-options="u.name as u.name for u in users" required>
                         <option value="">-- To --</option>
                     </select>
                 </div>
-                <div class="small-2 columns">
+                <div class="small-3 columns">
                     <input type="number" name="amount" value="1" ng-model="pointsAmount" min="1" max="5" required>
                 </div>
             </div>
