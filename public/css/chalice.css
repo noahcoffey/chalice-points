@@ -136,15 +136,20 @@ path.chord {
 }
 
 /* line 128, ../sass/chalice.scss */
+.add-points select {
+  height: 2em;
+  border: 1px solid #cccccc;
+}
+/* line 133, ../sass/chalice.scss */
 .add-points button {
   width: 100%;
 }
-/* line 132, ../sass/chalice.scss */
+/* line 137, ../sass/chalice.scss */
 .add-points input[name="message"] {
   height: 3em;
 }
 
-/* line 137, ../sass/chalice.scss */
+/* line 142, ../sass/chalice.scss */
 .styled-select {
   border: 1px solid #ccc;
   padding: 5px;
@@ -153,12 +158,12 @@ path.chord {
   float: left;
   width: 100%;
 }
-/* line 145, ../sass/chalice.scss */
+/* line 150, ../sass/chalice.scss */
 .styled-select .base {
   width: 100%;
   float: left;
 }
-/* line 149, ../sass/chalice.scss */
+/* line 154, ../sass/chalice.scss */
 .styled-select .base .active {
   background-color: white;
   border: 1px solid #ccc;
@@ -168,11 +173,11 @@ path.chord {
   background-repeat: no-repeat;
   background-position: 98% center;
 }
-/* line 161, ../sass/chalice.scss */
+/* line 166, ../sass/chalice.scss */
 .styled-select .base .list {
   display: none;
 }
-/* line 164, ../sass/chalice.scss */
+/* line 169, ../sass/chalice.scss */
 .styled-select .base .list ul {
   margin: 0 0 1em 0;
   padding: 0;
