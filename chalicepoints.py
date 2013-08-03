@@ -456,6 +456,10 @@ def robots():
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'public'),
         'favicon.ico', mimetype='image/vnd.microsoft.icon')
+@app.route('/googleaf18a4916e849528.html')
+def gwt():
+    return send_from_directory(os.path.join(app.root_path, 'public'),
+        'googleaf18a4916e849528.html', mimetype='text/html')
 
 @app.errorhandler(BadRequest)
 def handle_bad_request(error):
