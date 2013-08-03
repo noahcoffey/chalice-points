@@ -126,9 +126,7 @@ $weight-heavy: 600;
 
 .add-points {
     button {
-        margin-right: 0;
-        margin-left: auto;
-        display: block;
+        width: 100%;
     }
 
     input[name="message"] {
