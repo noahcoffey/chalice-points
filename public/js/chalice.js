@@ -30,7 +30,9 @@ angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters'])
         var cleanup = function() {
             $timeout.cancel(reset);
             reset = $timeout(function() {
-                $rootScope.message = {};
+                $('.alert-box').slideUp(400, function() {
+                    $rootScope.message = {};
+                });
             }, 2000);
         };
 
@@ -39,6 +41,8 @@ angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters'])
                 level: level,
                 text: text
             };
+
+            $('.alert-box').slideDown();
 
             cleanup();
         };
@@ -98,6 +102,10 @@ var LeaderboardCtrl = ['$scope', 'flash', 'leaderboard', 'users', 'CPEvent', 'Le
 
         cpEvent.$save(function(data) {
             flash('success', 'Chalice Point Given');
+
+            $scope.pointsAmount = 1
+            $scope.pointsTarget = ''
+            $scope.pointsMessage = ''
 
             $scope.leaderboard = Leaderboard.get(function() {
                 $scope.givers = $scope.leaderboard.given;
