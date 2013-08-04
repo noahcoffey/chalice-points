@@ -37,7 +37,10 @@ app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'public'),
         static_url_path='/public')
 
 app.config.from_pyfile('FlaskConfig.py')
-app.config['SECRET_KEY'] = 'G322S$Ivkze&5T]43"5[03CL/>26'
+app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY', None)
+
+if app.config['SECRET_KEY'] is None:
+    abort(500)
 
 login_manager = LoginManager()
 login_manager.login_view = 'login'
