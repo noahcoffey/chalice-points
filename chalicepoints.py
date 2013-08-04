@@ -262,14 +262,14 @@ def leaderboardAction():
 
 @app.route('/api/1.0/user.json', methods=['GET'])
 @login_required
-def userAction():
+def userAction(include_self=True):
     userDict = getUsers()
     userNames = userDict.keys()
     userNames.sort()
 
     users = []
     for name in userNames:
-        if name == current_user.name:
+        if name == current_user.name and not include_self:
             continue
 
         entry = {
@@ -285,7 +285,7 @@ def userNameAction(name):
     name = name.encode('ascii')
 
     if name == 'list':
-        return userAction()
+        return userAction(False)
 
     users = getUsers()
     if name not in users:
