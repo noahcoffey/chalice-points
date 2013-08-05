@@ -10,7 +10,7 @@ from flask import Flask, request, redirect, url_for, \
     Response, g
 
 from flask.ext.login import LoginManager, UserMixin, login_required,\
-    login_user, current_user
+    login_user, current_user, logout_user
 from flask.ext.openid import OpenID
 
 class BadRequest(Exception):
@@ -407,6 +407,13 @@ def removeEventAction(source, target, date):
 def login():
     return open_id.try_login('https://www.google.com/accounts/o8/id', \
         ask_for=['email', 'fullname'])
+
+@app.route('/logout')
+@login_required
+def logout():
+    r.hdel('openid', current_user.url)
+    logout_user()
+    return redirect(url_for('index'))
 
 @open_id.after_login
 def after_login(response):
