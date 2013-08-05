@@ -106,7 +106,7 @@ def getEvents(name, deleted=None):
     return events
 
 def get_user_dict():
-    users_key = 'cpUsers';
+    users_key = 'cpUsers'
 
     user_dict = None
     if r.exists(users_key):
@@ -121,10 +121,21 @@ def get_user_names():
     if user_dict != None:
         for user_key in user_dict:
             user_json = user_dict[user_key]
-            user = json.loads(user_json);
+            user = json.loads(user_json)
             names.append(user['name'])
 
     return names
+
+def get_user_emails():
+    emails = {}
+    user_dict = get_user_dict()
+    if user_dict != None:
+        for user_key in user_dict:
+            user_json = user_dict[user_key]
+            user = json.loads(user_json)
+            emails[user['email']] = user['name']
+
+    return emails
 
 def getUsers():
     users = {}
@@ -133,7 +144,7 @@ def getUsers():
     if user_dict != None:
         for user_key in user_dict:
             user_json = user_dict[user_key]
-            user = json.loads(user_json);
+            user = json.loads(user_json)
             users[user['name']] = user
 
     return users
@@ -185,7 +196,7 @@ def addEvent(source, target, eventDate, amount, message):
         'amount': amount,
         'date': eventDate,
         'message': message,
-    };
+    }
     r.lpush(givenKey, json.dumps(given))
 
     targetKey = toKey(target)
@@ -375,7 +386,7 @@ def eventGetAction():
     return jsonify(success=1, events=events)
 
 def eventPostAction(data):
-    source = current_user.name;
+    source = current_user.name
     target = data['target'].encode('ascii')
     amount = max(min(5, data['amount']), 1)
 
@@ -409,7 +420,7 @@ def removeEventAction(source, target, date):
 @open_id.loginhandler
 def login():
     return open_id.try_login('https://www.google.com/accounts/o8/id', \
-        ask_for=['email', 'fullname'])
+        ask_for=['email'])
 
 @app.route('/logout')
 @login_required
@@ -420,7 +431,11 @@ def logout():
 
 @open_id.after_login
 def after_login(response):
-    user = User(response.identity_url, response.email, response.fullname)
+    emails = get_user_emails()
+    if response.email not in emails:
+        abort(401)
+
+    user = User(response.identity_url, response.email, emails[response.email])
     user_json = user.to_json()
     r.hset('openid', user.url, user_json)
     login_user(user)
