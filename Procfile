@@ -1,1 +1,1 @@
-web: newrelic-admin run-program gunicorn chalicepoints:app
+web: gunicorn chalicepoints:app
