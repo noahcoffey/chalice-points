@@ -431,11 +431,13 @@ def logout():
 
 @open_id.after_login
 def after_login(response):
+    email = string.lower(response.email)
+
     emails = get_user_emails()
-    if response.email not in emails:
+    if email not in emails:
         abort(401)
 
-    user = User(response.identity_url, response.email, emails[response.email])
+    user = User(response.identity_url, email, emails[email])
     user_json = user.to_json()
     r.hset('openid', user.url, user_json)
     login_user(user)
