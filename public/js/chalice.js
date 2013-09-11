@@ -20,6 +20,9 @@ angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters'])
             userId: 'list'
         });
     })
+    .factory('Total', function($resource) {
+        return $resource('api/1.0/totals.json', {});
+    })
     .factory('CPEvent', function($resource) {
         return $resource('api/1.0/event.json', {});
     })
@@ -68,6 +71,11 @@ angular.module('cpPoints', ['cpPointsServices'])
                 templateUrl: 'public/partials/profile.html',
                 controller: UserCtrl,
                 resolve: UserCtrl.resolve
+            })
+            .when('/totals', {
+                templateUrl: 'public/partials/totals.html',
+                controller: TotalsCtrl,
+                resolve: TotalsCtrl.resolve
             })
             .otherwise({
                 redirectTo: '/'
@@ -136,6 +144,20 @@ var ChartCtrl = ['$scope', '$routeParams', function($scope, $routeParams) {
     $scope.mode = $routeParams.mode ? $routeParams.mode.toLowerCase() : 'received';
     ChalicePoints.Chord($scope.mode);
 }];
+
+var TotalsCtrl = ['$scope', 'totals', function($scope, totals) {
+    $scope.totals = totals;
+}];
+
+TotalsCtrl.resolve = {
+    totals: function($q, Week, $route) {
+        var deferred = $q.defer();
+        var res = Total.get({}, function() {
+            deferred.resolve(res);
+        });
+        return deferred.promise;
+    }
+};
 
 var UserCtrl = ['$scope', '$routeParams', 'CPEvent', 'User', 'user', function($scope, $routeParams, CPEvent, User, user) {
     user.gravatar += '?s=50&d=mm';
