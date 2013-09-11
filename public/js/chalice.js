@@ -150,7 +150,7 @@ var TotalsCtrl = ['$scope', 'totals', function($scope, totals) {
 }];
 
 TotalsCtrl.resolve = {
-    totals: function($q, Week, $route) {
+    totals: function($q, Total, $route) {
         var deferred = $q.defer();
         var res = Total.get({}, function() {
             deferred.resolve(res);
