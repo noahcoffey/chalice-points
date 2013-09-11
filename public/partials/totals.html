@@ -1,11 +1,26 @@
-<div class="row">
-    <div class="small-6 small-centered columns">
-        <ul>
-            <li ng-repeat="week in totals | orderBy:'name'">
-                <div>{{week.name}}</div>
-                <div>Received Winner(s): {{week.received}}</div>
-                <div>Given Winner(s): {{week.given}}</div>
-            </li>
-        </ul>
+<div class="totals row">
+    <div class="total small-6 small-centered columns" ng-repeat="week in totals | orderBy:'-date'">
+        <div class="date">Week Starting {{week.date | dateMoment:'M/d/yyyy'}}</div>
+        <div class="winners">
+            <div>
+                <span class="name">{{week.received.name}}</span> Won with 
+                <span class="amount">{{week.received.amount}}</span>
+                <span ng-switch on="week.received.amount">
+                    <span ng-switch-when="1">Point</span>
+                    <span ng-switch-default>Points</span>
+                </span>
+                <span class="type receive">Received</span>
+            </div>
+
+            <div>
+                <span class="name">{{week.given.name}}</span> Won with 
+                <span class="amount">{{week.given.amount}}</span>
+                <span ng-switch on="week.given.amount">
+                    <span ng-switch-when="1">Point</span>
+                    <span ng-switch-default>Points</span>
+                </span>
+                <span class="type give">Given</span>
+            </div>
+        </div>
     </div>
 </div>
