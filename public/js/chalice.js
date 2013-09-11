@@ -162,7 +162,10 @@ TotalsCtrl.resolve = {
                     givenTotal = res[week].given[idx].amount;
                 }
 
-                res[week].given = given.join(', ') + ': ' + givenTotal;
+                res[week].given = {
+                    name: given.join(', '),
+                    amount: givenTotal
+                };
 
                 var received = []
                 var receivedTotal = 0;
@@ -172,7 +175,10 @@ TotalsCtrl.resolve = {
                     receivedTotal = res[week].received[idx].amount;
                 }
 
-                res[week].received = received.join(', ') + ': ' + receivedTotal;
+                res[week].received = {
+                    name: received.join(', '),
+                    amount: receivedTotal
+                };
             }
 
             deferred.resolve(res);
