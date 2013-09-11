@@ -256,6 +256,8 @@ def index():
 @login_required
 def totalsActions():
     totals = {}
+    leaders = {}
+    highest = {}
 
     users = getUsers()
     for source in users:
@@ -268,26 +270,64 @@ def totalsActions():
             week = datetime.strptime(date, '%Y-%m-%dT%H:%M:%SZ').strftime('%U')
 
             if not week in totals:
-                totals[week] = []
+                totals[week] = {}
+
+            if not source in totals[week]:
+                totals[week][source] = {
+                    'given': 0,
+                    'received': 0,
+                }
+
+            if not target in totals[week]:
+                totals[week][target] = {
+                    'given': 0,
+                    'received': 0,
+                }
 
             if event['type'] == 'give':
-                if not source in totals[week]:
-                    totals[week][source] = {
-                        'given': 0,
-                        'received': 0,
-                    }
-
                 totals[week][source]['given'] += amount
-            else:
-                if not target in totals[week]:
-                    totals[week][target] = {
-                        'given': 0,
-                        'received': 0,
-                    }
-
                 totals[week][target]['received'] += amount
 
-    return Response(json.dumps(totals), mimetype='application/json')
+    for week in totals:
+        leaders[week] = {
+            'given': [],
+            'received': [],
+        }
+
+        highest[week] = {
+            'given': 0,
+            'received': 0,
+        }
+
+        for person in totals[week]:
+            if totals[week][person]['given'] > highest[week]['given']:
+                leaders[week]['given'] = [{
+                    'name': person,
+                    'amount': totals[week][person]['given'],
+                }]
+
+                highest[week]['given'] = totals[week][person]['given']
+            elif totals[week][person]['given'] == highest[week]['given']:
+                leaders[week]['given'].append({
+                    'name': person,
+                    'amount': totals[week][person]['given'],
+                })
+
+            if totals[week][person]['received'] > highest[week]['received']:
+                leaders[week]['received'] = [{
+                    'name': person,
+                    'amount': totals[week][person]['received'],
+                }]
+
+                highest[week]['received'] = totals[week][person]['received']
+            elif totals[week][person]['received'] == highest[week]['received']:
+                leaders[week]['received'].append({
+                    'name': person,
+                    'amount': totals[week][person]['received'],
+                })
+
+
+    return Response(json.dumps(leaders), mimetype='application/json')
 
 @app.route('/api/1.0/leaderboard.json', methods=['GET'])
 @login_required
