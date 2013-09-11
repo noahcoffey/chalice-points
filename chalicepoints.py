@@ -290,7 +290,7 @@ def totalsActions():
 
     for week in totals:
         leaders[week] = {
-            'name': week,
+            'name': int(week),
             'given': [],
             'received': [],
         }
