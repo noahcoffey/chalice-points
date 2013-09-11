@@ -252,6 +252,43 @@ def index():
     return render_template('index.html',
         user_json=current_user.to_json(for_public=True))
 
+@app.route('/api/1.0/totals.json', methods=['GET'])
+@login_required
+def totalsActions():
+    totals = {}
+
+    users = getUsers()
+    for source in users:
+        events = getEvents(source)
+        for event in events:
+            target = event['user']
+            amount = int(event['amount'])
+
+            date = event['date']
+            week = datetime.strptime(date, '%Y-%m-%dT%H:%M:%SZ').strftime('%U')
+
+            if not week in totals:
+                totals[week] = []
+
+            if event['type'] == 'give':
+                if not source in totals[week]:
+                    totals[week][source] = {
+                        'given': 0,
+                        'received': 0,
+                    }
+
+                totals[week][source]['given'] += amount
+            else:
+                if not target in totals[week]:
+                    totals[week][target] = {
+                        'given': 0,
+                        'received': 0,
+                    }
+
+                totals[week][target]['received'] += amount
+
+    return Response(json.dumps(totals), mimetype='application/json')
+
 @app.route('/api/1.0/leaderboard.json', methods=['GET'])
 @login_required
 def leaderboardAction():
