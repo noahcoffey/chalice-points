@@ -152,9 +152,32 @@ var TotalsCtrl = ['$scope', 'totals', function($scope, totals) {
 TotalsCtrl.resolve = {
     totals: function($q, Total, $route) {
         var deferred = $q.defer();
-        var res = Total.get({}, function() {
+        var res = Total.query(function() {
+            for (var week in res) {
+                var given = []
+                var givenTotal = 0;
+
+                for (var idx in res[week].given) {
+                    given.push(res[week].given[idx].name);
+                    givenTotal = res[week].given[idx].amount;
+                }
+
+                res[week].given = given.join(', ') + ': ' + givenTotal;
+
+                var received = []
+                var receivedTotal = 0;
+
+                for (var idx in res[week].received) {
+                    received.push(res[week].received[idx].name);
+                    receivedTotal = res[week].received[idx].amount;
+                }
+
+                res[week].received = received.join(', ') + ': ' + receivedTotal;
+            }
+
             deferred.resolve(res);
         });
+
         return deferred.promise;
     }
 };
