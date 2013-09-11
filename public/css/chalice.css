@@ -188,3 +188,23 @@ path.chord {
   -moz-box-shadow: 0 -5px 0 white, 0 0 0 1px #dddddd;
   box-shadow: 0 -5px 0 white, 0 0 0 1px #dddddd;
 }
+
+/* line 183, ../sass/chalice.scss */
+.totals .total {
+  padding: 10px;
+  margin: 20px inherit;
+  text-align: center;
+  border: 1px solid #888;
+  line-height: 1.3;
+  -webkit-box-shadow: 5px 5px 10px #333333;
+  -moz-box-shadow: 5px 5px 10px #333333;
+  box-shadow: 5px 5px 10px #333333;
+}
+/* line 195, ../sass/chalice.scss */
+.totals .total .winners .name {
+  font-weight: 600;
+}
+/* line 198, ../sass/chalice.scss */
+.totals .total .winners .amount {
+  font-weight: 600;
+}
