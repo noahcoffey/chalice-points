@@ -266,65 +266,65 @@ def totalsActions():
             target = event['user']
             amount = int(event['amount'])
 
-            date = event['date']
-            week = datetime.strptime(date, '%Y-%m-%dT%H:%M:%SZ').strftime('%U')
+            week = datetime.strptime(event['date'], '%Y-%m-%dT%H:%M:%SZ').strftime('%U %y 0')
+            date = datetime.strptime(week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%SZ')
 
-            if not week in totals:
-                totals[week] = {}
+            if not date in totals:
+                totals[date] = {}
 
-            if not source in totals[week]:
-                totals[week][source] = {
+            if not source in totals[date]:
+                totals[date][source] = {
                     'given': 0,
                     'received': 0,
                 }
 
-            if not target in totals[week]:
-                totals[week][target] = {
+            if not target in totals[date]:
+                totals[date][target] = {
                     'given': 0,
                     'received': 0,
                 }
 
             if event['type'] == 'give':
-                totals[week][source]['given'] += amount
-                totals[week][target]['received'] += amount
+                totals[date][source]['given'] += amount
+                totals[date][target]['received'] += amount
 
-    for week in totals:
-        leaders[week] = {
-            'name': int(week),
+    for date in totals:
+        leaders[date] = {
+            'date': date,
             'given': [],
             'received': [],
         }
 
-        highest[week] = {
+        highest[date] = {
             'given': 0,
             'received': 0,
         }
 
-        for person in totals[week]:
-            if totals[week][person]['given'] > highest[week]['given']:
-                leaders[week]['given'] = [{
+        for person in totals[date]:
+            if totals[date][person]['given'] > highest[date]['given']:
+                leaders[date]['given'] = [{
                     'name': person,
-                    'amount': totals[week][person]['given'],
+                    'amount': totals[date][person]['given'],
                 }]
 
-                highest[week]['given'] = totals[week][person]['given']
-            elif totals[week][person]['given'] == highest[week]['given']:
-                leaders[week]['given'].append({
+                highest[date]['given'] = totals[date][person]['given']
+            elif totals[date][person]['given'] == highest[date]['given']:
+                leaders[date]['given'].append({
                     'name': person,
-                    'amount': totals[week][person]['given'],
+                    'amount': totals[date][person]['given'],
                 })
 
-            if totals[week][person]['received'] > highest[week]['received']:
-                leaders[week]['received'] = [{
+            if totals[date][person]['received'] > highest[date]['received']:
+                leaders[date]['received'] = [{
                     'name': person,
-                    'amount': totals[week][person]['received'],
+                    'amount': totals[date][person]['received'],
                 }]
 
-                highest[week]['received'] = totals[week][person]['received']
-            elif totals[week][person]['received'] == highest[week]['received']:
-                leaders[week]['received'].append({
+                highest[date]['received'] = totals[date][person]['received']
+            elif totals[date][person]['received'] == highest[date]['received']:
+                leaders[date]['received'].append({
                     'name': person,
-                    'amount': totals[week][person]['received'],
+                    'amount': totals[date][person]['received'],
                 })
 
     return Response(json.dumps(leaders.values()), mimetype='application/json')
