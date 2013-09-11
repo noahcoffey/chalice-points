@@ -1,7 +1,7 @@
 <div class="row">
     <div class="small-12 columns">
         <ul>
-            <li ng-repeat="week in totals">
+            <li ng-repeat="week in totals | orderBy:'-week.name'">
                 <div>{{week.name}}</div>
                 <div>Received Winner(s): {{week.received}}</div>
                 <div>Given Winner(s): {{week.given}}</div>
