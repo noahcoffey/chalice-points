@@ -290,6 +290,7 @@ def totalsActions():
 
     for week in totals:
         leaders[week] = {
+            'name': week,
             'given': [],
             'received': [],
         }
@@ -326,8 +327,7 @@ def totalsActions():
                     'amount': totals[week][person]['received'],
                 })
 
-
-    return Response(json.dumps(leaders), mimetype='application/json')
+    return Response(json.dumps(leaders.values()), mimetype='application/json')
 
 @app.route('/api/1.0/leaderboard.json', methods=['GET'])
 @login_required
