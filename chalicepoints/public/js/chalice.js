@@ -38,6 +38,9 @@ angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters'])
     .factory('Winner', function($resource) {
         return $resource('api/1.0/winners.json', {});
     })
+    .factory('Timeline', function($resource) {
+        return $resource('api/1.0/timeline.json', {});
+    })
     .factory('CPEvent', function($resource) {
         return $resource('api/1.0/event.json', {});
     })
@@ -91,6 +94,11 @@ angular.module('cpPoints', ['cpPointsServices'])
                 templateUrl: 'public/partials/winners.html',
                 controller: WinnersCtrl,
                 resolve: WinnersCtrl.resolve
+            })
+            .when('/timeline', {
+                templateUrl: 'public/partials/timeline.html',
+                controller: TimelineCtrl,
+                resolve: TimelineCtrl.resolve
             })
             .otherwise({
                 redirectTo: '/'
@@ -168,6 +176,21 @@ WinnersCtrl.resolve = {
     winners: function($q, Winner, $route) {
         var deferred = $q.defer();
         var res = Winner.query(function() {
+            deferred.resolve(res);
+        });
+
+        return deferred.promise;
+    }
+};
+
+var TimelineCtrl = ['$scope', 'timeline', function($scope, timeline) {
+    $scope.timeline = timeline;
+}];
+
+TimelineCtrl.resolve = {
+    timeline: function($q, Timeline, $route) {
+        var deferred = $q.defer();
+        var res = Timeline.query(function() {
             deferred.resolve(res);
         });
 
