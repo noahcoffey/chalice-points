@@ -146,7 +146,7 @@ var ChartCtrl = ['$scope', '$routeParams', function($scope, $routeParams) {
 }];
 
 var WinnersCtrl = ['$scope', 'winners', function($scope, winners) {
-    $scope.totals = totals;
+    $scope.winners = winners;
 }];
 
 WinnersCtrl.resolve = {
