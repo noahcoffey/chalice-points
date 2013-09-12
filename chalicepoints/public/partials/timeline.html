@@ -3,7 +3,7 @@
 </div>
 <div class="events row">
     <div class="event small-8 small-centered columns" ng-repeat="event in timeline | orderBy:'-date'">
-        <span class="user"><a href="#/user/{{event.source}}">{{event.source}}</a></span> at
+        <span class="user"><a href="#/user/{{event.source}}">{{event.source}}</a></span>
         <span class="type {{event.type}}" ng-switch on="event.type">
             <span ng-switch-when="give">Gave</span>
             <span ng-switch-when="receive">Received</span>
@@ -17,7 +17,7 @@
             <span ng-switch-when="give">to</span>
             <span ng-switch-when="receive">from</span>
         </span>
-        <span class="user"><a href="#/user/{{event.user}}">{{event.user}}</a></span>
+        <span class="user"><a href="#/user/{{event.user}}">{{event.user}}</a></span> at
         <span class="date">{{event.date | dateMoment:'M/d/yyyy h:mma'}}</span>
 
         <div class="message">{{event.message}}</div>
