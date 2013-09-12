@@ -26,7 +26,7 @@ class Event(BaseModel):
                 while timestamp in events:
                     timestamp += 0.001
 
-                event['target'] = name
+                event['source'] = name
                 events[timestamp] = event
 
         timeline = OrderedDict(sorted(events.items(), key=lambda t: -t[0]))
