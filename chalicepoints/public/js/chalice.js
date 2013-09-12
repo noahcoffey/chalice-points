@@ -9,6 +9,31 @@ angular.module('cpPointsFilters', [])
             var momentDate = moment(dateString).toDate()
             return dateFilter(momentDate, format);
         };
+    })
+    .filter('join', function($filter) {
+        return function(array, delimiter) {
+            return array.join(delimiter);
+        };
+    })
+    .filter('nameJoin', function($filter) {
+        return function(array, delimiter) {
+            var names = []
+            for (var idx in array) {
+                names.push(array[idx].name);
+            }
+
+            return names.join(delimiter);
+        };
+    })
+    .filter('amountMax', function($filter) {
+        return function(array) {
+            var maxAmount = 0;
+            for (var idx in array) {
+                maxAmount = Math.max(maxAmount, array[idx].amount);
+            }
+
+            return maxAmount;
+        };
     });
 
 angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters'])
@@ -153,34 +178,6 @@ WinnersCtrl.resolve = {
     winners: function($q, Winner, $route) {
         var deferred = $q.defer();
         var res = Winner.query(function() {
-            for (var week in res) {
-                var given = []
-                var givenTotal = 0;
-
-                for (var idx in res[week].given) {
-                    given.push(res[week].given[idx].name);
-                    givenTotal = res[week].given[idx].amount;
-                }
-
-                res[week].given = {
-                    name: given.join(', '),
-                    amount: givenTotal
-                };
-
-                var received = []
-                var receivedTotal = 0;
-
-                for (var idx in res[week].received) {
-                    received.push(res[week].received[idx].name);
-                    receivedTotal = res[week].received[idx].amount;
-                }
-
-                res[week].received = {
-                    name: received.join(', '),
-                    amount: receivedTotal
-                };
-            }
-
             deferred.resolve(res);
         });
 
