@@ -67,7 +67,10 @@ $weight-heavy: 600;
 .profile {
     .meta {
         text-align: center;
-        display: inline-block;
+
+        .total {
+            display: inline-block;
+        }
     }
 
     .picture {
