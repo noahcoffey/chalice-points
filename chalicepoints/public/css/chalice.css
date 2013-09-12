@@ -81,29 +81,33 @@ path.chord {
   margin-top: 30px;
 }
 
-/* line 68, ../sass/chalice.scss */
+/* line 67, ../sass/chalice.scss */
+.profile {
+  margin-bottom: 20px;
+}
+/* line 70, ../sass/chalice.scss */
 .profile .meta {
   text-align: center;
 }
-/* line 71, ../sass/chalice.scss */
+/* line 73, ../sass/chalice.scss */
 .profile .meta .total {
   display: inline-block;
 }
-/* line 76, ../sass/chalice.scss */
+/* line 78, ../sass/chalice.scss */
 .profile .picture {
   width: 50px;
   height: 50px;
   border: 1px solid #888;
   vertical-align: text-bottom;
 }
-/* line 83, ../sass/chalice.scss */
+/* line 85, ../sass/chalice.scss */
 .profile .name {
   font-size: 3em;
   font-weight: 300;
   line-height: 50px;
   display: inline-block;
 }
-/* line 92, ../sass/chalice.scss */
+/* line 94, ../sass/chalice.scss */
 .profile .winner {
   display: inline-block;
   font-size: 1.1em;
@@ -112,10 +116,6 @@ path.chord {
   vertical-align: text-bottom;
 }
 
-/* line 103, ../sass/chalice.scss */
-.events {
-  margin-top: 20px;
-}
 /* line 106, ../sass/chalice.scss */
 .events .event {
   padding: 10px;
