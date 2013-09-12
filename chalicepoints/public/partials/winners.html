@@ -6,7 +6,11 @@
         <div class="date">Week Starting {{week.date | dateMoment:'M/d/yyyy'}}</div>
         <div class="winners">
             <div>
-                <span class="name">{{week.received.name}}</span> Won with 
+                <span class="name">{{week.received.name}}</span>
+                <span ng-switch on="week.current">
+                    <span ng-switch-when="1">is Currently Winning with</span>
+                    <span ng-switch-default>Won with</span> 
+                </span>
                 <span class="amount">{{week.received.amount}}</span>
                 <span ng-switch on="week.received.amount">
                     <span ng-switch-when="1">Point</span>
@@ -16,7 +20,11 @@
             </div>
 
             <div>
-                <span class="name">{{week.given.name}}</span> Won with 
+                <span class="name">{{week.given.name}}</span>
+                <span ng-switch on="week.current">
+                    <span ng-switch-when="1">is Currently Winning with</span>
+                    <span ng-switch-default>Won with</span> 
+                </span>
                 <span class="amount">{{week.given.amount}}</span>
                 <span ng-switch on="week.given.amount">
                     <span ng-switch-when="1">Point</span>
