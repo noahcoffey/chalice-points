@@ -4,10 +4,10 @@ require 'zurb-foundation'
 
 # Set this to the root of your project when deployed:
 http_path = "/"
-css_dir = "public/css"
-sass_dir = "public/sass"
-images_dir = "public/img"
-javascripts_dir = "public/js"
+css_dir = "chalicepoints/public/css"
+sass_dir = "chalicepoints/public/sass"
+images_dir = "chalicepoints/public/img"
+javascripts_dir = "chalicepoints/public/js"
 
 # You can select your preferred output style here (can be overridden via the command line):
 # output_style = :expanded or :nested or :compact or :compressed

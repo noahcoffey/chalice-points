@@ -1,1 +1,1 @@
-web: gunicorn chalicepoints:app
+web: gunicorn application:app
