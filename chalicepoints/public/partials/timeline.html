@@ -2,7 +2,7 @@
     <div class="small-8 small-centered columns"><h2 class="pagetitle centered">Timeline</h2></div>
 </div>
 <div class="events row">
-    <div class="event small-8 small-centered columns" ng-repeat="event in timeline | orderBy:'-date'">
+    <div class="event small-10 small-centered columns" ng-repeat="event in timeline | orderBy:'-date'">
         <span class="user"><a href="#/user/{{event.source}}">{{event.source}}</a></span>
         <span class="type {{event.type}}" ng-switch on="event.type">
             <span ng-switch-when="give">Gave</span>
