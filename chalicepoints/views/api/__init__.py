@@ -12,6 +12,12 @@ from chalicepoints.models.point import Point
 
 api = Blueprint('api', __name__, url_prefix='/api')
 
+@api.route('/1.0/timeline.json', methods=['GET'])
+@login_required
+def timeline():
+    timeline = Event.get_timeline()
+    return Response(json.dumps(timeline.values()), mimetype='application/json')
+
 @api.route('/1.0/winners.json', methods=['GET'])
 @login_required
 def winners():
