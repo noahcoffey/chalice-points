@@ -20,8 +20,8 @@ angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters'])
             userId: 'list'
         });
     })
-    .factory('Total', function($resource) {
-        return $resource('api/1.0/totals.json', {});
+    .factory('Winner', function($resource) {
+        return $resource('api/1.0/winners.json', {});
     })
     .factory('CPEvent', function($resource) {
         return $resource('api/1.0/event.json', {});
@@ -72,10 +72,10 @@ angular.module('cpPoints', ['cpPointsServices'])
                 controller: UserCtrl,
                 resolve: UserCtrl.resolve
             })
-            .when('/totals', {
-                templateUrl: 'public/partials/totals.html',
-                controller: TotalsCtrl,
-                resolve: TotalsCtrl.resolve
+            .when('/winners', {
+                templateUrl: 'public/partials/winners.html',
+                controller: WinnersCtrl,
+                resolve: WinnersCtrl.resolve
             })
             .otherwise({
                 redirectTo: '/'
@@ -145,14 +145,14 @@ var ChartCtrl = ['$scope', '$routeParams', function($scope, $routeParams) {
     ChalicePoints.Chord($scope.mode);
 }];
 
-var TotalsCtrl = ['$scope', 'totals', function($scope, totals) {
+var WinnersCtrl = ['$scope', 'winners', function($scope, winners) {
     $scope.totals = totals;
 }];
 
-TotalsCtrl.resolve = {
-    totals: function($q, Total, $route) {
+WinnersCtrl.resolve = {
+    winners: function($q, Winner, $route) {
         var deferred = $q.defer();
-        var res = Total.query(function() {
+        var res = Winner.query(function() {
             for (var week in res) {
                 var given = []
                 var givenTotal = 0;
