@@ -201,7 +201,7 @@ $weight-heavy: 600;
 }
 
 .pagetitle {
-    .centered {
+    &.centered {
         text-align: center;
     }
 }
