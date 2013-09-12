@@ -210,6 +210,6 @@ path.chord {
 }
 
 /* line 204, ../sass/chalice.scss */
-.pagetitle .centered {
+.pagetitle.centered {
   text-align: center;
 }
