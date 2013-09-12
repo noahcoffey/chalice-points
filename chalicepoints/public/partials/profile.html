@@ -7,7 +7,7 @@
     </div>
 </div>
 <div class="events row">
-    <div class="event small-6 small-centered columns" ng-repeat="event in user.events | orderBy:'date'">
+    <div class="event small-6 small-centered columns" ng-repeat="event in user.events | orderBy:'-date'">
         <span class="type {{event.type}}" ng-switch on="event.type">
             <span ng-switch-when="give">Gave</span>
             <span ng-switch-when="receive">Received</span>
