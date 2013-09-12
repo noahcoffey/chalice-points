@@ -20,7 +20,7 @@ def winners():
     highest = {}
 
     current_week = datetime.now().strftime('%U %y 0')
-    current_date = datetime.strptime(current, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%SZ')
+    current_date = datetime.strptime(current_week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%SZ')
 
     users = User.get_users()
     for source in users:
