@@ -15,16 +15,6 @@ angular.module('cpPointsFilters', [])
             return array.join(delimiter);
         };
     })
-    .filter('nameJoin', function($filter) {
-        return function(array, delimiter) {
-            var names = []
-            for (var idx in array) {
-                names.push(array[idx].name);
-            }
-
-            return names.join(delimiter);
-        };
-    })
     .filter('amountMax', function($filter) {
         return function(array) {
             var maxAmount = 0;
