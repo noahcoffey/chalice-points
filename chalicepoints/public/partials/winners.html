@@ -3,7 +3,7 @@
 </div>
 <div class="winners row">
     <div class="winner small-6 small-centered columns" ng-repeat="week in winners | orderBy:'-date'">
-        <div class="date">Week Starting {{week.date | dateMoment:'M/d/yyyy'}}</div>
+        <div class="date">Week Starting {{week.date}} {{week.date | dateMoment:'M/d/yyyy Z'}}</div>
         <div class="winners">
             <div>
                 <span class="name">{{week.received | nameJoin:', '}}</span>
