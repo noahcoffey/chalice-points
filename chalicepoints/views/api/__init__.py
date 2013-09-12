@@ -19,6 +19,9 @@ def winners():
     leaders = {}
     highest = {}
 
+    current_week = datetime.now().strftime('%U %y 0')
+    current_date = datetime.strptime(current, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%SZ')
+
     users = User.get_users()
     for source in users:
         events = Event.get_events(source)
@@ -51,9 +54,13 @@ def winners():
     for date in totals:
         leaders[date] = {
             'date': date,
+            'current': 0,
             'given': [],
             'received': [],
         }
+
+        if current_date == date:
+            leaders[date]['current'] = 0
 
         highest[date] = {
             'given': 0,
