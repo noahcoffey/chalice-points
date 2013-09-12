@@ -6,7 +6,12 @@
         <div class="date">Week Starting {{week.date | dateMoment:'M/d/yyyy'}}</div>
         <div class="winners">
             <div>
-                <span class="name">{{week.received | nameJoin:', '}}</span>
+                <span class="name">
+                    <span ng-repeat="person in week.received">
+                        <a href="/#/user/{{person.name}}">{{person.name}}</a>
+                        <span ng-show="!$first && !$last">, </span>
+                    </span>
+                </span>
                 -
                 <span ng-switch on="week.current">
                     <span ng-switch-when="1">Winning with</span>
@@ -21,7 +26,12 @@
             </div>
 
             <div>
-                <span class="name">{{week.given | nameJoin:', '}}</span>
+                <span class="name">
+                    <span ng-repeat="person in week.given">
+                        <a href="/#/user/{{person.name}}">{{person.name}}</a>
+                        <span ng-show="!$first && !$last">, </span>
+                    </span>
+                </span>
                 -
                 <span ng-switch on="week.current">
                     <span ng-switch-when="1">Winning with</span>
