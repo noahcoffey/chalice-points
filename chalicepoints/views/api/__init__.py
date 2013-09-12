@@ -20,7 +20,7 @@ def winners():
     highest = {}
 
     current_week = datetime.now().strftime('%U %y 0')
-    current_date = datetime.strptime(current_week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%SZ')
+    current_date = datetime.strptime(current_week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%S')
 
     users = User.get_users()
     for source in users:
@@ -30,7 +30,7 @@ def winners():
             amount = int(event['amount'])
 
             week = datetime.strptime(event['date'], '%Y-%m-%dT%H:%M:%SZ').strftime('%U %y 0')
-            date = datetime.strptime(week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%SZ')
+            date = datetime.strptime(week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%S')
 
             if not date in totals:
                 totals[date] = {}
