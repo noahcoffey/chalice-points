@@ -8,7 +8,13 @@
             <div>
                 <span class="name">{{week.received | nameJoin:', '}}</span>
                 <span ng-switch on="week.current">
-                    <span ng-switch-when="1">is Winning with</span>
+                    <span ng-switch-when="1">
+                        <span ng-switch on "week.received.length > 1">
+                            <span ng-switch-when="1">are</span>
+                            <span ng-switch-default>is</span>
+                        </span>
+                        Winning with
+                    </span>
                     <span ng-switch-default>Won with</span> 
                 </span>
                 <span class="amount">{{week.received | amountMax}}</span>
@@ -22,7 +28,13 @@
             <div>
                 <span class="name">{{week.given | nameJoin:', '}}</span>
                 <span ng-switch on="week.current">
-                    <span ng-switch-when="1">is Winning with</span>
+                    <span ng-switch-when="1">
+                        <span ng-switch on "week.given.length > 1">
+                            <span ng-switch-when="1">are</span>
+                            <span ng-switch-default>is</span>
+                        </span>
+                        Winning with
+                    </span>
                     <span ng-switch-default>Won with</span> 
                 </span>
                 <span class="amount">{{week.given | amountMax}}</span>
