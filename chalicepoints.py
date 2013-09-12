@@ -184,6 +184,47 @@ def getPoints():
 
     return points
 
+def getPointsByWeek():
+    points = {}
+
+    users = getUsers()
+    for source in users:
+        events = getEvents(source)
+        for event in events:
+            target = event['user']
+            amount = int(event['amount'])
+
+            week = datetime.strptime(event['date'], '%Y-%m-%dT%H:%M:%SZ').strftime('%U %y 0')
+            date = datetime.strptime(week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%SZ')
+
+            if date not in points:
+                points[date] = {}
+
+            if source not in points[date]:
+                points[date][source] = {
+                    'givenTotal': 0,
+                    'receivedTotal': 0,
+                    'given': {},
+                    'received': {},
+                }
+
+            if event['type'] == 'give':
+                points[date][source]['givenTotal'] += amount
+
+                if target not in points[date][source]['given']:
+                    points[date][source]['given'][target] = 0
+
+                points[date][source]['given'][target] += amount
+            else:
+                points[date][source]['receivedTotal'] += amount
+
+                if target not in points[date][source]['received']:
+                    points[date][source]['received'][target] = 0
+
+                points[date][source]['received'][target] += amount
+
+    return points
+
 def addEvent(source, target, eventDate, amount, message):
     if source == target:
         return False
@@ -350,6 +391,46 @@ def leaderboardAction():
         received.append(receivedEntry)
 
     return jsonify(success=1, given=given, received=received)
+
+@app.route('/api/1.0/leaderboard/<type>.json', methods=['GET'])
+@login_required
+def leaderboardTypeAction(type):
+    type = type.encode('ascii')
+
+    if type == 'all':
+        return leaderboardAction()
+
+    points = {}
+    if type == 'week':
+        points = getPointsByWeek()
+    else:
+        abort(404)
+
+    leaderboard = []
+    for date in points:
+        given = []
+        received = []
+
+        for name in points[date]:
+            givenEntry = {
+                'name': name,
+                'amount': points[date][name]['givenTotal']
+            }
+            given.append(givenEntry)
+
+            receivedEntry = {
+                'name': name,
+                'amount': points[date][name]['receivedTotal']
+            }
+            received.append(receivedEntry)
+
+        leaderboard.append({
+            'name': date,
+            'given': given,
+            'received': received,
+        });
+
+    return jsonify(success=1, leaderboard=leaderboard)
 
 @app.route('/api/1.0/user.json', methods=['GET'])
 @login_required
