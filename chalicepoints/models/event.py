@@ -1,5 +1,7 @@
+import os
 import json
 from datetime import datetime
+from ordereddict import OrderedDict
 
 from flask import abort, jsonify
 from flask.ext.login import current_user
@@ -9,6 +11,28 @@ from chalicepoints.models.base import BaseModel
 from chalicepoints.models.user import User
 
 class Event(BaseModel):
+    @staticmethod
+    def get_timeline():
+        events = {}
+
+        users = User.get_users()
+        for name in users:
+            user_events = Event.get_events(name)
+            for event in user_events:
+                if event['type'] != 'give':
+                    continue
+
+                timestamp = float(datetime.strptime(event['date'], '%Y-%m-%dT%H:%M:%SZ').strftime('%s'))
+                while timestamp in events:
+                    timestamp += 0.001
+
+                event['target'] = name
+                events[timestamp] = event
+
+        timeline = OrderedDict(sorted(events.items(), key=lambda t: -t[0]))
+
+        return timeline
+
     @staticmethod
     def do_get_events():
         events = {}
