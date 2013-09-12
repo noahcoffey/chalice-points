@@ -60,7 +60,7 @@ def winners():
         }
 
         if current_date == date:
-            leaders[date]['current'] = 0
+            leaders[date]['current'] = 1
 
         highest[date] = {
             'given': 0,
