@@ -12,9 +12,9 @@ from chalicepoints.models.point import Point
 
 api = Blueprint('api', __name__, url_prefix='/api')
 
-@api.route('/1.0/totals.json', methods=['GET'])
+@api.route('/1.0/winners.json', methods=['GET'])
 @login_required
-def totalsActions():
+def winners():
     totals = {}
     leaders = {}
     highest = {}
@@ -91,7 +91,7 @@ def totalsActions():
 
 @api.route('/1.0/leaderboard.json', methods=['GET'])
 @login_required
-def leaderboardAction():
+def leaderboard():
     points = Point.get_points()
 
     given = []
@@ -113,7 +113,7 @@ def leaderboardAction():
 
 @api.route('/1.0/leaderboard/<type>.json', methods=['GET'])
 @login_required
-def leaderboardTypeAction(type):
+def leaderboard_type(type):
     type = type.encode('ascii')
 
     if type == 'all':

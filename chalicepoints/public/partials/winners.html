@@ -1,5 +1,8 @@
-<div class="totals row">
-    <div class="total small-6 small-centered columns" ng-repeat="week in totals | orderBy:'-date'">
+<div class="row">
+    <div class="small-8 columns small-offset-2"><h2>Weekly Winners</h2></div>
+</div>
+<div class="winners row">
+    <div class="winner small-6 small-centered columns" ng-repeat="week in winners | orderBy:'-date'">
         <div class="date">Week Starting {{week.date | dateMoment:'M/d/yyyy'}}</div>
         <div class="winners">
             <div>

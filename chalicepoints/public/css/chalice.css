@@ -100,7 +100,7 @@ path.chord {
   display: inline-block;
 }
 /* line 88, ../sass/chalice.scss */
-.profile .total {
+.profile .winner {
   display: inline-block;
   font-size: 1.1em;
   font-weight: 600;
@@ -190,7 +190,7 @@ path.chord {
 }
 
 /* line 183, ../sass/chalice.scss */
-.totals .total {
+.winners .winner {
   padding: 10px;
   margin: 20px inherit;
   text-align: center;
@@ -200,11 +200,11 @@ path.chord {
   -moz-box-shadow: 5px 5px 10px #333333;
   box-shadow: 5px 5px 10px #333333;
 }
-/* line 195, ../sass/chalice.scss */
-.totals .total .winners .name {
+/* line 194, ../sass/chalice.scss */
+.winners .winner .name {
   font-weight: 600;
 }
-/* line 198, ../sass/chalice.scss */
-.totals .total .winners .amount {
+/* line 197, ../sass/chalice.scss */
+.winners .winner .amount {
   font-weight: 600;
 }
