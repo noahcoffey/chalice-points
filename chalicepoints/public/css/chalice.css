@@ -201,15 +201,21 @@ path.chord {
   box-shadow: 5px 5px 10px #333333;
 }
 /* line 194, ../sass/chalice.scss */
+.winners .winner .date {
+  font-style: italic;
+  font-weight: 1.2rem;
+  padding-bottom: 10px;
+}
+/* line 200, ../sass/chalice.scss */
 .winners .winner .name {
   font-weight: 600;
 }
-/* line 197, ../sass/chalice.scss */
+/* line 203, ../sass/chalice.scss */
 .winners .winner .amount {
   font-weight: 600;
 }
 
-/* line 204, ../sass/chalice.scss */
+/* line 210, ../sass/chalice.scss */
 .pagetitle.centered {
   text-align: center;
 }
