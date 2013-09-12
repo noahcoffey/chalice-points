@@ -28,8 +28,8 @@
             <div>
                 <span class="name">
                     <span ng-repeat="person in week.given">
+                        <span ng-show="!$first">, </span>
                         <a href="/#/user/{{person.name}}">{{person.name}}</a>
-                        <span ng-show="!$first && !$last">, </span>
                     </span>
                 </span>
                 -
