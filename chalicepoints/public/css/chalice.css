@@ -208,3 +208,8 @@ path.chord {
 .winners .winner .amount {
   font-weight: 600;
 }
+
+/* line 204, ../sass/chalice.scss */
+.pagetitle .centered {
+  text-align: center;
+}
