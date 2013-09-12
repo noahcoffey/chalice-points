@@ -85,7 +85,7 @@ $weight-heavy: 600;
         display: inline-block;
     }
 
-    .total {
+    .winner {
         display: inline-block;
         font: {
             size: 1.1em;
@@ -179,8 +179,8 @@ $weight-heavy: 600;
     }
 }
 
-.totals {
-    .total {
+.winners {
+    .winner {
         padding: 10px;
         margin: 20px inherit;
 
@@ -191,13 +191,11 @@ $weight-heavy: 600;
 
         @include single-box-shadow(#333, 5px, 5px, 10px);
 
-        .winners {
-            .name {
-                font-weight: $weight-heavy;
-            }
-            .amount {
-                font-weight: $weight-heavy;
-            }
+        .name {
+            font-weight: $weight-heavy;
+        }
+        .amount {
+            font-weight: $weight-heavy;
         }
     }
 }
