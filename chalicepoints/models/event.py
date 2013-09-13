@@ -67,9 +67,12 @@ class Event(BaseModel):
         return jsonify(success=1)
 
     @staticmethod
-    def get_events(name, deleted=None):
+    def get_events(name, deleted=False, week=False):
         userKey = Event.to_key(name)
         eventsKey = 'cpEvents' + userKey
+
+        current_week = datetime.now().strftime('%U %y 0')
+        current_date = datetime.strptime(current_week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%SZ')
 
         events = []
         if chalicepoints.r.exists(eventsKey):
@@ -80,6 +83,12 @@ class Event(BaseModel):
 
                 if not deleted and '__deleted' in event:
                     continue
+
+                event_week = datetime.strptime(event['date'], '%Y-%m-%dT%H:%M:%SZ').strftime('%U %y 0')
+                event_date = datetime.strptime(event_week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%SZ')
+
+                if week and event_date != current_date:
+                    continue;
 
                 events.append(event)
 
