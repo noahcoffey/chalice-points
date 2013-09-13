@@ -7,21 +7,21 @@ from chalicepoints.models.event import Event
 
 class Point(BaseModel):
     @staticmethod
-    def get_points():
+    def get_points(week=False):
         points = {}
 
         users = User.get_users()
         for source in users:
-            if source not in points:
-                points[source] = {
-                    'givenTotal': 0,
-                    'receivedTotal': 0,
-                    'given': {},
-                    'received': {},
-                }
-
-            events = Event.get_events(source)
+            events = Event.get_events(source, False, week)
             for event in events:
+                if source not in points:
+                    points[source] = {
+                        'givenTotal': 0,
+                        'receivedTotal': 0,
+                        'given': {},
+                        'received': {},
+                    }
+
                 target = event['user']
                 amount = int(event['amount'])
 
@@ -39,47 +39,5 @@ class Point(BaseModel):
                         points[source]['received'][target] = 0
 
                     points[source]['received'][target] += amount
-
-        return points
-
-    @staticmethod
-    def get_points_by_week():
-        points = {}
-
-        users = User.get_users()
-        for source in users:
-            events = Event.get_events(source)
-            for event in events:
-                target = event['user']
-                amount = int(event['amount'])
-
-                week = datetime.strptime(event['date'], '%Y-%m-%dT%H:%M:%SZ').strftime('%U %y 0')
-                date = datetime.strptime(week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%SZ')
-
-                if date not in points:
-                    points[date] = {}
-
-                if source not in points[date]:
-                    points[date][source] = {
-                        'givenTotal': 0,
-                        'receivedTotal': 0,
-                        'given': {},
-                        'received': {},
-                    }
-
-                if event['type'] == 'give':
-                    points[date][source]['givenTotal'] += amount
-
-                    if target not in points[date][source]['given']:
-                        points[date][source]['given'][target] = 0
-
-                    points[date][source]['given'][target] += amount
-                else:
-                    points[date][source]['receivedTotal'] += amount
-
-                    if target not in points[date][source]['received']:
-                        points[date][source]['received'][target] = 0
-
-                    points[date][source]['received'][target] += amount
 
         return points
