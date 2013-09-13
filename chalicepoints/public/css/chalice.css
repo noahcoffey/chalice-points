@@ -81,34 +81,30 @@ path.chord {
   margin-top: 10px;
 }
 
-/* line 67, ../sass/chalice.scss */
-.profile {
-  margin-bottom: 20px;
-}
-/* line 70, ../sass/chalice.scss */
+/* line 68, ../sass/chalice.scss */
 .profile .meta {
   text-align: center;
 }
-/* line 73, ../sass/chalice.scss */
+/* line 71, ../sass/chalice.scss */
 .profile .meta .total {
   display: inline-block;
   font-weight: 600;
 }
-/* line 79, ../sass/chalice.scss */
+/* line 77, ../sass/chalice.scss */
 .profile .picture {
   width: 50px;
   height: 50px;
   border: 1px solid #888;
   vertical-align: text-bottom;
 }
-/* line 86, ../sass/chalice.scss */
+/* line 84, ../sass/chalice.scss */
 .profile .name {
   font-size: 3em;
   font-weight: 300;
   line-height: 50px;
   display: inline-block;
 }
-/* line 95, ../sass/chalice.scss */
+/* line 93, ../sass/chalice.scss */
 .profile .winner {
   display: inline-block;
   font-size: 1.1em;
@@ -117,7 +113,7 @@ path.chord {
   vertical-align: text-bottom;
 }
 
-/* line 107, ../sass/chalice.scss */
+/* line 105, ../sass/chalice.scss */
 .events .event {
   padding: 10px;
   margin: 20px inherit;
@@ -127,11 +123,11 @@ path.chord {
   -moz-box-shadow: 5px 5px 10px #333333;
   box-shadow: 5px 5px 10px #333333;
 }
-/* line 116, ../sass/chalice.scss */
+/* line 114, ../sass/chalice.scss */
 .events .event .amount {
   font-weight: 600;
 }
-/* line 120, ../sass/chalice.scss */
+/* line 118, ../sass/chalice.scss */
 .events .event .message {
   font-size: 1.2em;
   font-style: italic;
@@ -140,21 +136,21 @@ path.chord {
   line-height: 1.3;
 }
 
-/* line 133, ../sass/chalice.scss */
+/* line 131, ../sass/chalice.scss */
 .add-points select {
   height: 2em;
   border: 1px solid #cccccc;
 }
-/* line 138, ../sass/chalice.scss */
+/* line 136, ../sass/chalice.scss */
 .add-points button {
   width: 100%;
 }
-/* line 142, ../sass/chalice.scss */
+/* line 140, ../sass/chalice.scss */
 .add-points input[name="message"] {
   height: 3em;
 }
 
-/* line 147, ../sass/chalice.scss */
+/* line 145, ../sass/chalice.scss */
 .styled-select {
   border: 1px solid #ccc;
   padding: 5px;
@@ -163,12 +159,12 @@ path.chord {
   float: left;
   width: 100%;
 }
-/* line 155, ../sass/chalice.scss */
+/* line 153, ../sass/chalice.scss */
 .styled-select .base {
   width: 100%;
   float: left;
 }
-/* line 159, ../sass/chalice.scss */
+/* line 157, ../sass/chalice.scss */
 .styled-select .base .active {
   background-color: white;
   border: 1px solid #ccc;
@@ -178,11 +174,11 @@ path.chord {
   background-repeat: no-repeat;
   background-position: 98% center;
 }
-/* line 171, ../sass/chalice.scss */
+/* line 169, ../sass/chalice.scss */
 .styled-select .base .list {
   display: none;
 }
-/* line 174, ../sass/chalice.scss */
+/* line 172, ../sass/chalice.scss */
 .styled-select .base .list ul {
   margin: 0 0 1em 0;
   padding: 0;
@@ -194,7 +190,7 @@ path.chord {
   box-shadow: 0 -5px 0 white, 0 0 0 1px #dddddd;
 }
 
-/* line 188, ../sass/chalice.scss */
+/* line 186, ../sass/chalice.scss */
 .winners .winner {
   padding: 10px;
   margin: 20px inherit;
@@ -205,27 +201,27 @@ path.chord {
   -moz-box-shadow: 5px 5px 10px #333333;
   box-shadow: 5px 5px 10px #333333;
 }
-/* line 199, ../sass/chalice.scss */
+/* line 197, ../sass/chalice.scss */
 .winners .winner .date {
   font-style: italic;
   font-size: 1.2rem;
   padding-bottom: 10px;
 }
-/* line 205, ../sass/chalice.scss */
+/* line 203, ../sass/chalice.scss */
 .winners .winner .name {
   font-weight: 600;
 }
-/* line 208, ../sass/chalice.scss */
+/* line 206, ../sass/chalice.scss */
 .winners .winner .amount {
   font-weight: 600;
 }
 
-/* line 215, ../sass/chalice.scss */
+/* line 213, ../sass/chalice.scss */
 .pagetitle.centered {
   text-align: center;
 }
 
-/* line 221, ../sass/chalice.scss */
+/* line 219, ../sass/chalice.scss */
 .tabs .tab-box .tab-title {
   border-style: solid;
   border-width: 1px 0 1px 1px;
@@ -239,16 +235,16 @@ path.chord {
   text-decoration: none;
   cursor: pointer;
 }
-/* line 238, ../sass/chalice.scss */
+/* line 236, ../sass/chalice.scss */
 .tabs .tab-box .tab-title:last-child {
   border-right: 1px solid #cccccc;
 }
-/* line 242, ../sass/chalice.scss */
+/* line 240, ../sass/chalice.scss */
 .tabs .tab-box .tab-title.active {
   border-bottom: 1px solid white;
   background-color: white;
 }
-/* line 248, ../sass/chalice.scss */
+/* line 246, ../sass/chalice.scss */
 .tabs .data-content {
   border: 1px solid #cccccc;
   z-index: 10;
@@ -257,7 +253,7 @@ path.chord {
   display: none;
   margin-top: -1px;
 }
-/* line 257, ../sass/chalice.scss */
+/* line 255, ../sass/chalice.scss */
 .tabs .data-content.active {
   display: block;
 }
