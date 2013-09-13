@@ -102,10 +102,14 @@ def winners():
 
     return Response(json.dumps(leaders.values()), mimetype='application/json')
 
-@api.route('/1.0/leaderboard.json', methods=['GET'])
+@api.route('/1.0/leaderboard/<type>.json', methods=['GET'])
 @login_required
-def leaderboard():
-    points = Point.get_points()
+def leaderboard(type):
+    week = False
+    if type == 'week':
+        week = True
+
+    points = Point.get_points(week)
 
     given = []
     received = []
@@ -123,46 +127,6 @@ def leaderboard():
         received.append(receivedEntry)
 
     return jsonify(success=1, given=given, received=received)
-
-@api.route('/1.0/leaderboard/<type>.json', methods=['GET'])
-@login_required
-def leaderboard_type(type):
-    type = type.encode('ascii')
-
-    if type == 'all':
-        return leaderboardAction()
-
-    points = {}
-    if type == 'week':
-        points = Point.get_points_by_week()
-    else:
-        abort(404)
-
-    leaderboard = []
-    for date in points:
-        given = []
-        received = []
-
-        for name in points[date]:
-            givenEntry = {
-                'name': name,
-                'amount': points[date][name]['givenTotal']
-            }
-            given.append(givenEntry)
-
-            receivedEntry = {
-                'name': name,
-                'amount': points[date][name]['receivedTotal']
-            }
-            received.append(receivedEntry)
-
-        leaderboard.append({
-            'name': date,
-            'given': given,
-            'received': received,
-        });
-
-    return jsonify(success=1, leaderboard=leaderboard)
 
 @api.route('/1.0/user.json', methods=['GET'])
 @login_required
