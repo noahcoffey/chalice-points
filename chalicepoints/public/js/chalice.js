@@ -28,7 +28,9 @@ angular.module('cpPointsFilters', [])
 
 angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters'])
     .factory('Leaderboard', function($resource) {
-        return $resource('api/1.0/leaderboard.json', {});
+        return $resource('api/1.0/leaderboard/:type.json', {
+            type: 'all'
+        });
     })
     .factory('User', function($resource) {
         return $resource('api/1.0/user/:userId.json', {
@@ -109,11 +111,25 @@ angular.module('cpPoints', ['cpPointsServices'])
         $rootScope.user = angular.fromJson(user_json);
     }])
 
-var LeaderboardCtrl = ['$scope', 'flash', 'leaderboard', 'users', 'CPEvent', 'Leaderboard', function($scope, flash, leaderboard, users, CPEvent, Leaderboard) {
-    $scope.leaderboard = leaderboard;
-    $scope.givers = $scope.leaderboard.given;
-    $scope.receivers = $scope.leaderboard.received;
+var LeaderboardCtrl = ['$scope', 'flash', 'users', 'leaderboardWeek', 'leaderboardAll', 'CPEvent', 'Leaderboard', function($scope, flash, users, leaderboardWeek, leaderboardAll, CPEvent, Leaderboard) {
+    $scope.leaderboard = {
+        week: leaderboardWeek,
+        all: leaderboardAll
+    };
+
     $scope.users = users;
+
+    $scope.selected = {
+        week: true,
+        all: false
+    };
+
+    $scope.select = function(type) {
+        for (var ctype in $scope.selected) {
+            $scope.selected[ctype] = false;
+        }
+        $scope.selected[type] = true;
+    };
 
     $scope.pointsAmount = 1;
 
@@ -138,18 +154,36 @@ var LeaderboardCtrl = ['$scope', 'flash', 'leaderboard', 'users', 'CPEvent', 'Le
             $scope.pointsTarget = ''
             $scope.pointsMessage = ''
 
-            $scope.leaderboard = Leaderboard.get(function() {
-                $scope.givers = $scope.leaderboard.given;
-                $scope.receivers = $scope.leaderboard.received;
+            var weekResult = Leaderboard.get({
+                type: 'week'
+            }, function() {
+                $scope.leaderboard.week = weekResult;
+            });
+
+            var allResult = Leaderboard.get({
+                type: 'all'
+            }, function() {
+                $scope.leaderboard.all = allResult;
             });
         });
     };
 }];
 
 LeaderboardCtrl.resolve = {
-    leaderboard: function($q, Leaderboard) {
+    leaderboardWeek: function($q, Leaderboard) {
         var deferred = $q.defer();
-        var res = Leaderboard.get(function() {
+        var res = Leaderboard.get({
+            type: 'week'
+        }, function() {
+            deferred.resolve(res);
+        });
+        return deferred.promise;
+    },
+    leaderboardAll: function($q, Leaderboard) {
+        var deferred = $q.defer();
+        var res = Leaderboard.get({
+            type: 'all'
+        }, function() {
             deferred.resolve(res);
         });
         return deferred.promise;
