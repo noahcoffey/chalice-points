@@ -31,57 +31,55 @@
     <div class="small-8 columns small-offset-2"><h2>Leaderboard</h2></div>
 </div>
 <div class="leaderboard row">
-    <div class="small-12 columns">
+    <div class="small-8 small-centered columns">
         <div class="section-container tabs">
             <div class="tab-box">
                 <p class="tab-title" ng-class="{active: selected.week}" ng-click="select('week')">This Week</p>
                 <p class="tab-title" ng-class="{active: selected.all}" ng-click="select('all')">All Time</p>
             </div>
 
-            <div ng-controller="LeaderboardWeekCtrl" class="data-content" ng-class="{active: selected.week}">
+            <div class="data-content active" ng-class="{active: selected.week}">
                 <div class="row">
-                    <div class="small-4 columns small-offset-2">
+                    <div class="small-6 columns">
                         <h3>Received</h3>
                         <ul>
-                            <li ng-repeat="receiver in receivers | orderBy:['-amount','name']">
+                            <li ng-repeat="receiver in leaderboard.week.received | orderBy:['-amount','name']">
                                 <div class="dataLabel"><a href="#/user/{{receiver.name}}">{{receiver.name}}</a></div>
                                 <div class="dataValue">{{receiver.amount}}</div>
                             </li>
                         </ul>
                     </div>
-                    <div class="small-4 columns">
+                    <div class="small-6 columns">
                         <h3>Given</h3>
                         <ul>
-                            <li ng-repeat="giver in givers | orderBy:['-amount','name']">
+                            <li ng-repeat="giver in leaderboard.week.given | orderBy:['-amount','name']">
                                 <div class="dataLabel"><a href="#/user/{{giver.name}}">{{giver.name}}</a></div>
                                 <div class="dataValue">{{giver.amount}}</div>
                             </li>
                         </ul>
                     </div>
-                    <div class="small-2 columns"></div>
                 </div>
             </div>
-            <div ng-controller="LeaderboardAllCtrl" class="data-content" ng-class="{active: selected.all}">
+            <div class="data-content" ng-class="{active: selected.all}">
                 <div class="row">
-                    <div class="small-4 columns small-offset-2">
+                    <div class="small-6 columns">
                         <h3>Received</h3>
                         <ul>
-                            <li ng-repeat="receiver in receivers | orderBy:['-amount','name']">
+                            <li ng-repeat="receiver in leaderboard.all.received | orderBy:['-amount','name']">
                                 <div class="dataLabel"><a href="#/user/{{receiver.name}}">{{receiver.name}}</a></div>
                                 <div class="dataValue">{{receiver.amount}}</div>
                             </li>
                         </ul>
                     </div>
-                    <div class="small-4 columns">
+                    <div class="small-6 columns">
                         <h3>Given</h3>
                         <ul>
-                            <li ng-repeat="giver in givers | orderBy:['-amount','name']">
+                            <li ng-repeat="giver in leaderboard.all.given | orderBy:['-amount','name']">
                                 <div class="dataLabel"><a href="#/user/{{giver.name}}">{{giver.name}}</a></div>
                                 <div class="dataValue">{{giver.amount}}</div>
                             </li>
                         </ul>
                     </div>
-                    <div class="small-2 columns"></div>
                 </div>
             </div>
         </div>
