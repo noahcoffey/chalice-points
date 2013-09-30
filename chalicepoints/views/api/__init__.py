@@ -141,9 +141,6 @@ def userAction(include_self=True):
             continue
 
         entry = user_dict[name]
-        #entry = {
-        #    'name': name,
-        #}
         users.append(entry)
 
     return Response(json.dumps(users), mimetype='application/json')
