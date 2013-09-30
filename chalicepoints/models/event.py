@@ -65,7 +65,6 @@ class Event(BaseModel):
             message = data['message'].encode('ascii')
 
         eventDate = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-
         Event.add_event(source, target, eventDate, amount, message)
 
         return jsonify(success=1)
@@ -102,6 +101,16 @@ class Event(BaseModel):
     def add_event(source, target, eventDate, amount, message):
         if source == target:
             return False
+
+        user = User.get_user(source)
+        if not user:
+            return False
+
+        if user.disabled:
+            return False
+
+        if amount > user.max_points:
+            amount = user.max_points
 
         sourceKey = Event.to_key(source)
         givenKey = 'cpEvents' + sourceKey
