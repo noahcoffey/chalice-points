@@ -65,7 +65,7 @@ def after_login(response):
     user.set_id(response.identity_url)
 
     user_json = user.to_json()
-    r.hset('openid', , user_json)
+    r.hset('openid', response.identity_url, user_json)
     login_user(user)
 
     return redirect(url_for('site.index'))
