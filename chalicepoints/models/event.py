@@ -106,11 +106,11 @@ class Event(BaseModel):
         if not user:
             return False
 
-        if user.disabled:
+        if user['disabled']:
             return False
 
-        if amount > user.max_points:
-            amount = user.max_points
+        if amount > user['max_points']:
+            amount = user['max_points']
 
         sourceKey = Event.to_key(source)
         givenKey = 'cpEvents' + sourceKey
