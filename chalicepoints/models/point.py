@@ -12,8 +12,23 @@ class Point(BaseModel):
 
         users = User.get_users()
         for source in users:
+            sourceUser = users[source]
+            if not sourceUser:
+                continue
+
+            if sourceUser['disabled']:
+                continue
+
             events = Event.get_events(source, False, week)
             for event in events:
+                target = event['user']
+                targetUser = User.get_user(target)
+                if not targetUser:
+                    continue
+
+                if targetUser['disabled']:
+                    continue
+
                 if source not in points:
                     points[source] = {
                         'givenTotal': 0,
@@ -22,7 +37,6 @@ class Point(BaseModel):
                         'received': {},
                     }
 
-                target = event['user']
                 amount = int(event['amount'])
 
                 if event['type'] == 'give':
