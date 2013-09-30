@@ -191,6 +191,12 @@ LeaderboardCtrl.resolve = {
     users: function($q, User) {
         var deferred = $q.defer();
         var res = User.query(function() {
+            for (var i = res.length - 1; i >= 0; i--) {
+                if (res[i].disabled) {
+                    res.splice(i, 1);
+                }
+            }
+
             deferred.resolve(res);
         });
         return deferred.promise;
