@@ -56,6 +56,10 @@ class Event(BaseModel):
         if target not in users:
             abort(403)
 
+        # Hellban Alex from Giving more than 1 Point (for now)
+        if source == 'Alex Lopes':
+            amount = 1
+
         message = 'None'
         if 'message' in data and data['message']:
             message = data['message'].encode('ascii')
