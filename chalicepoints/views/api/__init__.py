@@ -131,18 +131,19 @@ def leaderboard(type):
 @api.route('/1.0/user.json', methods=['GET'])
 @login_required
 def userAction(include_self=True):
-    userDict = User.get_users()
-    userNames = userDict.keys()
-    userNames.sort()
+    user_dict = User.get_users()
+    user_names = user_dict.keys()
+    user_names.sort()
 
     users = []
-    for name in userNames:
+    for name in user_names:
         if name == current_user.name and not include_self:
             continue
 
-        entry = {
-            'name': name,
-        }
+        entry = user_dict[name]
+        #entry = {
+        #    'name': name,
+        #}
         users.append(entry)
 
     return Response(json.dumps(users), mimetype='application/json')
