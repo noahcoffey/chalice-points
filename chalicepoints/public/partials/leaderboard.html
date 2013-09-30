@@ -13,7 +13,7 @@
                     </select>
                 </div>
                 <div class="small-3 columns">
-                    <input type="number" name="amount" value="1" ng-model="pointsAmount" min="1" max="5" required>
+                    <input type="number" name="amount" value="1" ng-model="pointsAmount" min="1" max="{{user.max_points}}" required>
                 </div>
             </div>
             <div class="row">
