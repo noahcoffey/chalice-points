@@ -48,7 +48,13 @@ def load_user(id):
     user_json = r.hget('openid', id)
     if user_json:
         u = json.loads(user_json)
-        return User.get_instance(u['email'])
+        user = User.get_instance(u['email'])
+        if not user:
+            return None
+
+        user.set_id(id)
+
+        return user
     else:
         return None
 
