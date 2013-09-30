@@ -24,12 +24,12 @@ class User(BaseModel, UserMixin):
             'email': self.email,
             'name' : self.name,
             'gravatar': self.gravatar,
+            'max_points': self.max_points,
+            'disabled': self.disabled,
         }
 
         if not for_public:
             d['url'] = self.url
-            d['max_points'] = self.max_points
-            d['disabled'] = self.disabled
 
         return json.dumps(d)
 
