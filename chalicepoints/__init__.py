@@ -48,7 +48,7 @@ def load_user(id):
     user_json = r.hget('openid', id)
     if user_json:
         u = json.loads(user_json)
-        return User(u['url'], u['email'], u['name'])
+        return User.get_instance(u['email'])
     else:
         return None
 
@@ -58,13 +58,14 @@ def after_login(response):
 
     email = string.lower(response.email)
 
-    emails = User.get_user_emails()
-    if email not in emails:
+    user = User.get_instance(email)
+    if not user:
         abort(401)
 
-    user = User(response.identity_url, email, emails[email])
+    user.set_id(response.identity_url)
+
     user_json = user.to_json()
-    r.hset('openid', user.url, user_json)
+    r.hset('openid', , user_json)
     login_user(user)
 
     return redirect(url_for('site.index'))
