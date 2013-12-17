@@ -228,11 +228,8 @@ def eventAction():
     else:
         abort(404)
 
-'''
 @api.route('/1.0/event/<source>/<target>/<date>.json', methods=['DELETE'])
 @login_required
 def removeEventAction(source, target, date):
     Event.remove_event(source, target, date)
-
     return jsonify(success=1)
-'''
