@@ -136,7 +136,6 @@ class Event(BaseModel):
 
         Event.update_hipchat(source, target, amount, message)
 
-    '''
     @staticmethod
     def remove_event(source, target, date):
         source = source.encode('ascii')
@@ -145,6 +144,7 @@ class Event(BaseModel):
 
         found = False
 
+        # type: give, user: source, date: 2013-01-01 01:01:01
         sourceEvents = Event.get_events(source)
         for idx in range(len(sourceEvents)):
             event = sourceEvents[idx]
@@ -152,6 +152,7 @@ class Event(BaseModel):
                 found = True
                 Event.set_deleted_flag(source, idx, event, True)
 
+        # type: receive, user: target, date: 2013-01-01 01:01:01
         targetEvents = Event.get_events(target)
         for idx in range(len(targetEvents)):
             event = targetEvents[idx]
@@ -169,4 +170,3 @@ class Event(BaseModel):
             event.pop('__deleted', None)
 
         chalicepoints.r.lset(key, idx, json.dumps(event))
-    '''
