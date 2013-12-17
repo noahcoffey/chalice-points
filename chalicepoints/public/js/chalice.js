@@ -108,7 +108,7 @@ angular.module('cpPoints', ['cpPointsServices'])
     }]).run(['$rootScope', function($rootScope) {
         // Publish the user on the root scope.
         var user_json = document.getElementById('user').innerHTML
-        $rootScope.user = angular.fromJson(user_json);
+        $rootScope.current_user = angular.fromJson(user_json);
     }])
 
 var LeaderboardCtrl = ['$scope', 'flash', 'users', 'leaderboardWeek', 'leaderboardAll', 'CPEvent', 'Leaderboard', function($scope, flash, users, leaderboardWeek, leaderboardAll, CPEvent, Leaderboard) {
@@ -134,7 +134,7 @@ var LeaderboardCtrl = ['$scope', 'flash', 'users', 'leaderboardWeek', 'leaderboa
     $scope.pointsAmount = 1;
 
     $scope.addEvent = function() {
-        if ($scope.pointsTarget == $scope.user.name) {
+        if ($scope.pointsTarget == $scope.current_user.name) {
             flash('alert', 'Really? You can\'t give yourself points.');
             return;
         }
