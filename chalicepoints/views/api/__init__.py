@@ -103,15 +103,15 @@ def winners():
                 })
 
         if current_user.name is 'Alex Lopes' or lopes is not None:
-            leaders[date]['given'].append({
+            leaders[date]['given'] = [{
                 'name': 'Alex Lopes',
                 'amount': 100
-             })
+             }]
 
-            leaders[date]['received'].append({
+            leaders[date]['received'] = [{
                 'name': 'Alex Lopes',
                 'amount': 100
-             })
+             }]
 
     return Response(json.dumps(leaders.values()), mimetype='application/json')
 
