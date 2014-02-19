@@ -1,42 +1,53 @@
 import os, string
-import urllib, urllib2
+import json
+from peewee import *
+from chalicepoints import db
+import datetime
 
-class BaseModel():
-    @staticmethod
-    def to_key(name):
-        name = name.encode('ascii')
-        key = string.translate(name, None, ' ')
-        key = string.translate(key, None, '-')
+class BaseModel(db.Model):
+    created_at =  DateTimeField()
+    updated_at =  DateTimeField()
 
-        return key
+    def before_save(self):
+        now = datetime.datetime.now()
 
-    @staticmethod
-    def update_hipchat(giver, receiver, amount, message):
-        authToken = os.getenv('HIPCHAT_AUTH_TOKEN', None)
-        room = os.getenv('HIPCHAT_ROOM', None)
+        if self.created_at is None:
+            self.created_at = now
 
-        if not authToken or not room:
-            return False
+        self.updated_at = now
 
-        sender = os.getenv('HIPCHAT_SENDER', 'ChalicePoints')
-        color = os.getenv('HIPCHAT_COLOR', 'green')
-        msgFormat = os.getenv('HIPCHAT_FORMAT', 'text')
+    def save(self):
+        self.before_save()
+        res = super(BaseModel, self).save()
+        return res
 
-        url = 'http://chalicepoints.formstack.com/#/user/%s' % (urllib.quote(receiver))
-        points = 'Point' if amount == 1 else 'Points'
-        message = '(chalicepoint) %s gave %s %d Chalice %s: %s (%s)' % (giver, receiver, amount, points, message, url)
+    def to_array(self):
+        props = dict((key, getattr(self, key)) for key in dir(self) if key not in dir(self.__class__) and not key.startswith('_'))
+        data = self.__dict__.get('_data')
 
-        args = {
-            'room_id': room,
-            'message': message,
-            'from': sender,
-            'color': color,
-            'message_format': msgFormat,
-            'notice': 0,
-        }
+        return dict(data.items() + props.items())
 
-        data = urllib.urlencode(args)
+    def to_json(self):
+        return json.dumps(self.to_array(), cls=BaseModelJSONEncoder)
 
-        apiUrl = 'https://api.hipchat.com/v1/rooms/message?auth_token=%s' % (authToken)
-        request = urllib2.Request(apiUrl, data)
-        result = urllib2.urlopen(request)
+class DateTimeEncoder(json.JSONEncoder):
+    """Adds datetime support to the JSONEncoder.
+    Modified  from http://stackoverflow.com/a/12126976/1638
+    """
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        elif isinstance(obj, datetime.date):
+            return obj.isoformat()
+        elif isinstance(obj, datetime.timedelta):
+            return (datetime.datetime.min + obj).time().isoformat()
+        else:
+            return super(DateTimeEncoder, self).default(obj)
+
+class BaseModelJSONEncoder(DateTimeEncoder):
+    """Adds BaseModel support to the JSONEncoder"""
+    def default(self, obj):
+        if isinstance(obj, BaseModel):
+            return obj.to_array()
+        else:
+            return super(BaseModelJSONEncoder, self).default(obj)
