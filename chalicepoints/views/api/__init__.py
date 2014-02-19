@@ -25,8 +25,6 @@ def winners():
     leaders = {}
     highest = {}
 
-    lopes = request.args.get('lopes', None)
-
     current_week = datetime.now().strftime('%U %y 0')
     current_date = datetime.strptime(current_week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%S')
 
@@ -101,17 +99,6 @@ def winners():
                     'name': person,
                     'amount': totals[date][person]['received'],
                 })
-
-        if current_user.name is 'Alex Lopes' or lopes is not None:
-            leaders[date]['given'] = [{
-                'name': 'Alex Lopes',
-                'amount': 100
-             }]
-
-            leaders[date]['received'] = [{
-                'name': 'Alex Lopes',
-                'amount': 100
-             }]
 
     return Response(json.dumps(leaders.values()), mimetype='application/json')
 
