@@ -5,7 +5,6 @@ import hashlib
 from flask import Flask, redirect, url_for, abort, jsonify, g
 from flask.ext.login import LoginManager, login_user
 from flask.ext.openid import OpenID
-from google_openid import GoogleOpenID
 
 from flask_peewee.db import Database
 from peewee import MySQLDatabase, DoesNotExist
@@ -22,8 +21,7 @@ if app.config['SECRET_KEY'] is None:
     abort(500)
 
 # Flask-OpenID
-open_id = GoogleOpenID()
-#open_id = OpenID()
+open_id = OpenID()
 open_id.init_app(app)
 
 # Flask-Login
