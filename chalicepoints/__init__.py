@@ -1,12 +1,14 @@
 import os, sys, string
 import json
-import redis
+import hashlib
 
-from flask import Flask, redirect, url_for, abort, jsonify
+from flask import Flask, redirect, url_for, abort, jsonify, g
 from flask.ext.login import LoginManager, login_user
 from flask.ext.openid import OpenID
+from google_openid import GoogleOpenID
 
-from chalicepoints.models.user import User
+from flask_peewee.db import Database
+from peewee import MySQLDatabase, DoesNotExist
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 
@@ -20,7 +22,8 @@ if app.config['SECRET_KEY'] is None:
     abort(500)
 
 # Flask-OpenID
-open_id = OpenID()
+open_id = GoogleOpenID()
+#open_id = OpenID()
 open_id.init_app(app)
 
 # Flask-Login
@@ -28,9 +31,17 @@ login_manager = LoginManager()
 login_manager.login_view = 'site.login'
 login_manager.init_app(app)
 
-# Redis
-redis_url = os.getenv('REDISTOGO_URL', app.config['REDIS_URL'])
-r = redis.from_url(redis_url)
+app.config['DATABASE'] = {
+    'engine': 'peewee.MySQLDatabase',
+    'name': app.config['MYSQL_DATABASE'],
+    'user': app.config['MYSQL_USER'],
+    'passwd': app.config['MYSQL_PASSWORD'],
+    'host': app.config['MYSQL_HOST'],
+    'threadlocals': True,
+    'autocommit': False
+}
+
+db = Database(app)
 
 def register_blueprint(app):
     from chalicepoints.views.site import site
@@ -45,17 +56,9 @@ register_blueprint(app)
 def load_user(id):
     from chalicepoints.models.user import User
 
-    user_json = r.hget('openid', id)
-    if user_json:
-        u = json.loads(user_json)
-        user = User.get_instance(u['email'])
-        if not user:
-            return None
-
-        user.set_id(id)
-
-        return user
-    else:
+    try:
+        return User.get(User.id == id)
+    except:
         return None
 
 @open_id.after_login
@@ -64,17 +67,32 @@ def after_login(response):
 
     email = string.lower(response.email)
 
-    user = User.get_instance(email)
-    if not user:
-        abort(401)
+    try:
+        user = User.get(User.email == email)
+        user.url = response.identity_url
+        user.save()
+    except DoesNotExist:
+        user = User()
+        user.name = response.fullname
+        user.email = email
+        user.gravatar = hashlib.md5(email.strip().lower()).hexdigest()
+        user.url = response.identity_url
+        user.save()
 
-    user.set_id(response.identity_url)
+    if not User:
+        abort(404)
 
-    user_json = user.to_json()
-    r.hset('openid', response.identity_url, user_json)
     login_user(user)
-
     return redirect(url_for('site.index'))
+
+@app.after_request
+def after_request(response):
+    if response.status_code < 400:
+        db.database.commit()
+    else:
+        db.database.rollback()
+
+    return response
 
 if __name__ == "__main__":
     port = 9896
