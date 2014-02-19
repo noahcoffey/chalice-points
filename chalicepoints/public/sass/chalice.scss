@@ -19,6 +19,10 @@ $weight-heavy: 600;
     color: $give-color;
 }
 
+.delete a {
+    color: $receive-color;
+}
+
 .top-bar .name {
     background: {
         image: url("../images/chalice.png");
