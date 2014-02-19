@@ -20,7 +20,7 @@ def index():
 @site.route('/login')
 @open_id.loginhandler
 def login():
-    return open_id.try_login('formstack.com', \
+    return open_id.try_login('https://www.google.com/accounts/o8/id', \
         ask_for=['email', 'fullname'])
 
 @site.route('/logout')
