@@ -1,24 +1,25 @@
 import os, sys
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import urllib, urllib2
 
 from flask import Blueprint, abort, request, jsonify, Response
 from flask.ext.login import login_required, current_user
 
-from chalicepoints.models.user import User
+from chalicepoints.models.user import User, UserModelJSONEncoder as Encoder
 from chalicepoints.models.event import Event
-from chalicepoints.models.point import Point
+
+from peewee import *
 
 api = Blueprint('api', __name__, url_prefix='/api')
 
-@api.route('/1.0/timeline.json', methods=['GET'])
+@api.route('/1.0/timeline', methods=['GET'])
 @login_required
 def timeline():
     timeline = Event.get_timeline()
-    return Response(json.dumps(timeline.values()), mimetype='application/json')
+    return Response(json.dumps(timeline, cls=Encoder), mimetype='application/json')
 
-@api.route('/1.0/winners.json', methods=['GET'])
+@api.route('/1.0/winners', methods=['GET'])
 @login_required
 def winners():
     totals = {}
@@ -28,34 +29,26 @@ def winners():
     current_week = datetime.now().strftime('%U %y 0')
     current_date = datetime.strptime(current_week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%S')
 
-    users = User.get_users()
-    for source in users:
-        events = Event.get_events(source)
-        for event in events:
-            target = event['user']
-            amount = int(event['amount'])
+    q = Event.select()
+    for event in q:
+        week = event.created_at.strftime('%U %y 0')
+        date = datetime.strptime(week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%S')
 
-            week = datetime.strptime(event['date'], '%Y-%m-%dT%H:%M:%SZ').strftime('%U %y 0')
-            date = datetime.strptime(week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%S')
+        if not date in totals:
+            totals[date] = {}
 
-            if not date in totals:
-                totals[date] = {}
+        if not event.source.id in totals[date]:
+            totals[date][event.source.id] = event.source
+            totals[date][event.source.id].given = 0
+            totals[date][event.source.id].received = 0
 
-            if not source in totals[date]:
-                totals[date][source] = {
-                    'given': 0,
-                    'received': 0,
-                }
+        if not event.target.id in totals[date]:
+            totals[date][event.target.id] = event.target
+            totals[date][event.target.id].given = 0
+            totals[date][event.target.id].received = 0
 
-            if not target in totals[date]:
-                totals[date][target] = {
-                    'given': 0,
-                    'received': 0,
-                }
-
-            if event['type'] == 'give':
-                totals[date][source]['given'] += amount
-                totals[date][target]['received'] += amount
+        totals[date][event.source.id].given += event.amount
+        totals[date][event.target.id].received += event.amount
 
     for date in totals:
         leaders[date] = {
@@ -74,162 +67,194 @@ def winners():
         }
 
         for person in totals[date]:
-            if totals[date][person]['given'] > highest[date]['given']:
+            if totals[date][person].given > highest[date]['given']:
                 leaders[date]['given'] = [{
-                    'name': person,
-                    'amount': totals[date][person]['given'],
+                    'user': totals[date][person],
+                    'amount': totals[date][person].given
                 }]
 
-                highest[date]['given'] = totals[date][person]['given']
-            elif totals[date][person]['given'] == highest[date]['given']:
+                highest[date]['given'] = totals[date][person].given
+            elif totals[date][person].given == highest[date]['given']:
                 leaders[date]['given'].append({
-                    'name': person,
-                    'amount': totals[date][person]['given'],
+                    'user': totals[date][person],
+                    'amount': totals[date][person].given
                 })
 
-            if totals[date][person]['received'] > highest[date]['received']:
+            if totals[date][person].received > highest[date]['received']:
                 leaders[date]['received'] = [{
-                    'name': person,
-                    'amount': totals[date][person]['received'],
+                    'user': totals[date][person],
+                    'amount': totals[date][person].received
                 }]
 
-                highest[date]['received'] = totals[date][person]['received']
-            elif totals[date][person]['received'] == highest[date]['received']:
+                highest[date]['received'] = totals[date][person].received
+            elif totals[date][person].received == highest[date]['received']:
                 leaders[date]['received'].append({
-                    'name': person,
-                    'amount': totals[date][person]['received'],
+                    'user': totals[date][person],
+                    'amount': totals[date][person].received
                 })
 
-    return Response(json.dumps(leaders.values()), mimetype='application/json')
+    return Response(json.dumps(leaders.values(), cls=Encoder), mimetype='application/json')
 
-@api.route('/1.0/leaderboard/<type>.json', methods=['GET'])
+@api.route('/1.0/leaderboard/<type>', methods=['GET'])
 @login_required
 def leaderboard(type):
-    week = False
-    if type == 'week':
-        week = True
-
-    points = Point.get_points(week)
+    points = Event.get_points(type == 'week')
 
     given = []
     received = []
-    for name in points:
+
+    for id, user in points.iteritems():
         givenEntry = {
-            'name': name,
-            'amount': points[name]['givenTotal']
+            'user': user,
+            'amount': user.given
         }
         given.append(givenEntry)
 
         receivedEntry = {
-            'name': name,
-            'amount': points[name]['receivedTotal']
+            'user': user,
+            'amount': user.received
         }
         received.append(receivedEntry)
 
-    return jsonify(success=1, given=given, received=received)
+    response = {
+        'success': 1,
+        'given': given,
+        'received': received
+    }
 
-@api.route('/1.0/user.json', methods=['GET'])
+    return Response(json.dumps(response, cls=Encoder), mimetype='application/json')
+
+@api.route('/1.0/user', methods=['GET'])
 @login_required
 def userAction(include_self=True):
-    user_dict = User.get_users()
-    user_names = user_dict.keys()
-    user_names.sort()
+    users = User.get_users(include_self)
+    return Response(json.dumps(users, cls=Encoder), mimetype='application/json')
 
-    users = []
-    for name in user_names:
-        if name == current_user.name and not include_self:
-            continue
-
-        entry = user_dict[name]
-        users.append(entry)
-
-    return Response(json.dumps(users), mimetype='application/json')
-
-@api.route('/1.0/user/<name>.json', methods=['GET'])
+@api.route('/1.0/user/<id>', methods=['GET'])
 @login_required
-def userNameAction(name):
-    name = name.encode('ascii')
+def userNameAction(id):
+    id = id.encode('ascii')
 
-    if name == 'list':
+    if id == 'list':
         return userAction(False)
 
-    users = User.get_users()
-    if name not in users:
-        abort(404)
+    user = User.get(User.id == id)
+    user.events = user.get_timeline()
+    user.points = user.get_points()
 
-    user = users[name]
-    user['events'] = Event.get_events(name)
-    user['given'] = 0
-    user['received'] = 0
+    return Response(json.dumps(user, cls=Encoder), mimetype='application/json')
 
-    points = Point.get_points()
-    if name in points:
-        user['given'] = points[name]['givenTotal']
-        user['received'] = points[name]['receivedTotal']
-
-    return Response(json.dumps(user), mimetype='application/json')
-
-@api.route('/1.0/matrix.json', methods=['GET'])
+@api.route('/1.0/matrix', methods=['GET'])
 @login_required
 def matrixAction():
-    return matrix_mode('received')
+    return matrixModeAction('received')
 
-@api.route('/1.0/matrix/<mode>.json', methods=['GET'])
+@api.route('/1.0/matrix/<mode>', methods=['GET'])
 @login_required
 def matrixModeAction(mode):
-    points = Point.get_points()
     users = User.get_users()
+    matrix = {}
 
-    names = users.keys()
-    names.sort()
+    q = Event.select()
+    for event in q:
+        user_one = event.source.id
+        user_two = event.target.id
 
-    if mode == 'received':
-        matrix = []
-        for user in names:
-            entry = []
+        if mode == 'received':
+            user_one = event.target.id
+            user_two = event.source.id
 
-            for otherUser in names:
-                value = 0
-                if user in points and otherUser in points[user]['received']:
-                    value = points[user]['received'][otherUser]
+        if user_one not in matrix:
+            matrix[user_one] = {}
 
-                entry.append(value)
+        if user_two not in matrix[user_one]:
+            matrix[user_one][user_two] = 0
 
-            matrix.append(entry)
-    else:
-        matrix = []
-        for user in names:
-            entry = []
+        matrix[user_one][user_two] += event.amount
 
-            for otherUser in names:
-                value = 0
-                if user in points and otherUser in points[user]['given']:
-                    value = points[user]['given'][otherUser]
+    entries = []
+    for user in users:
+        entry = []
+        for other_user in users:
+            value = 0
+            if user.id in matrix and other_user.id in matrix[user.id]:
+                value = matrix[user.id][other_user.id]
+            entry.append(value)
+        entries.append(entry)
 
-                entry.append(value)
+    return Response(json.dumps(entries, cls=Encoder), mimetype='application/json')
 
-            matrix.append(entry)
-
-    return Response(json.dumps(matrix), mimetype='application/json')
-
-@api.route('/1.0/point.json', methods=['GET'])
-@login_required
-def pointAction():
-    points = Point.get_points()
-    return jsonify(success=1, points=points)
-
-@api.route('/1.0/event.json', methods=['GET', 'POST'])
+@api.route('/1.0/event', methods=['GET', 'POST'])
 @login_required
 def eventAction():
     if request.method == 'GET':
-        return Event.do_get_events()
-    elif request.method == 'POST':
-        return Event.do_post_events(request.json)
-    else:
-        abort(404)
+        users = User.get_users()
+        events = dict((user.name, user.get_timeline()) for user in users)
 
-@api.route('/1.0/event/<source>/<target>/<date>.json', methods=['DELETE'])
+        response = {
+            'success': 1,
+            'events': events
+        }
+
+        return Response(json.dumps(response, cls=Encoder), mimetype='application/json')
+    elif request.method == 'POST':
+        data = request.json
+        data.pop('id', None)
+
+        if data['target'] == current_user.id:
+            abort(403)
+
+        target = User()
+        try:
+            target = User.get(User.id == data['target'])
+        except DoesNotExist:
+            abort(403)
+
+        if target.disabled:
+            abort(403)
+
+        data['amount'] = max(min(current_user.max_points, data['amount']), 1)
+
+        event = Event(**data)
+        event.source = current_user.id
+        event.add()
+
+        return jsonify(success=1)
+
+    abort(404)
+
+@api.route('/1.0/event/<id>', methods=['PUT', 'DELETE'])
 @login_required
-def removeEventAction(source, target, date):
-    Event.remove_event(source, target, date)
-    return jsonify(success=1)
+def eventIdAction(id):
+    if request.method == 'DELETE':
+        try:
+            event = Event.get(Event.id == id)
+            event.delete_instance()
+        except DoesNotExist:
+            abort(404)
+
+        return jsonify(success=1)
+    elif request.method == 'PUT':
+        data = request.json
+        data.pop('id', None)
+
+        if data['target'] == current_user.id:
+            abort(403)
+
+        target = None
+        try:
+            target = User.get(User.id == data['target'])
+        except DoesNotExist:
+            abort(403)
+
+        if target.disabled:
+            abort(403)
+
+        data['amount'] = max(min(current_user.max_points, data['amount']), 1)
+        data['source'] = current_user.id
+
+        Event.update(**data).where(Event.id == id)
+        event.save()
+        return jsonify(success=1)
+
+    abort(404)
