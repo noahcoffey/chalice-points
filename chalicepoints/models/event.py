@@ -1,172 +1,105 @@
 import os
 import json
-from datetime import datetime
-from ordereddict import OrderedDict
+import urllib, urllib2
 
-from flask import abort, jsonify
+from datetime import datetime, timedelta
+
+from flask import abort, jsonify, Response, current_app
 from flask.ext.login import current_user
 
+from peewee import *
+
 import chalicepoints
-from chalicepoints.models.base import BaseModel
+from chalicepoints.models.base import BaseModel, BaseModelJSONEncoder as Encoder
 from chalicepoints.models.user import User
 
 class Event(BaseModel):
+    source = ForeignKeyField(User, db_column='source', related_name='given', cascade=True)
+    target = ForeignKeyField(User, db_column='target', related_name='received', cascade=True)
+    amount = IntegerField()
+    message = CharField()
+
+    def add(self):
+        self.save()
+        self.hipchat()
+
+    def hipchat(self):
+        authToken = os.getenv('HIPCHAT_AUTH_TOKEN', None)
+        room = os.getenv('HIPCHAT_ROOM', None)
+
+        if not authToken or not room:
+            return False
+
+        sender = os.getenv('HIPCHAT_SENDER', 'ChalicePoints')
+        color = os.getenv('HIPCHAT_COLOR', 'green')
+        msgFormat = os.getenv('HIPCHAT_FORMAT', 'text')
+
+        current_app.logger.debug(self.target.id)
+
+        url = 'http://chalicepoints.formstack.com/#/user/%s' % (self.target.id)
+        points = 'Point' if self.amount == 1 else 'Points'
+        message = '(chalicepoint) %s gave %s %d Chalice %s: %s (%s)' % (self.source.name, self.target.name, self.amount, points, self.message, url)
+
+        args = {
+            'room_id': room,
+            'message': message,
+            'from': sender,
+            'color': color,
+            'message_format': msgFormat,
+            'notice': 0,
+        }
+
+        data = urllib.urlencode(args)
+
+        apiUrl = 'https://api.hipchat.com/v1/rooms/message?auth_token=%s' % (authToken)
+        request = urllib2.Request(apiUrl, data)
+        result = urllib2.urlopen(request)
+
     @staticmethod
     def get_timeline():
-        events = {}
+        q = Event.select().order_by(Event.created_at.desc())
 
-        users = User.get_users()
-        for name in users:
-            user_events = Event.get_events(name)
-            for event in user_events:
-                if event['type'] != 'give':
-                    continue
+        timeline = []
+        for event in q:
+            event.source_user = User.get(User.id == event.source)
+            event.target_user = User.get(User.id == event.target)
 
-                timestamp = float(datetime.strptime(event['date'], '%Y-%m-%dT%H:%M:%SZ').strftime('%s'))
-                while timestamp in events:
-                    timestamp += 0.001
-
-                event['source'] = name
-                events[timestamp] = event
-
-        timeline = OrderedDict(sorted(events.items(), key=lambda t: -t[0]))
+            timeline.append(event)
 
         return timeline
 
     @staticmethod
-    def do_get_events():
-        events = {}
+    def get_points(user_id=False, week=False):
+        q = Event.select()
 
-        users = User.get_users()
-        for name in users:
-            events[name] = Event.get_events(name)
+        if user_id:
+            q.where((Event.source == user_id) | (Event.target == user_id))
 
-        return jsonify(success=1, events=events)
+        if week:
+            now = datetime.now()
+            dow = now.weekday()
 
-    @staticmethod
-    def do_post_events(data):
-        source = current_user.name
-        target = data['target'].encode('ascii')
-        amount = max(min(5, data['amount']), 1)
+            first_delta = timedelta(days=dow)
+            first_day = now - first_delta
 
-        if target == current_user.name:
-            abort(403)
+            last_delta = timedelta(days=6 - dow)
+            last_day = now + last_delta
 
-        users = User.get_user_names()
-        if target not in users:
-            abort(403)
+            q.where(Event.created_at >= first_day, Event.created_at <= last_day)
 
-        # Hellban Alex from Giving more than 1 Point (for now)
-        if source == 'Alex Lopes':
-            amount = 1
+        totals = {}
+        for event in q:
+            if event.source.id not in totals:
+                totals[event.source.id] = event.source
+                totals[event.source.id].given = 0
+                totals[event.source.id].received = 0
 
-        message = 'None'
-        if 'message' in data and data['message']:
-            message = data['message'].encode('ascii')
+            if event.target.id not in totals:
+                totals[event.target.id] = event.target
+                totals[event.target.id].given = 0
+                totals[event.target.id].received = 0
 
-        eventDate = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-        Event.add_event(source, target, eventDate, amount, message)
+            totals[event.source.id].given += event.amount
+            totals[event.target.id].received += event.amount
 
-        return jsonify(success=1)
-
-    @staticmethod
-    def get_events(name, deleted=False, week=False):
-        userKey = Event.to_key(name)
-        eventsKey = 'cpEvents' + userKey
-
-        current_week = datetime.now().strftime('%U %y 0')
-        current_date = datetime.strptime(current_week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%SZ')
-
-        events = []
-        if chalicepoints.r.exists(eventsKey):
-            eventsLen = chalicepoints.r.llen(eventsKey)
-            for idx in range(eventsLen):
-                eventJSON = chalicepoints.r.lindex(eventsKey, idx)
-                event = json.loads(eventJSON)
-
-                if not deleted and '__deleted' in event:
-                    continue
-
-                event_week = datetime.strptime(event['date'], '%Y-%m-%dT%H:%M:%SZ').strftime('%U %y 0')
-                event_date = datetime.strptime(event_week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%SZ')
-
-                if week and event_date != current_date:
-                    continue;
-
-                events.append(event)
-
-        return events
-
-    @staticmethod
-    def add_event(source, target, eventDate, amount, message):
-        if source == target:
-            return False
-
-        user = User.get_user(source)
-        if not user:
-            return False
-
-        if user['disabled']:
-            return False
-
-        if amount > user['max_points']:
-            amount = user['max_points']
-
-        sourceKey = Event.to_key(source)
-        givenKey = 'cpEvents' + sourceKey
-        given = {
-            'type': 'give',
-            'user': target,
-            'amount': amount,
-            'date': eventDate,
-            'message': message,
-        }
-        chalicepoints.r.lpush(givenKey, json.dumps(given))
-
-        targetKey = Event.to_key(target)
-        receivedKey = 'cpEvents' + targetKey
-        received = {
-            'type': 'receive',
-            'user': source,
-            'amount': amount,
-            'date': eventDate,
-            'message': message,
-        }
-        chalicepoints.r.lpush(receivedKey, json.dumps(received))
-
-        Event.update_hipchat(source, target, amount, message)
-
-    @staticmethod
-    def remove_event(source, target, date):
-        source = source.encode('ascii')
-        target = target.encode('ascii')
-        date = date.encode('ascii')
-
-        found = False
-
-        # type: give, user: source, date: 2013-01-01 01:01:01
-        sourceEvents = Event.get_events(source)
-        for idx in range(len(sourceEvents)):
-            event = sourceEvents[idx]
-            if event['user'] == target and event['date'] == date:
-                found = True
-                Event.set_deleted_flag(source, idx, event, True)
-
-        # type: receive, user: target, date: 2013-01-01 01:01:01
-        targetEvents = Event.get_events(target)
-        for idx in range(len(targetEvents)):
-            event = targetEvents[idx]
-            if event['user'] == source and event['date'] == date:
-                found = True
-                setDeletedFlag(source, idx, event, True)
-
-        return found
-
-    @staticmethod
-    def set_deleted_flag(key, idx, event, deleted=True):
-        if deleted:
-            event['__deleted'] = 1
-        else:
-            event.pop('__deleted', None)
-
-        chalicepoints.r.lset(key, idx, json.dumps(event))
+        return totals
