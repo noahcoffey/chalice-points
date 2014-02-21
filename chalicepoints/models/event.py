@@ -73,7 +73,7 @@ class Event(BaseModel):
         q = Event.select()
 
         if user_id:
-            q.where((Event.source == user_id) | (Event.target == user_id))
+            q = q.where((Event.source == user_id) | (Event.target == user_id))
 
         if week:
             now = datetime.now()
@@ -85,7 +85,7 @@ class Event(BaseModel):
             last_delta = timedelta(days=6 - dow)
             last_day = now + last_delta
 
-            q.where(Event.created_at >= first_day, Event.created_at <= last_day)
+            q = q.where(Event.created_at >= first_day, Event.created_at <= last_day)
 
         totals = {}
         for event in q:
