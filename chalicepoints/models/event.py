@@ -69,11 +69,13 @@ class Event(BaseModel):
         return timeline
 
     @staticmethod
-    def get_points(user_id=False, week=False):
-        q = Event.select()
+    def get_points(week=False):
+        #q = Event.select()
+        given = Event.select(Event, fn.Sum(Event.amount).alias('given'))
+        given = given.group_by(Event.source)
 
-        if user_id:
-            q = q.where((Event.source == user_id) | (Event.target == user_id))
+        received = Event.select(Event, fn.Sum(Event.amount).alias('received'))
+        received = received.group_by(Event.target)
 
         if week:
             now = datetime.now()
@@ -85,21 +87,24 @@ class Event(BaseModel):
             last_delta = timedelta(days=6 - dow)
             last_day = now + last_delta
 
-            q = q.where(Event.created_at >= first_day, Event.created_at <= last_day)
+            given = given.where(Event.created_at >= first_day, Event.created_at <= last_day)
+            received = received.where(Event.created_at >= first_day, Event.created_at <= last_day)
 
         totals = {}
-        for event in q:
+        for event in given:
             if event.source.id not in totals:
                 totals[event.source.id] = event.source
                 totals[event.source.id].given = 0
                 totals[event.source.id].received = 0
 
+            totals[event.source.id].given = event.given;
+
+        for event in received:
             if event.target.id not in totals:
                 totals[event.target.id] = event.target
                 totals[event.target.id].given = 0
                 totals[event.target.id].received = 0
 
-            totals[event.source.id].given += event.amount
-            totals[event.target.id].received += event.amount
+            totals[event.target.id].received = event.received;
 
         return totals
