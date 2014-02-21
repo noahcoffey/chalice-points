@@ -24,17 +24,25 @@ class Event(BaseModel):
         self.hipchat()
 
     def hipchat(self):
-        authToken = os.getenv('HIPCHAT_AUTH_TOKEN', None)
-        room = os.getenv('HIPCHAT_ROOM', None)
+        if 'HIPCHAT_AUTH_TOKEN' not in current_app.config:
+            return False
+
+        if 'HIPCHAT_ROOM' not in current_app.config:
+            return False
+
+        authToken = current_app.config['HIPCHAT_AUTH_TOKEN']
+        room = current_app.config['HIPCHAT_ROOM']
 
         if not authToken or not room:
             return False
 
-        sender = os.getenv('HIPCHAT_SENDER', 'ChalicePoints')
-        color = os.getenv('HIPCHAT_COLOR', 'green')
-        msgFormat = os.getenv('HIPCHAT_FORMAT', 'text')
+        sender = 'ChalicePoints'
+        if 'HIPCHAT_SENDER' in current_app.config:
+            sender = current_app.config['HIPCHAT_SENDER']
 
-        current_app.logger.debug(self.target.id)
+        color = 'green'
+        if 'HIPCHAT_COLOR' in current_app.config:
+            color = current_app.config['HIPCHAT_COLOR']
 
         url = 'http://chalicepoints.formstack.com/#/user/%s' % (self.target.id)
         points = 'Point' if self.amount == 1 else 'Points'
@@ -45,7 +53,7 @@ class Event(BaseModel):
             'message': message,
             'from': sender,
             'color': color,
-            'message_format': msgFormat,
+            'message_format': 'text',
             'notice': 0,
         }
 
