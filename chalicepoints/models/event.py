@@ -14,8 +14,8 @@ from chalicepoints.models.base import BaseModel, BaseModelJSONEncoder as Encoder
 from chalicepoints.models.user import User
 
 class Event(BaseModel):
-    source = ForeignKeyField(User, db_column='source', related_name='given', cascade=True)
-    target = ForeignKeyField(User, db_column='target', related_name='received', cascade=True)
+    source = ForeignKeyField(User, db_column='source', related_name='given')
+    target = ForeignKeyField(User, db_column='target', related_name='received')
     amount = IntegerField()
     message = CharField()
 
