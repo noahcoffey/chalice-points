@@ -98,8 +98,7 @@ def winners():
 @api.route('/1.0/leaderboard/<type>', methods=['GET'])
 @login_required
 def leaderboard(type):
-    week = True if type == 'week' else False
-    points = Event.get_points(week=week)
+    points = Event.get_points(type == 'week')
 
     given = []
     received = []
