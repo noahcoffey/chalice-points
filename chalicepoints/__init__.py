@@ -91,10 +91,3 @@ def after_request(response):
         db.database.rollback()
 
     return response
-
-if __name__ == "__main__":
-    port = 9896
-    if len(sys.argv) == 2:
-        port = int(sys.argv[1])
-
-    app.run(host='0.0.0.0', port=port, debug=True)
