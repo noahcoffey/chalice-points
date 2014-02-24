@@ -1,6 +1,9 @@
 import os, sys, string
 import json
 import hashlib
+import base64
+
+from uuid import uuid4
 
 from flask import Flask, redirect, url_for, abort, jsonify, g
 from flask.ext.login import LoginManager, login_user
@@ -59,6 +62,31 @@ def load_user(id):
     except:
         return None
 
+@login_manager.header_loader
+def load_user_from_header(header):
+    from chalicepoints.models.user import User
+
+    print header
+
+    if header.startswith('Basic '):
+        header = header.replace('Basic ', '', 1)
+
+    print header
+
+    try:
+        header = base64.b64decode(header)
+    except TypeError:
+        pass
+
+    header = header.split(':')[0]
+
+    print header
+
+    try:
+        return User.get(User.api_key == header)
+    except:
+        return None
+
 @open_id.after_login
 def after_login(response):
     from chalicepoints.models.user import User
@@ -67,17 +95,22 @@ def after_login(response):
 
     try:
         user = User.get(User.email == email)
+
+        if not user.api_key:
+            user.api_key = str(uuid4())
+
         user.url = response.identity_url
         user.save()
     except DoesNotExist:
         user = User()
         user.name = response.fullname
         user.email = email
+        user.api_key = str(uuid4())
         user.gravatar = hashlib.md5(email.strip().lower()).hexdigest()
         user.url = response.identity_url
         user.save()
 
-    if not User:
+    if not user:
         abort(404)
 
     login_user(user)
