@@ -86,7 +86,7 @@ class Event(BaseModel):
         received = received.group_by(Event.target)
 
         if week:
-            now = datetime.now()
+            now = datetime.now().date()
             dow = now.weekday()
 
             first_delta = timedelta(days=dow)
@@ -95,8 +95,8 @@ class Event(BaseModel):
             last_delta = timedelta(days=6 - dow)
             last_day = now + last_delta
 
-            given = given.where(Event.created_at >= first_day, Event.created_at <= last_day)
-            received = received.where(Event.created_at >= first_day, Event.created_at <= last_day)
+            given = given.where(fn.Date(Event.created_at) >= first_day, fn.Date(Event.created_at) <= last_day)
+            received = received.where(fn.Date(Event.created_at) >= first_day, fn.Date(Event.created_at) <= last_day)
 
         totals = {}
         for event in given:
