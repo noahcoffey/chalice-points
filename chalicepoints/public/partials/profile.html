@@ -6,6 +6,11 @@
         <div class="give total noradius" title="Points Given" data-tooltip data-width="105">{{user.points.given}}</div>
     </div>
 </div>
+<div ng:if="current_user.id == user.id" class="api row">
+  <div class="small-6 small-centered columns text-center">
+  {{user.api_key}}
+  </div>
+</div>
 <div class="events row">
     <div class="event small-6 small-centered columns" ng-repeat="event in user.events | orderBy:'-created_at'">
         <span class="type {{event.type}}" ng-switch on="event.type">
@@ -27,7 +32,7 @@
         </span>
         at
         <span class="date">{{event.created_at | dateMoment:'M/d/yyyy h:mma'}}</span>
-        <span class="delete" ng-if="current_user.name == user.name">
+        <span class="delete" ng-if="current_user.id == user.id">
             <a href="" ng-click="removeEvent(event.id)">[Delete]</a>
         </span>
 
