@@ -9,6 +9,7 @@ from chalicepoints.models.base import BaseModel, BaseModelJSONEncoder
 class User(BaseModel, UserMixin):
     name = CharField()
     email = CharField()
+    api_key = CharField()
     gravatar = CharField()
     max_points = IntegerField()
     disabled = BooleanField(default=False)
@@ -85,6 +86,8 @@ class User(BaseModel, UserMixin):
     @staticmethod
     def get_users(include_self=True):
         q = User.select()
+        q = q.order_by(User.name)
+
         if not include_self:
             q = q.where(User.id != current_user.id)
 
