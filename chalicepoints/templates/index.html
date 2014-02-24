@@ -23,6 +23,7 @@
                         <li><a href="#/chart">Chart</a></li>
                         <li><a href="#/winners">Winners</a></li>
                         <li><a href="#/timeline">Timeline</a></li>
+                        <li><a ng:href="#/user/{{current_user.id}}">Profile</a></li>
                         <li><a href="/logout">Logout</a></li>
                     </ul>
                 </section>
@@ -30,7 +31,6 @@
         </div>
         <div class="content" ng-view></div>
         <script src="{{url_for('static', filename='js/vendor/custom.modernizr.js')}}"></script>
-        <script src="{{url_for('static', filename='js/vendor/d3.v3.js')}}"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-route.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-resource.min.js"></script>
@@ -38,6 +38,7 @@
         <script src="{{url_for('static', filename='js/vendor/jquery.js')}}"></script>
         <script src="{{url_for('static', filename='js/vendor/moment.js')}}"></script>
         <script src="{{url_for('static', filename='js/foundation.min.js')}}"></script>
+        <script src="{{url_for('static', filename='js/vendor/d3.v3.js')}}"></script>
         <script src="{{url_for('static', filename='js/chalice.js')}}"></script>
         <div id="user" style="display: none;">{{ user_json | safe }}</div>
         <script>
