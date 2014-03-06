@@ -1,4 +1,5 @@
 venv
+chalicepoints/config.py
 *.pyc
 *.swp
 *.sass-cache*

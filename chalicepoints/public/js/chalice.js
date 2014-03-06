@@ -11,15 +11,15 @@ angular.module('cpPointsFilters', [])
         };
     })
     .filter('join', function($filter) {
-        return function(array, delimiter) {
-            return array.join(delimiter);
+        return function(arr, delimiter) {
+            return arr.join(delimiter);
         };
     })
     .filter('amountMax', function($filter) {
-        return function(array) {
+        return function(arr) {
             var maxAmount = 0;
-            for (var idx in array) {
-                maxAmount = Math.max(maxAmount, array[idx].amount);
+            for (var idx in arr) {
+                maxAmount = Math.max(maxAmount, arr[idx].amount);
             }
 
             return maxAmount;
@@ -28,23 +28,25 @@ angular.module('cpPointsFilters', [])
 
 angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters'])
     .factory('Leaderboard', function($resource) {
-        return $resource('api/1.0/leaderboard/:type.json', {
+        return $resource('api/1.0/leaderboard/:type', {
             type: 'all'
         });
     })
     .factory('User', function($resource) {
-        return $resource('api/1.0/user/:userId.json', {
+        return $resource('api/1.0/user/:userId', {
             userId: 'list'
         });
     })
     .factory('Winner', function($resource) {
-        return $resource('api/1.0/winners.json', {});
+        return $resource('api/1.0/winners', {});
     })
     .factory('Timeline', function($resource) {
-        return $resource('api/1.0/timeline.json', {});
+        return $resource('api/1.0/timeline', {});
     })
     .factory('CPEvent', function($resource) {
-        return $resource('api/1.0/event.json', {});
+        return $resource('api/1.0/event/:eventId', {
+            eventId: "@eventId"
+        });
     })
     .factory('flash', function($rootScope, $timeout) {
         $rootScope.message = {};
@@ -71,7 +73,7 @@ angular.module('cpPointsServices', ['ngResource', 'cpPointsFilters'])
         };
     });
 
-angular.module('cpPoints', ['cpPointsServices'])
+angular.module('cpPoints', ['ngRoute', 'cpPointsServices'])
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider
             .when('/', {
@@ -135,11 +137,11 @@ var LeaderboardCtrl = ['$scope', 'flash', 'users', 'leaderboardWeek', 'leaderboa
 
     $scope.addEvent = function() {
         if ($scope.pointsTarget == $scope.current_user.name) {
-            flash('alert', 'Really? You can\'t give yourself points.');
+            flash('alert', "Really? You can't give yourself points.");
             return;
         }
 
-        $scope.pointsAmount = Math.max(Math.min(5, $scope.pointsAmount), 1);
+        $scope.pointsAmount = Math.max(Math.min($scope.current_user.max_points, $scope.pointsAmount), 1);
 
         var cpEvent = new CPEvent({
             target: $scope.pointsTarget,
@@ -241,26 +243,15 @@ TimelineCtrl.resolve = {
 var UserCtrl = ['$scope', '$routeParams', 'CPEvent', 'User', 'user', function($scope, $routeParams, CPEvent, User, user) {
     user.gravatar += '?s=50&d=mm';
     $scope.user = user;
-    $scope.admin = $routeParams.admin ? true : false;
 
-    $scope.removeEvent = function(type, user, dateTime) {
-        var source = user;
-        var target = $scope.user.name;
-
-        if (type == 'given') {
-            source = user;
-            target = $scope.user.name;
+    $scope.removeEvent = function(id) {
+        if (!confirm('Are you sure you want to delete this event?')) {
+            return false;
         }
 
-        var pointEvent = new CPEvent({
-            source: source,
-            target: target,
-            'date': dateTime
-        });
-
-        pointEvent.$remove(function(data) {
+        CPEvent.delete({}, {'eventId': id}, function(data) {
             $scope.user = User.get({
-                userId: $scope.user.name
+                userId: $scope.user.id
             });
         });
     };
@@ -321,8 +312,8 @@ ChalicePoints.Chord = function(type) {
 
     var colors = d3.scale.category20();
 
-    d3.json('api/1.0/user.json', function(users) {
-        d3.json('api/1.0/matrix/' + ChalicePoints.type + '.json', function(matrix) {
+    d3.json('api/1.0/user', function(users) {
+        d3.json('api/1.0/matrix/' + ChalicePoints.type, function(matrix) {
             layout.matrix(matrix);
 
             var group = svg.selectAll('.group')

@@ -12,5 +12,5 @@ Noah Coffey: UI cleanup
 
 /* SITE */
 Standards: HTML5, CSS3
-Components: Modernizr, jQuery, Foundation 4, AngularJS
-Software: Vim, Compass, Sass, Git, Heroku, Redis, Flask
+Components: Modernizr, jQuery, Foundation 4, AngularJS, Peewee, Flask
+Software: Vim, Compass, Sass, Git, MySQL

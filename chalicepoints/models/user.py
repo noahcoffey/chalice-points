@@ -1,115 +1,101 @@
 import json
 
-from flask.ext.login import UserMixin
+from flask.ext.login import UserMixin, current_user
+from peewee import *
 
 import chalicepoints
-from chalicepoints.models.base import BaseModel
+from chalicepoints.models.base import BaseModel, BaseModelJSONEncoder
 
 class User(BaseModel, UserMixin):
-    def __init__(self, user):
-        self.email = user['email']
-        self.name = user['name']
-        self.gravatar = user['gravatar']
-        self.max_points = user['max_points']
-        self.disabled = user['disabled']
+    name = CharField()
+    email = CharField()
+    api_key = CharField()
+    gravatar = CharField()
+    max_points = IntegerField()
+    disabled = BooleanField(default=False)
+    url = CharField()
 
-    def set_id(self, url):
-        self.url = url
+    def to_array(self, for_public=False):
+        data = super(User, self).to_array()
+        if for_public:
+            data.pop('url', None)
 
-    def get_id(self):
-        return self.url
+        return data
 
     def to_json(self, for_public=False):
-        d = {
-            'email': self.email,
-            'name' : self.name,
-            'gravatar': self.gravatar,
-            'max_points': self.max_points,
-            'disabled': self.disabled,
+        data = self.to_array(for_public)
+        return json.dumps(data, cls=UserModelJSONEncoder)
+
+    def get_given(self):
+        return [event for event in self.given]
+
+    def get_received(self):
+        return [event for event in self.received]
+
+    def get_timeline(self):
+        from chalicepoints.models.event import Event
+
+        q = Event.select()
+        q = q.where((Event.source == self.id) | (Event.target == self.id))
+        q = q.order_by(Event.created_at.desc())
+
+        timeline = []
+        for event in q:
+            if event.target.id == self.id:
+                event.type = 'receive'
+            else:
+                event.type = 'give'
+
+            event.source_user = User.get(User.id == event.source)
+            event.target_user = User.get(User.id == event.target)
+
+            timeline.append(event)
+
+        return timeline
+
+    def get_points(self, week=False):
+        from chalicepoints.models.event import Event
+
+        given_query = Event.select(fn.Sum(Event.amount).alias('total'))
+        given_query = given_query.where(Event.source == self.id)
+
+        received_query = Event.select(fn.Sum(Event.amount).alias('total'))
+        received_query = received_query.where(Event.target == self.id)
+
+        if type == 'week':
+            now = datetime.now()
+            dow = now.weekday()
+
+            first_delta = timedelta(days=dow)
+            first_day = now - first_delta
+
+            last_delta = timedelta(days=6 - dow)
+            last_day = now + last_delta
+
+            given_query = given_query.where(Event.created_at >= first_day, Event.created_at <= last_day)
+            received_query = received_query.where(Event.created_at >= first_day, Event.created_at <= last_day)
+
+        given = given_query.get()
+        received = received_query.get()
+
+        return {
+            'given': given.total or 0,
+            'received': received.total or 0
         }
 
-        if not for_public:
-            d['url'] = self.url
-
-        return json.dumps(d)
-
     @staticmethod
-    def get_instance(email):
-        user_dict = User.get_user_by_email(email)
-        if not user_dict:
-            return None
+    def get_users(include_self=True):
+        q = User.select()
+        q = q.order_by(User.name)
 
-        user = User(user_dict)
-        return user
+        if not include_self:
+            q = q.where(User.id != current_user.id)
 
-    @staticmethod
-    def get_user_dict():
-        users_key = 'cpUsers'
+        return [user for user in q]
 
-        user_dict = None
-        if chalicepoints.r.exists(users_key):
-            user_dict = chalicepoints.r.hgetall(users_key)
-
-        return user_dict
-
-    @staticmethod
-    def get_user_names():
-        names = []
-
-        user_dict = User.get_user_dict()
-        if user_dict != None:
-            for user_key in user_dict:
-                user_json = user_dict[user_key]
-                user = json.loads(user_json)
-                names.append(user['name'])
-
-        return names
-
-    @staticmethod
-    def get_user_emails():
-        emails = {}
-        user_dict = User.get_user_dict()
-        if user_dict != None:
-            for user_key in user_dict:
-                user_json = user_dict[user_key]
-                user = json.loads(user_json)
-                emails[user['email']] = user['name']
-
-        return emails
-
-    @staticmethod
-    def get_users():
-        users = {}
-
-        user_dict = User.get_user_dict()
-        if user_dict != None:
-            for user_key in user_dict:
-                user_json = user_dict[user_key]
-                user = json.loads(user_json)
-                users[user['name']] = user
-
-        return users
-
-    @staticmethod
-    def get_user(name):
-        user_key = User.to_key(name)
-
-        user = None
-        if chalicepoints.r.hexists('cpUsers', user_key):
-            user_json = chalicepoints.r.hget('cpUsers', user_key)
-            user = json.loads(user_json)
-
-        return user
-
-    @staticmethod
-    def get_user_by_email(email):
-        user = None
-        user_dict = User.get_user_dict()
-        if user_dict != None:
-            for user_key in user_dict:
-                user_json = user_dict[user_key]
-                user_obj = json.loads(user_json)
-                if user_obj['email'] == email:
-                    user = user_obj
-
-        return user
+class UserModelJSONEncoder(BaseModelJSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, User):
+            return obj.to_array(for_public=True)
+        else:
+            return super(UserModelJSONEncoder, self).default(obj)

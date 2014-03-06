@@ -8,12 +8,12 @@
             </div>
             <div class="row">
                 <div class="small-9 columns">
-                    <select name="target" ng-model="pointsTarget" ng-options="u.name as u.name for u in users" required>
+                    <select name="target" ng-model="pointsTarget" ng-options="u.id as u.name for u in users" required>
                         <option value="">-- To --</option>
                     </select>
                 </div>
                 <div class="small-3 columns">
-                    <input type="number" name="amount" value="1" ng-model="pointsAmount" min="1" max="{{user.max_points}}" required>
+                    <input type="number" name="amount" value="1" ng-model="pointsAmount" min="1" max="{{current_user.max_points}}" required>
                 </div>
             </div>
             <div class="row">
@@ -32,7 +32,7 @@
 </div>
 <div class="leaderboard row">
     <div class="small-8 small-centered columns">
-        <div class="section-container tabs">
+        <div class="tabs">
             <div class="tab-box">
                 <p class="tab-title" ng-class="{active: selected.week}" ng-click="select('week')">This Week</p>
                 <p class="tab-title" ng-class="{active: selected.all}" ng-click="select('all')">All Time</p>
@@ -43,18 +43,18 @@
                     <div class="small-6 columns">
                         <h3>Received</h3>
                         <ul>
-                            <li ng-repeat="receiver in leaderboard.week.received | orderBy:['-amount','name']">
-                                <div class="dataLabel"><a href="#/user/{{receiver.name}}">{{receiver.name}}</a></div>
-                                <div class="dataValue">{{receiver.amount}}</div>
+                            <li ng-repeat="entry in leaderboard.week.received | orderBy:['-amount','user.name']">
+                                <div class="dataLabel"><a href="#/user/{{entry.user.id}}">{{entry.user.name}}</a></div>
+                                <div class="dataValue">{{entry.amount}}</div>
                             </li>
                         </ul>
                     </div>
                     <div class="small-6 columns">
                         <h3>Given</h3>
                         <ul>
-                            <li ng-repeat="giver in leaderboard.week.given | orderBy:['-amount','name']">
-                                <div class="dataLabel"><a href="#/user/{{giver.name}}">{{giver.name}}</a></div>
-                                <div class="dataValue">{{giver.amount}}</div>
+                            <li ng-repeat="entry in leaderboard.week.given | orderBy:['-amount','user.name']">
+                                <div class="dataLabel"><a href="#/user/{{entry.user.id}}">{{entry.user.name}}</a></div>
+                                <div class="dataValue">{{entry.amount}}</div>
                             </li>
                         </ul>
                     </div>
@@ -65,18 +65,18 @@
                     <div class="small-6 columns">
                         <h3>Received</h3>
                         <ul>
-                            <li ng-repeat="receiver in leaderboard.all.received | orderBy:['-amount','name']">
-                                <div class="dataLabel"><a href="#/user/{{receiver.name}}">{{receiver.name}}</a></div>
-                                <div class="dataValue">{{receiver.amount}}</div>
+                            <li ng-repeat="entry in leaderboard.all.received | orderBy:['-amount','user.name']">
+                                <div class="dataLabel"><a href="#/user/{{entry.user.id}}">{{entry.user.name}}</a></div>
+                                <div class="dataValue">{{entry.amount}}</div>
                             </li>
                         </ul>
                     </div>
                     <div class="small-6 columns">
                         <h3>Given</h3>
                         <ul>
-                            <li ng-repeat="giver in leaderboard.all.given | orderBy:['-amount','name']">
-                                <div class="dataLabel"><a href="#/user/{{giver.name}}">{{giver.name}}</a></div>
-                                <div class="dataValue">{{giver.amount}}</div>
+                            <li ng-repeat="entry in leaderboard.all.given | orderBy:['-amount','user.name']">
+                                <div class="dataLabel"><a href="#/user/{{entry.user.id}}">{{entry.user.name}}</a></div>
+                                <div class="dataValue">{{entry.amount}}</div>
                             </li>
                         </ul>
                     </div>
