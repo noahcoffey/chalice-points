@@ -213,7 +213,7 @@ def eventAction():
         if target.disabled:
             abort(403)
 
-        data['amount'] = max(min(current_user.max_points, data['amount']), 1)
+        data['amount'] = max(min(current_user.max_points, int(data['amount'])), 1)
 
         event = Event(**data)
         event.source = current_user.id
