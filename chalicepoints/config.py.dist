@@ -1,0 +1,13 @@
+class DefaultConfig(object):
+    DEBUG = True
+    HOST = '0.0.0.0'
+    PORT = 9999
+
+    MYSQL_HOST = 'localhost'
+    MYSQL_USER = 'username'
+    MYSQL_PASSWORD = 'password'
+    MYSQL_DATABASE = 'chalicepoints'
+
+    SECRET_KEY = 'SECRET-KEY'
+    HIPCHAT_AUTH_TOKEN = 'HIPCHAT-AUTH-TOKEN'
+    HIPCHAT_ROOM = '1234567'
