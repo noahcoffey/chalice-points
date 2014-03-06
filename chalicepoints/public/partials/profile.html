@@ -2,12 +2,17 @@
     <div class="meta small-12 columns">
         <img ng-src="http://gravatar.com/avatar/{{user.gravatar}}?s=50&d=mm" class="picture" alt="{{user.name}}" />
         <div class="name">{{user.name}}</div>
-        <div class="receive total noradius" title="Points Received" data-tooltip data-width="130">{{user.received}}</div>
-        <div class="give total noradius" title="Points Given" data-tooltip data-width="105">{{user.given}}</div>
+        <div class="receive total noradius" title="Points Received" data-tooltip data-width="130">{{user.points.received}}</div>
+        <div class="give total noradius" title="Points Given" data-tooltip data-width="105">{{user.points.given}}</div>
     </div>
 </div>
+<div ng:if="current_user.id == user.id" class="api row">
+  <div class="small-6 small-centered columns text-center">
+  {{user.api_key}}
+  </div>
+</div>
 <div class="events row">
-    <div class="event small-6 small-centered columns" ng-repeat="event in user.events | orderBy:'-date'">
+    <div class="event small-6 small-centered columns" ng-repeat="event in user.events | orderBy:'-created_at'">
         <span class="type {{event.type}}" ng-switch on="event.type">
             <span ng-switch-when="give">Gave</span>
             <span ng-switch-when="receive">Received</span>
@@ -21,10 +26,16 @@
             <span ng-switch-when="give">to</span>
             <span ng-switch-when="receive">from</span>
         </span>
-        <span class="user"><a href="#/user/{{event.user}}">{{event.user}}</a></span> at
-        <span class="date">{{event.date | dateMoment:'M/d/yyyy h:mma'}}</span>
+        <span class="user">
+            <a ng:if="event.type == 'give'" href="#/user/{{event.target_user.id}}">{{event.target_user.name}}</a>
+            <a ng:if="event.type == 'receive'" href="#/user/{{event.source_user.id}}">{{event.source_user.name}}</a>
+        </span>
+        at
+        <span class="date">{{event.created_at | dateMoment:'M/d/yyyy h:mma'}}</span>
+        <span class="delete" ng-if="current_user.id == user.id">
+            <a href="" ng-click="removeEvent(event.id)">[Delete]</a>
+        </span>
 
         <div class="message">{{event.message}}</div>
-        <div ng-if="current_user.name == user.name"><button class="small alert button" ng-click="removeEvent(event.type, event.user, event.date)">Delete</button></div>
     </div>
 </div>

@@ -7,9 +7,9 @@
         <div class="winners">
             <div>
                 <span class="name">
-                    <span ng-repeat="person in week.received">
+                    <span ng-repeat="entry in week.received">
                         <span ng-show="!$first">&amp;</span>
-                        <a href="/#/user/{{person.name}}">{{person.name}}</a>
+                        <a href="/#/user/{{entry.user.id}}">{{entry.user.name}}</a>
                     </span>
                 </span>
                 -
@@ -27,9 +27,9 @@
 
             <div>
                 <span class="name">
-                    <span ng-repeat="person in week.given">
+                    <span ng-repeat="entry in week.given">
                         <span ng-show="!$first">&amp;</span>
-                        <a href="/#/user/{{person.name}}">{{person.name}}</a>
+                        <a href="/#/user/{{entry.user.id}}">{{entry.user.name}}</a>
                     </span>
                 </span>
                 -
