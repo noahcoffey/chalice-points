@@ -1,0 +1,27 @@
+<div class="row">
+  <div class="small-12 columns text-center">
+    <h2>{{ user.name }}</h2>
+  </div>
+</div>
+<div class="row">
+  <div class="small-12 columns text-center">
+    <p>Merge {{ user.name }} into Target User</p>
+  </div>
+</div>
+<div class="row">
+  <div class="small-4 columns">
+    <label for="target">Target User</label>
+  </div>
+  <div class="small-8 columns">
+    <select id="target" ng-model="merge.target" ng-options="user.id as user.email for user in users">
+    </select>
+  </div>
+</div>
+<div class="row">
+  <div class="small-12 columns">
+    <ul class="button-group clearfix">
+      <li class="right"><a href="" ng-click="cancel()" class="button small secondary">Cancel</a></li>
+      <li class="right"><a href="" ng-click="ok()" class="button small">Merge Users</a><li>
+    </ul>
+  </div>
+</div>
