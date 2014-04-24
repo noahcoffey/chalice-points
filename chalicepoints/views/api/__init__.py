@@ -126,23 +126,61 @@ def leaderboard(type):
 
 @api.route('/1.0/user', methods=['GET'])
 @login_required
-def userAction(include_self=True):
-    users = User.get_users(include_self)
+def userAction(include_self=True, include_points=False, include_events=False):
+    users = User.get_users(include_self, include_points, include_events)
     return Response(json.dumps(users, cls=Encoder), mimetype='application/json')
 
-@api.route('/1.0/user/<id>', methods=['GET'])
+@api.route('/1.0/merge/<id>/<target>', methods=['POST'])
+@login_required
+def mergeUser(id, target):
+    Event.update(source=target).where(Event.source == id).execute()
+    Event.update(target=target).where(Event.target == id).execute()
+
+    try:
+        user = User.get(User.id == id)
+        user.delete_instance()
+    except DoesNotExist:
+        abort(404)
+
+    return jsonify(success=1)
+
+@api.route('/1.0/user/<id>', methods=['GET', 'POST', 'DELETE'])
 @login_required
 def userNameAction(id):
-    id = id.encode('ascii')
+    if request.method == 'GET':
+        id = id.encode('ascii')
 
-    if id == 'list':
-        return userAction(False)
+        if id == 'list':
+            return userAction(False)
 
-    user = User.get(User.id == id)
-    user.events = user.get_timeline()
-    user.points = user.get_points()
+        if id == 'all':
+            return userAction(True, True)
 
-    return Response(json.dumps(user, cls=Encoder), mimetype='application/json')
+        user = User.get(User.id == id)
+        user.events = user.get_timeline()
+        user.points = user.get_points()
+
+        return Response(json.dumps(user, cls=Encoder), mimetype='application/json')
+    elif request.method == 'POST':
+        if not current_user.elder:
+            abort(403)
+
+        data = request.json
+
+        user = User(**data)
+        user.save()
+        return jsonify(success=1)
+    elif request.method == 'DELETE':
+        if not current_user.elder:
+            abort(403)
+
+        try:
+            user = User.get(User.id == id)
+            user.delete_instance()
+        except DoesNotExist:
+            abort(404)
+
+        return jsonify(success=1)
 
 @api.route('/1.0/matrix', methods=['GET'])
 @login_required
