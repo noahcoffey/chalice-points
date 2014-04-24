@@ -1,0 +1,30 @@
+{
+  "name": "chalicepoints",
+  "dependencies": {
+    "jquery": "~2.1.0",
+    "angular-cookies": "~1.2.16",
+    "angular-resource": "~1.2.16",
+    "angular-route": "~1.2.16",
+    "angular": "~1.2.16",
+    "momentjs": "~2.6.0",
+    "modernizr": "~2.7.2",
+    "foundation": "~5.2.2",
+    "d3": "~3.4.6"
+  },
+  "version": "0.3.0",
+  "homepage": "https://github.com/cisox/chalice-points",
+  "authors": [
+    "Brandon Peters <brandon@formstack.com>"
+  ],
+  "description": "Chalice Points",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "chalicepoints/public/bower_components",
+    "test",
+    "tests"
+  ]
+}
