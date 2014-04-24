@@ -3,3 +3,4 @@ chalicepoints/config.py
 *.pyc
 *.swp
 *.sass-cache*
+node_modules
