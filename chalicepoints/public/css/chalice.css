@@ -30,8 +30,25 @@ path.chord {
   color: #5da423;
 }
 
+.edit a {
+  color: #5da423;
+}
+.edit a:hover {
+  color: #457a1a;
+}
+
 .delete a {
   color: #e33605;
+}
+.delete a:hover {
+  color: #b12a04;
+}
+
+.merge a {
+  color: #2ba6cb;
+}
+.merge a:hover {
+  color: #2284a1;
 }
 
 .top-bar .name {
@@ -39,6 +56,12 @@ path.chord {
   background-repeat: no-repeat;
   background-position: left center;
   padding-left: 5px;
+}
+.top-bar .top-bar-section li a:not(.button) {
+  color: white;
+}
+.top-bar .top-bar-section li a:not(.button):hover {
+  color: #2ba6cb;
 }
 
 .dataLabel {
@@ -117,10 +140,14 @@ path.chord {
 .events .event .amount {
   font-weight: 600;
 }
-.events .event .message {
+.events .event .event__header {
+  white-space: nowrap;
+}
+.events .event .event__message {
   font-size: 1.2em;
   font-style: italic;
   font-weight: 300;
+  word-wrap: break-word;
   padding-top: 10px;
   line-height: 1.3;
 }
