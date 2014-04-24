@@ -11,12 +11,6 @@ from chalicepoints import open_id, login_manager
 
 site = Blueprint('site', __name__)
 
-@site.route('/')
-@login_required
-def index():
-    return render_template('index.html',
-        user_json=current_user.to_json(for_public=True))
-
 @site.route('/login')
 @open_id.loginhandler
 def login():
@@ -43,3 +37,10 @@ def robots():
 def favicon():
     return send_from_directory(os.path.join(current_app.root_path, 'public'),
         'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+@site.route('/', defaults={'path': 'index'})
+@site.route('/<path:path>')
+@login_required
+def index(path):
+    return render_template('index.html',
+        user_json=current_user.to_json(for_public=True))
