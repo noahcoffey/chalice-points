@@ -44,10 +44,10 @@ $default-float: left;
 
 // Colors
 
-// $primary-color: #2ba6cb;
-// $secondary-color: #e9e9e9;
-// $alert-color: #c60f13;
-// $success-color: #5da423;
+$primary-color: #2ba6cb;
+$secondary-color: #e9e9e9;
+$alert-color: #c60f13;
+$success-color: #5da423;
 
 // Make sure border radius matches unless we want it different.
 
@@ -969,7 +969,7 @@ $default-float: left;
 // $reveal-modal-bg: #fff;
 // $reveal-position-top: 50px;
 // $reveal-default-width: 80%;
-// $reveal-modal-padding: emCalc(20px);
+$reveal-modal-padding: emCalc(10px);
 // $reveal-box-shadow: 0 0 10px rgba(#000,.4);
 
 // Reveal close button
