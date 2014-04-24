@@ -1,0 +1,31 @@
+<div class="row">
+  <div class="small-8 small-centered columns"><h2 class="pagetitle text-center">Users</h2></div>
+</div>
+<div class="row">
+  <div class="small-8 small-centered columns">
+    <table class="small-12 columns">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Received</th>
+          <th>Given</th>
+          <th>&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="user in users">
+          <td><a href="/user/{{ user.id }}">{{ user.name }}</a></td>
+          <td>{{ user.email }}</td>
+          <td class="receive">{{ user.points.received }}</td>
+          <td class="give">{{ user.points.given }}</td>
+          <td class="text-right">
+            <span class="edit"><a href="" data-tooltip title="Edit User" ng-click="editUser($index)"><i class="fa fa-pencil"></i></a></span>
+            <span class="delete"><a href="" data-tooltip title="Delete User" ng-click="removeUser($index)"><i class="fa fa-trash-o"></i></a></span>
+            <span class="merge"><a href="" data-tooltip title="Merge User" ng-click="mergeUser($index)"><i class="fa fa-exchange"></i></a></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
