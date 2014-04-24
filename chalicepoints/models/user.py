@@ -14,6 +14,7 @@ class User(BaseModel, UserMixin):
     max_points = IntegerField()
     disabled = BooleanField(default=False)
     url = CharField()
+    elder = BooleanField(default=False)
 
     def to_array(self, for_public=False):
         data = super(User, self).to_array()
@@ -84,14 +85,23 @@ class User(BaseModel, UserMixin):
         }
 
     @staticmethod
-    def get_users(include_self=True):
+    def get_users(include_self=True, include_points=False, include_events=False):
         q = User.select()
         q = q.order_by(User.name)
 
         if not include_self:
             q = q.where(User.id != current_user.id)
 
-        return [user for user in q]
+        users = []
+        for user in q:
+            if include_events:
+                user.events = user.get_timeline()
+
+            if include_points:
+                user.points = user.get_points()
+
+            users.append(user)
+        return users
 
 class UserModelJSONEncoder(BaseModelJSONEncoder):
     def default(self, obj):
