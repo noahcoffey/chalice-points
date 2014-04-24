@@ -1,41 +1,57 @@
 <div class="profile row">
-    <div class="meta small-12 columns">
-        <img ng-src="http://gravatar.com/avatar/{{user.gravatar}}?s=50&d=mm" class="picture" alt="{{user.name}}" />
-        <div class="name">{{user.name}}</div>
-        <div class="receive total noradius" title="Points Received" data-tooltip data-width="130">{{user.points.received}}</div>
-        <div class="give total noradius" title="Points Given" data-tooltip data-width="105">{{user.points.given}}</div>
-    </div>
+  <div class="meta small-12 columns">
+    <img ng-src="http://gravatar.com/avatar/{{ user.gravatar }}?s=50&d=mm" class="picture" alt="{{ user.name }}" />
+    <div class="name">{{ user.name }}</div>
+    <div class="receive total noradius" title="Points Received" data-tooltip data-width="130">{{ user.points.received }}</div>
+    <div class="give total noradius" title="Points Given" data-tooltip data-width="105">{{ user.points.given }}</div>
+  </div>
 </div>
-<div ng:if="current_user.id == user.id" class="api row">
-  <div class="small-6 small-centered columns text-center">
-  {{user.api_key}}
+<div ng:if="current_user.id == user.id || current_user.elder" class="api row">
+  <div class="small-7 small-centered columns text-center">
+  {{ user.api_key }}
   </div>
 </div>
 <div class="events row">
-    <div class="event small-6 small-centered columns" ng-repeat="event in user.events | orderBy:'-created_at'">
-        <span class="type {{event.type}}" ng-switch on="event.type">
+  <div class="small-7 small-centered columns">
+    <div class="event row" ng-repeat="event in user.events | orderBy:'-created_at'">
+      <div class="event__header row">
+        <div class="small-12 columns">
+          <span class="type {{ event.type }}" ng-switch on="event.type">
             <span ng-switch-when="give">Gave</span>
             <span ng-switch-when="receive">Received</span>
-        </span>
-        <span class="amount">{{event.amount}}</span>
-        <span ng-switch on="event.amount">
+          </span>
+          <span class="amount">{{ event.amount }}</span>
+          <span ng-switch on="event.amount">
             <span ng-switch-when="1">Point</span>
             <span ng-switch-default>Points</span>
-        </span>
-        <span ng-switch on="event.type">
+          </span>
+          <span ng-switch on="event.type">
             <span ng-switch-when="give">to</span>
             <span ng-switch-when="receive">from</span>
-        </span>
-        <span class="user">
-            <a ng:if="event.type == 'give'" href="#/user/{{event.target_user.id}}">{{event.target_user.name}}</a>
-            <a ng:if="event.type == 'receive'" href="#/user/{{event.source_user.id}}">{{event.source_user.name}}</a>
-        </span>
-        at
-        <span class="date">{{event.created_at | dateMoment:'M/d/yyyy h:mma'}}</span>
-        <span class="delete" ng-if="current_user.id == user.id">
-            <a href="" ng-click="removeEvent(event.id)">[Delete]</a>
-        </span>
+          </span>
+          <span class="user">
+            <a ng:if="event.type == 'give'" href="/user/{{ event.target_user.id }}">{{ event.target_user.name }}</a>
+            <a ng:if="event.type == 'receive'" href="/user/{{ event.source_user.id }}">{{ event.source_user.name }}</a>
+          </span>
+          at
+          <span class="date">{{ event.created_at | dateMoment:'M/d/yyyy h:mma' }}</span>
+        </div>
+      </div>
 
-        <div class="message">{{event.message}}</div>
+      <div class="event__message row">
+        <div class="small-12 columns">{{ event.message }}</div>
+      </div>
+      <div class="event__action row" ng-if="event.source_user.id == current_user.id || current_user.elder">
+        <div class="small-9 columns"></div>
+        <div class="small-3 columns text-right">
+          <span class="edit">
+            <a href="" ng-click="editEvent(event.id)"><i class="fa fa-pencil"></i></a>
+          </span>
+          <span class="delete">
+            <a href="" ng-click="removeEvent(event.id)"><i class="fa fa-trash-o"></i></a>
+          </span>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
