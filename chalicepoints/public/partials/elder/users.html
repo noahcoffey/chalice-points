@@ -6,15 +6,15 @@
     <table class="small-12 columns">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Received</th>
-          <th>Given</th>
+          <th><a href="" ng-click="predicate='name'; reverse=!reverse;">Name</a></th>
+          <th><a href="" ng-click="predicate='email'; reverse=!reverse;">Email</a></th>
+          <th><a href="" ng-click="predicate='points.received'; reverse=!reverse">Received</a></th>
+          <th><a href="" ng-click="predicate='points.given'; reverse=!reverse">Given</a></th>
           <th>&nbsp;</th>
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="user in users">
+        <tr ng-repeat="user in users | orderBy:predicate:reverse">
           <td><a href="/user/{{ user.id }}">{{ user.name }}</a></td>
           <td>{{ user.email }}</td>
           <td class="receive">{{ user.points.received }}</td>
