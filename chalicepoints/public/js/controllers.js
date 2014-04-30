@@ -175,7 +175,7 @@ var UserCtrl = ['$scope', '$routeParams', 'CPEvent', 'User', 'user', '$modal',
 
     CPEvent.delete({}, {'id': id}, function(data) {
       $scope.user = User.get({
-        userId: $scope.user.id
+        id: $scope.user.id
       });
     });
   };
@@ -185,7 +185,7 @@ UserCtrl.resolve = {
   user: function($q, User, $route) {
     var deferred = $q.defer();
     var res = User.get({
-      userId: $route.current.params.userId
+      id: $route.current.params.id
     }, function() {
       deferred.resolve(res);
     });
@@ -256,7 +256,7 @@ ElderUsersCtrl.resolve = {
   users: function($q, User, $route) {
     var deferred = $q.defer();
     var res = User.query({
-      userId: 'all'
+      id: 'all'
     }, function() {
       deferred.resolve(res);
     });
