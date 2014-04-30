@@ -12,6 +12,10 @@ $gravatar-size: 50px;
 $weight-light: 300;
 $weight-heavy: 600;
 
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
 .receive {
   color: $receive-color;
 }
