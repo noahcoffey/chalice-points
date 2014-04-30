@@ -20,7 +20,7 @@
         templateUrl: '/public/partials/chart.html',
         controller: ChartCtrl
       },
-      '/user/:userId': { 
+      '/user/:id': { 
         templateUrl: '/public/partials/profile.html',
         controller: UserCtrl,
         resolve: UserCtrl.resolve
