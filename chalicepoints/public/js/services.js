@@ -10,14 +10,17 @@
       });
   })
   .factory('User', function($resource) {
-      return $resource('/api/1.0/user/:userId', {
-          userId: '@id'
+      return $resource('/api/1.0/user/:id', {
+          id: '@id'
       }, {
+        update: {
+          method: 'PUT'
+        },
         merge: {
-          url: '/api/1.0/merge/:userId/:targetId',
+          url: '/api/1.0/merge/:id/:targetId',
           method: 'POST',
           params: {
-            userId: '@id',
+            id: '@id',
             targetId: '@target'
           }
         }
@@ -30,8 +33,12 @@
       return $resource('/api/1.0/timeline', {});
   })
   .factory('CPEvent', function($resource) {
-      return $resource('/api/1.0/event/:eventId', {
-          eventId: "@eventId"
+      return $resource('/api/1.0/event/:id', {
+          id: "@id"
+      }, {
+        update: {
+          method: 'PUT'
+        }
       });
   })
   .factory('flash', function($rootScope, $timeout) {
