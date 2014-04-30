@@ -3,6 +3,8 @@ class DefaultConfig(object):
     HOST = '0.0.0.0'
     PORT = 9999
 
+    SITE_URL = 'http://chalicepoints.example.com'
+
     MYSQL_HOST = 'localhost'
     MYSQL_USER = 'username'
     MYSQL_PASSWORD = 'password'
