@@ -177,12 +177,12 @@ $weight-heavy: 600;
 
 .add-points {
   select {
-    height: 2em;
     border: 1px solid #cccccc;
   }
 
   button {
     width: 100%;
+    padding-top: 0.9em;
   }
 
   input[name="message"] {
