@@ -41,7 +41,7 @@
       <div class="event__message row">
         <div class="small-12 columns">{{ event.message }}</div>
       </div>
-      <div class="event__action row" ng-if="event.source_user.id == current_user.id || current_user.elder">
+      <div class="event__action row ng-cloak" ng-if="event.source_user.id == current_user.id || current_user.elder">
         <div class="small-9 columns"></div>
         <div class="small-3 columns text-right">
           <span class="edit">
