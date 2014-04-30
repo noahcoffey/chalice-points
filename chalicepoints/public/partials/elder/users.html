@@ -20,9 +20,9 @@
           <td class="receive">{{ user.points.received }}</td>
           <td class="give">{{ user.points.given }}</td>
           <td class="text-right">
-            <span class="edit"><a href="" data-tooltip title="Edit User" ng-click="editUser($index)"><i class="fa fa-pencil"></i></a></span>
-            <span class="delete"><a href="" data-tooltip title="Delete User" ng-click="removeUser($index)"><i class="fa fa-trash-o"></i></a></span>
-            <span class="merge"><a href="" data-tooltip title="Merge User" ng-click="mergeUser($index)"><i class="fa fa-exchange"></i></a></span>
+            <span class="edit"><a href="" data-tooltip title="Edit User" ng-click="editUser(user)"><i class="fa fa-pencil"></i></a></span>
+            <span class="delete"><a href="" data-tooltip title="Delete User" ng-click="removeUser(user)"><i class="fa fa-trash-o"></i></a></span>
+            <span class="merge"><a href="" data-tooltip title="Merge User" ng-click="mergeUser(user)"><i class="fa fa-exchange"></i></a></span>
           </td>
         </tr>
       </tbody>
