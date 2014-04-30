@@ -153,11 +153,11 @@ path.chord {
 }
 
 .add-points select {
-  height: 2em;
   border: 1px solid #cccccc;
 }
 .add-points button {
   width: 100%;
+  padding-top: 0.9em;
 }
 .add-points input[name="message"] {
   height: 3em;
