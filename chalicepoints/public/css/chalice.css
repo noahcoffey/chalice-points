@@ -22,6 +22,10 @@ path.chord {
   display: block;
 }
 
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
 .receive {
   color: #e33605;
 }
