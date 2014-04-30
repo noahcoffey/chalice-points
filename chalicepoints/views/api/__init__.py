@@ -124,12 +124,6 @@ def leaderboard(type):
 
     return Response(json.dumps(response, cls=Encoder), mimetype='application/json')
 
-@api.route('/1.0/user', methods=['GET'])
-@login_required
-def userAction(include_self=True, include_points=False, include_events=False):
-    users = User.get_users(include_self, include_points, include_events)
-    return Response(json.dumps(users, cls=Encoder), mimetype='application/json')
-
 @api.route('/1.0/merge/<id>/<target>', methods=['POST'])
 @login_required
 def mergeUser(id, target):
@@ -144,7 +138,13 @@ def mergeUser(id, target):
 
     return jsonify(success=1)
 
-@api.route('/1.0/user/<id>', methods=['GET', 'POST', 'DELETE'])
+@api.route('/1.0/user', methods=['GET'])
+@login_required
+def userAction(include_self=True, include_points=False, include_events=False):
+    users = User.get_users(include_self, include_points, include_events)
+    return Response(json.dumps(users, cls=Encoder), mimetype='application/json')
+
+@api.route('/1.0/user/<id>', methods=['GET', 'PUT', 'DELETE'])
 @login_required
 def userNameAction(id):
     if request.method == 'GET':
@@ -161,12 +161,11 @@ def userNameAction(id):
         user.points = user.get_points()
 
         return Response(json.dumps(user, cls=Encoder), mimetype='application/json')
-    elif request.method == 'POST':
+    elif request.method == 'PUT':
         if not current_user.elder:
             abort(403)
 
         data = request.json
-
         user = User(**data)
         user.save()
         return jsonify(success=1)
@@ -274,9 +273,11 @@ def eventIdAction(id):
         return jsonify(success=1)
     elif request.method == 'PUT':
         data = request.json
-        data.pop('id', None)
+        data.pop('target_user', None)
+        data.pop('source_user', None)
+        data.pop('type', None)
 
-        if data['target'] == current_user.id:
+        if data['source'] != current_user.id and current_user.elder == 0:
             abort(403)
 
         target = None
@@ -285,14 +286,14 @@ def eventIdAction(id):
         except DoesNotExist:
             abort(403)
 
-        if target.disabled:
+        if target.disabled and current_user.elder == 0:
             abort(403)
 
         data['amount'] = max(min(current_user.max_points, data['amount']), 1)
-        data['source'] = current_user.id
 
-        Event.update(**data).where(Event.id == id)
+        event = Event(**data)
         event.save()
+
         return jsonify(success=1)
 
     abort(404)
