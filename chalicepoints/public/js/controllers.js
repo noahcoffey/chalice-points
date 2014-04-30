@@ -198,8 +198,8 @@ var ElderUsersCtrl = ['$scope', '$routeParams', 'User', 'users', '$modal',
     $scope.users = users;
     $scope.user = null;
 
-    $scope.editUser = function(idx) {
-      $scope.user = $scope.users[idx];
+    $scope.editUser = function(user) {
+      $scope.user = user;
 
       var modal = $modal.open({
         templateUrl: '/public/partials/modals/edit_user.html',
@@ -217,18 +217,23 @@ var ElderUsersCtrl = ['$scope', '$routeParams', 'User', 'users', '$modal',
       });
     };
 
-    $scope.removeUser = function(idx) {
+    $scope.removeUser = function(user) {
       if (!confirm('Are you sure you want to delete this user?')) {
         return false;
       }
 
-      User.delete({}, $scope.users[idx], function(data) {
-        $scope.users.splice(idx, 1);
+      User.delete({}, user, function(data) {
+        for (var i = 0; i < $scope.users.length; i++) {
+          if ($scope.users[i].id == user.id) {
+            $scope.users.splice(i, 1);
+            break;
+          }
+        }
       });
     };
 
-    $scope.mergeUser = function(idx) {
-      $scope.user = $scope.users[idx];
+    $scope.mergeUser = function(user) {
+      $scope.user = user;
 
       var modal = $modal.open({
         templateUrl: '/public/partials/modals/merge_user.html',
@@ -246,7 +251,12 @@ var ElderUsersCtrl = ['$scope', '$routeParams', 'User', 'users', '$modal',
 
       modal.result.then(function(merge) {
           User.merge(merge, function() {
-            $scope.users.splice(idx, 1);
+            for (var i = 0; i < $scope.users.length; i++) {
+              if ($scope.users[i].id == user.id) {
+                $scope.users.splice(i, 1);
+                break;
+              }
+            }
           });
       });
     };
