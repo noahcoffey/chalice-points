@@ -129,29 +129,54 @@ TimelineCtrl.resolve = {
   }
 };
 
-var UserCtrl = ['$scope', '$routeParams', 'CPEvent', 'User', 'user',
-    function($scope, $routeParams, CPEvent, User, user) {
-  user.gravatar += '?s=50&d=mm';
+var UserCtrl = ['$scope', '$routeParams', 'CPEvent', 'User', 'user', '$modal',
+  function($scope, $routeParams, CPEvent, User, user, $modal) {
   $scope.user = user;
+
+  $scope.predicate = 'name';
+  $scope.reverse = false;
+
+  $scope.editEvent = function(idx) {
+    $scope.event = $scope.user.events[idx];
+
+    var modal = $modal.open({
+      templateUrl: '/public/partials/modals/edit_event.html',
+      controller: EditEventModalCtrl,
+      windowClass: 'small',
+      resolve: {
+        event: function() {
+          return $scope.event;
+        },
+        users: function($q, User) {
+          var deferred = $q.defer();
+          var res = User.query(function() {
+            for (var i = res.length - 1; i >= 0; i--) {
+              if (res[i].disabled) {
+                res.splice(i, 1);
+              }
+            }
+
+            deferred.resolve(res);
+          });
+          return deferred.promise;
+        }
+      }
+    });
+
+    modal.result.then(function(evt) {
+      CPEvent.update(null, evt);
+    });
+  };
 
   $scope.removeEvent = function(id) {
     if (!confirm('Are you sure you want to delete this event?')) {
       return false;
     }
 
-    CPEvent.delete({}, {'eventId': id}, function(data) {
+    CPEvent.delete({}, {'id': id}, function(data) {
       $scope.user = User.get({
         userId: $scope.user.id
       });
-    });
-  };
-
-  $scope.removeUser = function(id) {
-    if (!confirm('Are you sure you want to delete this user?')) {
-      return false;
-    }
-
-    User.delete({}, {'userId': id}, function(data) {
     });
   };
 }];
@@ -188,7 +213,7 @@ var ElderUsersCtrl = ['$scope', '$routeParams', 'User', 'users', '$modal',
       });
 
       modal.result.then(function(user) {
-        new User(user).$save();
+        User.update(null, user);
       });
     };
 
@@ -244,6 +269,19 @@ var EditUserModalCtrl = ['$scope', '$modalInstance', 'user', function($scope, $m
 
   $scope.ok = function() {
     $modalInstance.close($scope.user);
+  };
+
+  $scope.cancel = function() {
+    $modalInstance.dismiss('cancel');
+  };
+}];
+
+var EditEventModalCtrl = ['$scope', '$modalInstance', 'event', 'users', function($scope, $modalInstance, event, users) {
+  $scope.event = event;
+  $scope.users = users;
+
+  $scope.ok = function() {
+    $modalInstance.close($scope.event);
   };
 
   $scope.cancel = function() {
