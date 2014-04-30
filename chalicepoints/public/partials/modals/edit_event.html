@@ -1,0 +1,29 @@
+<div class="row">
+  <div class="add-points small-12 columns">
+    <form name="addEventForm">
+      <div class="row">
+        <div class="small-9 columns">
+          <select name="target" ng-model="event.target" ng-options="u.id as u.name for u in users" required>
+            <option value="">-- To --</option>
+          </select>
+        </div>
+        <div class="small-3 columns">
+          <input type="number" name="amount" value="1" ng-model="event.amount" min="1" max="5" required>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 columns">
+          <input type="text" name="message" ng-model="event.message" placeholder="The reason for giving points">
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="row">
+  <div class="small-12 columns">
+    <ul class="button-group clearfix">
+      <li class="right"><a href="" ng-click="cancel()" class="button small secondary">Cancel</a></li>
+      <li class="right"><a href="" ng-click="ok()" class="button small">Save</a><li>
+    </ul>
+  </div>
+</div>
