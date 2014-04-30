@@ -32,8 +32,9 @@ class Event(BaseModel):
 
         authToken = current_app.config['HIPCHAT_AUTH_TOKEN']
         room = current_app.config['HIPCHAT_ROOM']
+        siteUrl = current_app.config['SITE_URL']
 
-        if not authToken or not room:
+        if not authToken or not room or not siteUrl:
             return False
 
         sender = 'ChalicePoints'
@@ -44,7 +45,7 @@ class Event(BaseModel):
         if 'HIPCHAT_COLOR' in current_app.config:
             color = current_app.config['HIPCHAT_COLOR']
 
-        url = 'http://chalicepoints.formstack.com/#/user/%s' % (self.target.id)
+        url = '%s/user/%s' % (siteUrl, self.target.id)
         points = 'Point' if self.amount == 1 else 'Points'
         message = '(chalicepoint) %s gave %s %d Chalice %s: %s (%s)' % (self.source.name, self.target.name, self.amount, points, self.message, url)
 
