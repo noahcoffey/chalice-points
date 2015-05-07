@@ -1,6 +1,6 @@
 import os, sys
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import urllib, urllib2
 
 from flask import Blueprint, abort, request, jsonify, Response
@@ -19,14 +19,17 @@ def timeline():
     timeline = Event.get_timeline()
     return Response(json.dumps(timeline, cls=Encoder), mimetype='application/json')
 
-@api.route('/1.0/winners', methods=['GET'])
+@api.route('/1.0/winners/<week>', methods=['GET'])
 @login_required
-def winners():
+def winners(week=None):
     totals = {}
     leaders = {}
     highest = {}
 
     current_week = datetime.now().strftime('%U %y 0')
+    if week is not None:
+        current_week = time.strptime(week, '%Y-%m-%d').strftime('%U %y 0')
+
     current_date = datetime.strptime(current_week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%S')
 
     q = Event.select()
