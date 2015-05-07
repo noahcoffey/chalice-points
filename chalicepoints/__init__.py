@@ -7,7 +7,6 @@ from uuid import uuid4
 
 from flask import Flask, redirect, url_for, abort, jsonify, g
 from flask.ext.login import LoginManager, login_user
-from flask.ext.openid import OpenID
 
 from flask_peewee.db import Database
 from peewee import MySQLDatabase, DoesNotExist
@@ -22,10 +21,6 @@ app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY', app.config['SECRET_KEY'])
 
 if app.config['SECRET_KEY'] is None:
     abort(500)
-
-# Flask-OpenID
-open_id = OpenID()
-open_id.init_app(app)
 
 # Flask-Login
 login_manager = LoginManager()
@@ -86,35 +81,6 @@ def load_user_from_header(header):
         return User.get(User.api_key == header)
     except:
         return None
-
-@open_id.after_login
-def after_login(response):
-    from chalicepoints.models.user import User
-
-    email = string.lower(response.email)
-
-    try:
-        user = User.get(User.email == email)
-
-        if not user.api_key:
-            user.api_key = str(uuid4())
-
-        user.url = response.identity_url
-        user.save()
-    except DoesNotExist:
-        user = User()
-        user.name = response.fullname
-        user.email = email
-        user.api_key = str(uuid4())
-        user.gravatar = hashlib.md5(email.strip().lower()).hexdigest()
-        user.url = response.identity_url
-        user.save()
-
-    if not user:
-        abort(404)
-
-    login_user(user)
-    return redirect(url_for('site.index'))
 
 @app.after_request
 def after_request(response):
