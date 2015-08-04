@@ -5,11 +5,13 @@ import base64
 
 from uuid import uuid4
 
-from flask import Flask, redirect, url_for, abort, jsonify, g
+from flask import Flask, redirect, url_for, abort, jsonify, g, render_template
 from flask.ext.login import LoginManager, login_user
 
 from flask_peewee.db import Database
 from peewee import MySQLDatabase, DoesNotExist
+
+from chalicepoints.exceptions import APIException, WebException
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 
@@ -84,9 +86,24 @@ def load_user_from_header(header):
 
 @app.after_request
 def after_request(response):
-    if response.status_code < 400:
-        db.database.commit()
-    else:
-        db.database.rollback()
+  if response.status_code < 400:
+    db.database.commit()
+  else:
+    db.database.rollback()
 
-    return response
+  return response
+
+@app.errorhandler(APIException)
+def handle_api_exception(error):
+  print 'APIException %s (%d)' % (error.message, error.status_code)
+  return jsonify(error=error.message), error.status_code
+
+@app.errorhandler(WebException)
+def handle_web_exception(error):
+  return render_template('%s.html' % error.status_code, message=error.message), error.status_code
+
+@app.errorhandler(Exception)
+def handle_exception(error):
+  message = str(error) if app.config['DEBUG'] else 'Sorry, there was an internal server error. Please try again.'
+  app.logger.exception(error)
+  return jsonify(error=message), 500
