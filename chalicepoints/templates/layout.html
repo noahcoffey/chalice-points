@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en" ng-app="chalicepoints">
+  <head>
+      <title>{% block title %}Chalice Points{% endblock %}</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chalice.css') }}" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+  </head>
+  <body>
+    <div class="contain-to-grid">
+      <nav class="top-bar" data-topbar>
+        <ul class="title-area">
+          <li class="name">
+            <h1><a href="/">Chalice Points</a></h1>
+          </li>
+          <li class="toggle-topbar menu-icon"><a href=""><span></span></a></li>
+        </ul>
+        <section class="top-bar-section">
+          <ul class="right">
+            <li class="has-dropdown ng-cloak" ng-if="current_user.elder">
+              <a href="">Elder</a>
+              <ul class="dropdown">
+                <li><a href="/users">Users</a></li>
+              </ul>
+            </li>
+            <li><a href="/leaderboard">Leaderboard</a></li>
+            <li><a href="/chart">Chart</a></li>
+            <li><a href="/winners">Winners</a></li>
+            <li><a href="/timeline">Timeline</a></li>
+            <li><a ng:href="/user/{{ current_user.id }}">Profile</a></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+        </section>
+      </nav>
+    </div>
+
+    {% block body %}{% endblock %}
+
+    <script src="{{ url_for('static', filename='bower_components/modernizr/modernizr.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/angular/angular.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/angular-route/angular-route.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/angular-resource/angular-resource.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/angular-cookies/angular-cookies.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/momentjs/min/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/foundation/js/foundation.min.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/vendor/mm-foundation-tpls-0.1.0.min.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/controllers.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/services.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/filters.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/directives.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='bower_components/d3/d3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+    <div id="user" style="display: none;">{{ user_json | safe }}</div>
+  </body>
+</html>
