@@ -18,6 +18,7 @@ from oauth2client.client import OAuth2WebServerFlow
 import chalicepoints
 from chalicepoints import login_manager
 from chalicepoints.models.user import User
+from chalicepoints.exceptions import WebException
 
 from peewee import DoesNotExist
 
@@ -25,7 +26,7 @@ site = Blueprint('site', __name__)
 
 @site.route('/login')
 def login():
-  csrf_token = b64encode(os.urandom(24))
+  csrf_token = b64encode(os.urandom(24), '-_').decode('utf-8')
   session['csrf_token'] = csrf_token
 
   flow = OAuth2WebServerFlow(
@@ -35,7 +36,7 @@ def login():
     redirect_uri=current_app.config['SITE_URL'] + '/auth'
   )
 
-  auth_url = '%s&state=%s' % (flow.step1_get_authorize_url(), csrf_token)
+  auth_url = '%s&state=%s&approval_prompt=force' % (flow.step1_get_authorize_url(), csrf_token)
   return redirect(auth_url)
 
 @site.route('/auth')
@@ -45,13 +46,13 @@ def auth():
   code = request.args.get('code')
 
   if not session_csrf_token or not csrf_token:
-    abort(400)
+    raise WebException('Missing CSRF token')
 
   if not code:
-    abort(400)
+    raise WebException('Missing authorization code')
 
   if csrf_token != session_csrf_token:
-    abort(400)
+    raise WebException('CSRF Token Mismatch')
 
   flow = OAuth2WebServerFlow(
     client_id=current_app.config['GOOGLE_API_CLIENT_ID'],
@@ -66,17 +67,17 @@ def auth():
 
   id_token = credentials.id_token
   if not validate_id_token(id_token):
-    abort(400)
+    raise WebException('Invalid ID Token')
 
   (headers, content) = http.request('https://www.googleapis.com/oauth2/v3/userinfo', 'GET')
 
   if headers['status'] != '200':
-    abort(500)
+    raise WebException('Unable to retrieve user info', 500)
 
   try:
     userinfo = json.loads(content)
   except ValueError:
-    abort(500)
+    raise WebException('Unable to parse user info', 500)
 
   email = string.lower(userinfo['email'])
 
@@ -94,7 +95,7 @@ def auth():
     user.save()
 
   if not user:
-    abort(500)
+    raise WebException('Unable to upsert user', 500)
 
   login_user(user)
 
@@ -129,7 +130,7 @@ def validate_id_token(id_token):
 @site.route('/logout')
 def logout():
   logout_user()
-  return redirect(url_for('site.index'))
+  return redirect(url_for('site.login'))
 
 @site.route('/humans.txt')
 def humans():
