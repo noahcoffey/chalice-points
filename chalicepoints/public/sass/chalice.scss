@@ -1,7 +1,6 @@
 /* chalice.scss */
 
 @import "settings";
-@import "chart";
 @import "compass/css3/box-shadow";
 
 $receive-color: #E33605;
@@ -156,7 +155,7 @@ $weight-heavy: 600;
     text-align: center;
     border: 1px solid #888;
 
-    @include single-box-shadow(#333, 5px, 5px, 10px);
+    @include box-shadow(5px 5px 10px #333);
 
     .amount {
       font-weight: $weight-heavy;
@@ -244,7 +243,7 @@ $weight-heavy: 600;
 
     line-height: 1.3;
 
-    @include single-box-shadow(#333, 5px, 5px, 10px);
+    @include box-shadow(5px 5px 10px #333);
 
     .date {
       font-style: italic;
@@ -268,30 +267,34 @@ $weight-heavy: 600;
 }
 
 .tabs {
-  .tab-box .tab-title {
-    border: {
-      style: solid;
-      width: 1px 0 1px 1px;
-      color: #cccccc;
-    }
+  .tab-box {
+    height: 57px;
 
-    z-index: 1;
-    background-color: #efefef;
-    margin: 0 -5px 0 0;
-    padding: 0.9375em;
-    display: inline-block;
-
-    color: #2BA6CB; 
-    text-decoration: none;
-    cursor: pointer;
-
-    &:last-child {
-      border-right: 1px solid #cccccc;
-    }
-
-    &.active {
-      border-bottom: 1px solid white;
-      background-color: white;
+    .tab-title {
+      border: {
+        style: solid;
+        width: 1px 0 1px 1px;
+        color: #cccccc;
+      }
+  
+      z-index: 1;
+      background-color: #efefef;
+      margin: 0 -5px 0 0;
+      padding: 0.9375em;
+      display: inline-block;
+  
+      color: #2BA6CB; 
+      text-decoration: none;
+      cursor: pointer;
+  
+      &:last-child {
+        border-right: 1px solid #cccccc;
+      }
+  
+      &.active {
+        border-bottom: 1px solid white;
+        background-color: white;
+      }
     }
   }
 
@@ -308,4 +311,45 @@ $weight-heavy: 600;
       display: block;
     }
   }
+}
+
+table.history {
+  width: 100%;
+
+  &.all {
+    .name {
+      width: 20%;
+    }
+  
+    .type {
+      width: 33%;
+    }
+  
+    .amount {
+      width: 10%;
+    }
+  
+    .time {
+      width: 17%;
+    }
+  }
+
+  &.source, &.target, &.type {
+    .name {
+      width: 80%;
+    }
+
+    .amount {
+      width: 20%;
+    }
+  }
+}
+
+.pagination {
+  margin-bottom: 0.5em;
+}
+
+.tabs .tab-box .tab-title {
+  min-width: 100px;
+  text-align: center;
 }
