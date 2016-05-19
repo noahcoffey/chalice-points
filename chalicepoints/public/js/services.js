@@ -4,6 +4,30 @@
     'ngResource',
     'chalicepoints.filters'
   ])
+  .constant('Types', {
+    'peer': 'Approach everyone as a peer, regardless of title',
+    'agile': 'Be agile and iterate',
+    'communication': 'Communicate Status',
+    'transparency': 'Default to transparency with each other',
+    'problemsolving': 'Get to work on solving problems',
+    'helpothers': 'Help others succeed',
+    'positivity': 'Inject positivity into all of your interactions',
+    'results': 'Results matter',
+    'growth': 'Seek growth',
+    'other': 'High Five'
+  })
+  .constant('TypeOrder', [
+    'peer',
+    'agile',
+    'communication',
+    'transparency',
+    'problemsolving',
+    'helpothers',
+    'positivity',
+    'results',
+    'growth',
+    'other'
+  ])
   .factory('Leaderboard', function($resource) {
       return $resource('/api/1.0/leaderboard/:type', {
           type: 'all'
@@ -26,8 +50,21 @@
         }
       });
   })
-  .factory('Winner', function($resource) {
-      return $resource('/api/1.0/winners', {});
+  .factory('History', function($resource) {
+    var History = $resource('/api/1.0/history/:type', {
+      type: '@type'
+    },{
+      query: {
+        method: 'POST'
+      }
+    });
+
+    History.load = function(type, params) {
+      var query = $.extend({'type': type}, params['common'], params[type])
+      return History.query(query).$promise;
+    };
+
+    return History;
   })
   .factory('Timeline', function($resource) {
       return $resource('/api/1.0/timeline', {});
