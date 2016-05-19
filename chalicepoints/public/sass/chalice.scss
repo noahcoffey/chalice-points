@@ -150,7 +150,7 @@ $weight-heavy: 600;
 .events {
   .event {
     padding: 10px;
-    margin: 20px inherit;
+    margin-top: 20px;
 
     text-align: center;
     border: 1px solid #888;
@@ -322,11 +322,11 @@ table.history {
     }
   
     .type {
-      width: 33%;
+      width: 31%;
     }
   
     .amount {
-      width: 10%;
+      width: 12%;
     }
   
     .time {
