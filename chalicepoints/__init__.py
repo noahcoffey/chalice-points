@@ -63,12 +63,8 @@ def load_user(id):
 def load_user_from_header(header):
     from chalicepoints.models.user import User
 
-    print header
-
     if header.startswith('Basic '):
         header = header.replace('Basic ', '', 1)
-
-    print header
 
     try:
         header = base64.b64decode(header)
@@ -77,7 +73,8 @@ def load_user_from_header(header):
 
     header = header.split(':')[0]
 
-    print header
+    if header == app.config['HIPCHAT_SECRET_KEY']:
+      return User()
 
     try:
         return User.get(User.api_key == header)

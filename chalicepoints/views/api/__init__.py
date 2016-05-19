@@ -418,3 +418,45 @@ def eventIdAction(id):
         return jsonify(success=1)
 
     abort(404)
+
+@api.route('/1.0/hipchat', methods=['POST'])
+@login_required
+def hipchatAction():
+  data = request.json
+  data.pop('id', None)
+  data.pop('user_id', None)
+  data.pop('mention_name', None)
+
+  if data['target'] == data['source']:
+    abort(403)
+
+  source = User()
+  try:
+    source = User.get(User.email == data['source'])
+  except DoesNotExist:
+    abort(403)
+
+  if source.disabled:
+    abort(403)
+
+  data['source'] = source.id
+
+  target = User()
+  try:
+    target = User.get(User.email == data['target'])
+  except DoesNotExist:
+    abort(403)
+
+  if target.disabled:
+    abort(403)
+
+  data['target'] = target.id
+
+  data['amount'] = max(min(current_user.max_points, int(data['amount'])), 1)
+
+  data['type'] = 'other'
+
+  event = Event(**data)
+  event.add()
+
+  return jsonify(success=1)
