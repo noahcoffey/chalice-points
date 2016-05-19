@@ -1,4 +1,4 @@
-import json
+import simplejson as json
 
 from flask.ext.login import UserMixin, current_user
 from peewee import *
@@ -18,8 +18,10 @@ class User(BaseModel, UserMixin):
 
     def to_array(self, for_public=False):
         data = super(User, self).to_array()
+
         if for_public:
             data.pop('url', None)
+            data.pop('api_key', None)
 
         return data
 
@@ -54,7 +56,7 @@ class User(BaseModel, UserMixin):
 
         return timeline
 
-    def get_points(self, week=False):
+    def get_points(self, type='all'):
         from chalicepoints.models.event import Event
 
         given_query = Event.select(fn.Sum(Event.amount).alias('total'))
@@ -72,6 +74,13 @@ class User(BaseModel, UserMixin):
 
             last_delta = timedelta(days=6 - dow)
             last_day = now + last_delta
+
+            given_query = given_query.where(Event.created_at >= first_day, Event.created_at <= last_day)
+            received_query = received_query.where(Event.created_at >= first_day, Event.created_at <= last_day)
+        elif type == 'month':
+            now = datetime.now().date()
+            first_day = now.replace(day = 1)
+            last_day = now.replace(day = monthrange(now.year, now.month)[1])
 
             given_query = given_query.where(Event.created_at >= first_day, Event.created_at <= last_day)
             received_query = received_query.where(Event.created_at >= first_day, Event.created_at <= last_day)
