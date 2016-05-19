@@ -5,3 +5,4 @@ chalicepoints/public/bower_components
 *.swp
 *.sass-cache*
 node_modules
+Gemfile.lock
