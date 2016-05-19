@@ -111,7 +111,7 @@
 
 .events .event {
   padding: 10px;
-  margin: 20px inherit;
+  margin-top: 20px;
   text-align: center;
   border: 1px solid #888;
   -moz-box-shadow: 5px 5px 10px #333;
@@ -247,10 +247,10 @@ table.history.all .name {
   width: 20%;
 }
 table.history.all .type {
-  width: 33%;
+  width: 31%;
 }
 table.history.all .amount {
-  width: 10%;
+  width: 12%;
 }
 table.history.all .time {
   width: 17%;
