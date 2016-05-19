@@ -1,6 +1,8 @@
 venv
 chalicepoints/config.py
+chalicepoints/public/bower_components
 *.pyc
 *.swp
 *.sass-cache*
 node_modules
+Gemfile.lock

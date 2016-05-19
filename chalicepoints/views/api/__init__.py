@@ -1,15 +1,16 @@
 import os, sys
-import json
+import simplejson as json
 from datetime import datetime, timedelta, time
 import urllib, urllib2
 
-from flask import Blueprint, abort, request, jsonify, Response
+from flask import Blueprint, abort, request, jsonify, Response, current_app
 from flask.ext.login import login_required, current_user
 
 from chalicepoints.models.user import User, UserModelJSONEncoder as Encoder
 from chalicepoints.models.event import Event
 
 from peewee import *
+from playhouse.shortcuts import *
 
 api = Blueprint('api', __name__, url_prefix='/api')
 
@@ -19,89 +20,246 @@ def timeline():
     timeline = Event.get_timeline()
     return Response(json.dumps(timeline, cls=Encoder), mimetype='application/json')
 
-@api.route('/1.0/winners/<week>', methods=['GET'])
+@api.route('/1.0/history/all', methods=['POST'])
 @login_required
-def winners(week=None):
-    totals = {}
-    leaders = {}
-    highest = {}
+def history_all():
+    query = request.json
 
-    current_week = datetime.now().strftime('%U %y 0')
-    if week is not None:
-        current_week = time.strptime(week, '%Y-%m-%d').strftime('%U %y 0')
+    Source = User.alias()
+    Target = User.alias()
 
-    current_date = datetime.strptime(current_week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%S')
+    history = Event.select(
+      Event.id, Event.source, Event.target, Event.type, Event.amount, Event.created_at, Source.name.alias('source_name'), Target.name.alias('target_name')
+    ).join(
+      Source, on=(Event.source == Source.id)
+    ).switch(Event).join(
+      Target, on=(Event.target == Target.id)
+    ).switch(Event)
 
-    q = Event.select()
-    for event in q:
-        week = event.created_at.strftime('%U %y 0')
-        date = datetime.strptime(week, '%U %y %w').strftime('%Y-%m-%dT%H:%M:%S')
+    # Process Query Parameters
+    if 'minDate' in query and query['minDate'] is not None:
+      history = history.where(fn.Date(Event.created_at) >= query['minDate'])
 
-        if not date in totals:
-            totals[date] = {}
+    if 'maxDate' in query and query['maxDate'] is not None:
+      history = history.where(fn.Date(Event.created_at) <= query['maxDate'])
 
-        if not event.source.id in totals[date]:
-            totals[date][event.source.id] = event.source
-            totals[date][event.source.id].given = 0
-            totals[date][event.source.id].received = 0
+    # Order By
+    order_by = Event.created_at.desc()
 
-        if not event.target.id in totals[date]:
-            totals[date][event.target.id] = event.target
-            totals[date][event.target.id].given = 0
-            totals[date][event.target.id].received = 0
+    if 'sort' in query and query['sort'] is not None:
+      field = query['sort']['field'] if 'field' in query['sort'] else 'created_at'
 
-        totals[date][event.source.id].given += event.amount
-        totals[date][event.target.id].received += event.amount
+      if field == 'source':
+        field = 'source_name'
+      elif field == 'target':
+        field = 'target_name'
 
-    for date in totals:
-        leaders[date] = {
-            'date': date,
-            'current': 0,
-            'given': [],
-            'received': [],
-        }
+      order_by = SQL('%s %s' % (field, query['sort']['direction']))
 
-        if current_date == date:
-            leaders[date]['current'] = 1
+    history = history.order_by(order_by)
 
-        highest[date] = {
-            'given': 0,
-            'received': 0,
-        }
+    # Get Result Count
+    count = history.count()
 
-        for person in totals[date]:
-            if totals[date][person].given > highest[date]['given']:
-                leaders[date]['given'] = [{
-                    'user': totals[date][person],
-                    'amount': totals[date][person].given
-                }]
+    # Paginate
+    page = 1
+    limit = 10
 
-                highest[date]['given'] = totals[date][person].given
-            elif totals[date][person].given == highest[date]['given']:
-                leaders[date]['given'].append({
-                    'user': totals[date][person],
-                    'amount': totals[date][person].given
-                })
+    if 'page' in query and query['page'] is not None:
+      page = query['page']
 
-            if totals[date][person].received > highest[date]['received']:
-                leaders[date]['received'] = [{
-                    'user': totals[date][person],
-                    'amount': totals[date][person].received
-                }]
+    if 'limit' in query and query['limit'] is not None:
+      limit = query['limit']
 
-                highest[date]['received'] = totals[date][person].received
-            elif totals[date][person].received == highest[date]['received']:
-                leaders[date]['received'].append({
-                    'user': totals[date][person],
-                    'amount': totals[date][person].received
-                })
+    history = history.paginate(page, limit)
 
-    return Response(json.dumps(leaders.values(), cls=Encoder), mimetype='application/json')
+    # Query and return as dictionary
+    history = history.dicts()
+
+    # Process results
+    events = []
+    for event in history:
+      event['type'] = event['type'] if event['type'] != '' else 'other'
+      events.append(event)
+
+    result = {
+      'history': events,
+      'count': count
+    }
+
+    return Response(json.dumps(result, cls=Encoder, use_decimal=True), mimetype='application/json')
+
+@api.route('/1.0/history/source', methods=['POST'])
+@login_required
+def history_by_source():
+    query = request.json
+
+    Source = User.alias()
+    Target = User.alias()
+
+    history = Event.select(
+      Event.id, Event.source, Source.name.alias('source_name'), fn.Sum(Event.amount).alias('amount')
+    ).join(
+      Source, on=(Event.source == Source.id)
+    ).switch(Event)
+
+    # Group by Giver
+    history = history.group_by(Event.source)
+
+    # Process Query Parameters
+    if 'minDate' in query and query['minDate'] is not None:
+      history = history.where(fn.Date(Event.created_at) >= query['minDate'])
+
+    if 'maxDate' in query and query['maxDate'] is not None:
+      history = history.where(fn.Date(Event.created_at) <= query['maxDate'])
+
+    # Order By
+    history = history.order_by(SQL('amount DESC'))
+
+    # Get Result Count
+    count = history.count()
+
+    # Paginate
+    page = 1
+    limit = 5
+
+    if 'page' in query and query['page'] is not None:
+      page = query['page']
+
+    if 'limit' in query and query['limit'] is not None:
+      limit = query['limit']
+
+    history = history.paginate(page, limit)
+
+    # Query and return as dictionary
+    history = history.dicts()
+
+    # Process results
+    events = []
+    for event in history:
+      events.append(event)
+
+    result = {
+      'history': events,
+      'count': count
+    }
+
+    return Response(json.dumps(result, cls=Encoder, use_decimal=True), mimetype='application/json')
+
+@api.route('/1.0/history/target', methods=['POST'])
+@login_required
+def history_by_target():
+    query = request.json
+
+    Source = User.alias()
+    Target = User.alias()
+
+    history = Event.select(
+      Event.id, Event.target, Target.name.alias('target_name'), fn.Sum(Event.amount).alias('amount')
+    ).join(
+      Target, on=(Event.target == Target.id)
+    ).switch(Event)
+
+    # Group by Target
+    history = history.group_by(Event.target)
+
+    # Process Query Parameters
+    if 'minDate' in query and query['minDate'] is not None:
+      history = history.where(fn.Date(Event.created_at) >= query['minDate'])
+
+    if 'maxDate' in query and query['maxDate'] is not None:
+      history = history.where(fn.Date(Event.created_at) <= query['maxDate'])
+
+    # Order By
+    history = history.order_by(SQL('amount DESC'))
+
+    # Get Result Count
+    count = history.count()
+
+    # Paginate
+    page = 1
+    limit = 5
+
+    if 'page' in query and query['page'] is not None:
+      page = query['page']
+
+    if 'limit' in query and query['limit'] is not None:
+      limit = query['limit']
+
+    history = history.paginate(page, limit)
+
+    # Query and return as dictionary
+    history = history.dicts()
+
+    # Process results
+    events = []
+    for event in history:
+      events.append(event)
+
+    result = {
+      'history': events,
+      'count': count
+    }
+
+    return Response(json.dumps(result, cls=Encoder, use_decimal=True), mimetype='application/json')
+
+@api.route('/1.0/history/type', methods=['POST'])
+@login_required
+def history_by_type():
+    query = request.json
+
+    history = Event.select(
+      Event.id, Event.type, fn.Sum(Event.amount).alias('amount')
+    )
+
+    # Group by Type
+    history = history.group_by(Event.type)
+
+    # Process Query Parameters
+    if 'minDate' in query and query['minDate'] is not None:
+      history = history.where(fn.Date(Event.created_at) >= query['minDate'])
+
+    if 'maxDate' in query and query['maxDate'] is not None:
+      history = history.where(fn.Date(Event.created_at) <= query['maxDate'])
+
+    # Order By
+    history = history.order_by(SQL('amount DESC'))
+
+    # Get Result Count
+    count = history.count()
+
+    # Paginate
+    page = 1
+    limit = 5
+
+    if 'page' in query and query['page'] is not None:
+      page = query['page']
+
+    if 'limit' in query and query['limit'] is not None:
+      limit = query['limit']
+
+    history = history.paginate(page, limit)
+
+    # Query and return as dictionary
+    history = history.dicts()
+
+    # Process results
+    events = []
+    for event in history:
+      event['type'] = event['type'] if event['type'] != '' else 'other'
+      events.append(event)
+
+    result = {
+      'history': events,
+      'count': count
+    }
+
+    return Response(json.dumps(result, cls=Encoder, use_decimal=True), mimetype='application/json')
 
 @api.route('/1.0/leaderboard/<type>', methods=['GET'])
 @login_required
 def leaderboard(type):
-    points = Event.get_points(type == 'week')
+    points = Event.get_points(type)
 
     given = []
     received = []
@@ -184,46 +342,6 @@ def userNameAction(id):
 
         return jsonify(success=1)
 
-@api.route('/1.0/matrix', methods=['GET'])
-@login_required
-def matrixAction():
-    return matrixModeAction('received')
-
-@api.route('/1.0/matrix/<mode>', methods=['GET'])
-@login_required
-def matrixModeAction(mode):
-    users = User.get_users()
-    matrix = {}
-
-    q = Event.select()
-    for event in q:
-        user_one = event.source.id
-        user_two = event.target.id
-
-        if mode == 'received':
-            user_one = event.target.id
-            user_two = event.source.id
-
-        if user_one not in matrix:
-            matrix[user_one] = {}
-
-        if user_two not in matrix[user_one]:
-            matrix[user_one][user_two] = 0
-
-        matrix[user_one][user_two] += event.amount
-
-    entries = []
-    for user in users:
-        entry = []
-        for other_user in users:
-            value = 0
-            if user.id in matrix and other_user.id in matrix[user.id]:
-                value = matrix[user.id][other_user.id]
-            entry.append(value)
-        entries.append(entry)
-
-    return Response(json.dumps(entries, cls=Encoder), mimetype='application/json')
-
 @api.route('/1.0/event', methods=['GET', 'POST'])
 @login_required
 def eventAction():
@@ -300,3 +418,45 @@ def eventIdAction(id):
         return jsonify(success=1)
 
     abort(404)
+
+@api.route('/1.0/hipchat', methods=['POST'])
+@login_required
+def hipchatAction():
+  data = request.json
+  data.pop('id', None)
+  data.pop('user_id', None)
+  data.pop('mention_name', None)
+
+  if data['target'] == data['source']:
+    abort(403)
+
+  source = User()
+  try:
+    source = User.get(User.email == data['source'])
+  except DoesNotExist:
+    abort(403)
+
+  if source.disabled:
+    abort(403)
+
+  data['source'] = source.id
+
+  target = User()
+  try:
+    target = User.get(User.email == data['target'])
+  except DoesNotExist:
+    abort(403)
+
+  if target.disabled:
+    abort(403)
+
+  data['target'] = target.id
+
+  data['amount'] = max(min(current_user.max_points, int(data['amount'])), 1)
+
+  data['type'] = 'other'
+
+  event = Event(**data)
+  event.add()
+
+  return jsonify(success=1)

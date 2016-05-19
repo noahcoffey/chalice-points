@@ -7,6 +7,7 @@
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chalice.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/jquery-ui/themes/base/jquery-ui.min.css') }}" />
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
   </head>
   <body>
@@ -27,9 +28,7 @@
               </ul>
             </li>
             <li><a href="/leaderboard">Leaderboard</a></li>
-            <li><a href="/chart">Chart</a></li>
-            <li><a href="/winners">Winners</a></li>
-            <li><a href="/timeline">Timeline</a></li>
+            <li><a href="/history">History</a></li>
             <li><a ng:href="/user/{{ current_user.id }}">Profile</a></li>
             <li><a href="/logout">Logout</a></li>
           </ul>
@@ -39,12 +38,14 @@
 
     {% block body %}{% endblock %}
 
+    <script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/jquery-ui/jquery-ui.min.js') }}"></script>
     <script src="{{ url_for('static', filename='bower_components/modernizr/modernizr.js') }}"></script>
     <script src="{{ url_for('static', filename='bower_components/angular/angular.js') }}"></script>
     <script src="{{ url_for('static', filename='bower_components/angular-route/angular-route.min.js') }}"></script>
     <script src="{{ url_for('static', filename='bower_components/angular-resource/angular-resource.min.js') }}"></script>
     <script src="{{ url_for('static', filename='bower_components/angular-cookies/angular-cookies.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
+
     <script src="{{ url_for('static', filename='bower_components/momentjs/min/moment.min.js') }}"></script>
     <script src="{{ url_for('static', filename='bower_components/foundation/js/foundation.min.js') }}"></script>
 

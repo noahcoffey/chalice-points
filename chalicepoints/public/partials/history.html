@@ -1,0 +1,224 @@
+<div>
+  <div class="row">
+    <div class="small-12 text-center columns"><h2 class="pagetitle">History</h2></div>
+  </div>
+  <div class="row">
+    <div class="small-6 columns">
+      <div class="row collapse">
+        <div class="small-3 columns">
+          <span class="prefix">From</span>
+        </div>
+        <div class="small-9 columns">
+          <input type="text" ng-model="params.common.minDate" datepicker>
+        </div>
+      </div>
+    </div>
+    <div class="small-6 columns">
+      <div class="row collapse">
+        <div class="small-3 columns">
+          <span class="prefix">To</span>
+        </div>
+        <div class="small-9 columns">
+          <input type="text" ng-model="params.common.maxDate" datepicker>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="small-12 columns">
+      <div class="tabs">
+        <div class="tab-box">
+          <p class="tab-title" ng-class="{active: selected.all}" ng-click="select('all')">All</p>
+          <p class="tab-title" ng-class="{active: selected.source}" ng-click="select('source')">By Giver</p>
+          <p class="tab-title" ng-class="{active: selected.target}" ng-click="select('target')">By Receiver</p>
+          <p class="tab-title" ng-class="{active: selected.type}" ng-click="select('type')">By Type</p>
+        </div>
+        <div class="data-content active" ng-class="{active: selected.all}">
+          <div class="history row">
+            <div class="small-12 columns">
+              <table class="history all">
+                <thead>
+                  <tr>
+                    <th class="name">
+                      <a href="" ng-click="toggleSort('all', 'source');">
+                        Giver
+                        <i ng-if="params.all.sort.field == 'source' && params.all.sort.direction == 'ASC'" class="fa fa-chevron-up fa-fw"></i>
+                        <i ng-if="params.all.sort.field == 'source' && params.all.sort.direction == 'DESC'" class="fa fa-chevron-down fa-fw"></i>
+                      </a>
+                    </th>
+                    <th class="name">
+                      <a href="" ng-click="toggleSort('all', 'target');">
+                        Receiver
+                        <i ng-if="params.all.sort.field == 'target' && params.all.sort.direction == 'ASC'" class="fa fa-chevron-up fa-fw"></i>
+                        <i ng-if="params.all.sort.field == 'target' && params.all.sort.direction == 'DESC'" class="fa fa-chevron-down fa-fw"></i>
+                      </a>
+                    </th>
+                    <th class="type">
+                      <a href="" ng-click="toggleSort('all', 'type');">
+                        Type
+                        <i ng-if="params.all.sort.field == 'type' && params.all.sort.direction == 'ASC'" class="fa fa-chevron-up fa-fw"></i>
+                        <i ng-if="params.all.sort.field == 'type' && params.all.sort.direction == 'DESC'" class="fa fa-chevron-down fa-fw"></i>
+                      </a>
+                    </th>
+                    <th class="amount">
+                      <a href="" ng-click="toggleSort('all', 'amount');">
+                        Amount
+                        <i ng-if="params.all.sort.field == 'amount' && params.all.sort.direction == 'ASC'" class="fa fa-chevron-up fa-fw"></i>
+                        <i ng-if="params.all.sort.field == 'amount' && params.all.sort.direction == 'DESC'" class="fa fa-chevron-down fa-fw"></i>
+                      </a>
+                    </th>
+                    <th class="time">
+                      <a href="" ng-click="toggleSort('all', 'created_at');">
+                        Date
+                        <i ng-if="params.all.sort.field == 'created_at' && params.all.sort.direction == 'ASC'" class="fa fa-chevron-up fa-fw"></i>
+                        <i ng-if="params.all.sort.field == 'created_at' && params.all.sort.direction == 'DESC'" class="fa fa-chevron-down fa-fw"></i>
+                      </a>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="event in history.all">
+                    <td class="name"><a href="/user/{{ event.source }}">{{ event.source_name }}</a></td>
+                    <td class="name"><a href="/user/{{ event.target }}">{{ event.target_name }}</a></td>
+                    <td class="type">{{ types[event.type] }}</td>
+                    <td class="amount text-center">{{ event.amount }}</td>
+                    <td class="time">{{ event.created_at | dateMoment:'M/d/yyyy h:mma' }}</td>
+                  </tr>
+                </tbody>
+                <tfoot ng-if="pages.all.total > 1">
+                  <td colspan="5" class="pagination-centered">
+                    <ul class="pagination">
+                      <li class="arrow" ng-class="{'unavailable': params.all.page == 1}">
+                        <a href="" ng-click="prevPage('all')">&laquo;</a>
+                      </li>
+                      <li ng-class="{'current': params.all.page == 1}">
+                        <a href="" ng-click="goToPage('all', 1)">1</a>
+                      </li>
+                      <li class="unavailable" data-ng-if="params.all.page > 3 && pages.all.total > 5">&hellip;</li>
+                      <li ng-repeat="page in range(pages.all.start, pages.all.end)" ng-class="{'current': page == params.all.page}" ng-if="pages.all.total > 2">
+                        <a href="" ng-click="goToPage('all', page)">{{ page }}</a>
+                      </li>
+                      <li class="unavailable" data-ng-if="pages.all.total - params.all.page > 2 && pages.all.total > 5">&hellip;</li>
+                      <li ng-class="{'current': params.all.page == pages.all.total}">
+                        <a href="" ng-click="goToPage('all', pages.all.total)">{{ pages.all.total }}</a>
+                      </li>
+                      <li class="arrow" ng-class="{'unavailable': params.all.page == pages.all.total}">
+                        <a href="" ng-click="nextPage('all')">&raquo;</a>
+                      <li>
+                    </ul>
+                  </td>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="data-content" ng-class="{active: selected.source}">
+          <div class="history row">
+            <div class="small-12 columns">
+              <table class="history source">
+                <thead>
+                  <tr>
+                    <th class="name">Giver</th>
+                    <th class="amount">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="event in history.source">
+                    <td class="name"><a href="/user/{{ event.source }}">{{ event.source_name }}</a></td>
+                    <td class="amount text-center">{{ event.amount }}</td>
+                  </tr>
+                </tbody>
+                <tfoot ng-if="pages.source.total > 1">
+                  <td colspan="5" class="pagination-centered">
+                    <ul class="pagination">
+                      <li class="arrow" ng-class="{'unavailable': params.source.page == 1}">
+                        <a href="" ng-click="prevPage('source')">&laquo;</a>
+                      </li>
+                      <li ng-class="{'current': params.source.page == 1}">
+                        <a href="" ng-click="goToPage('source', 1)">1</a>
+                      </li>
+                      <li class="unavailable" data-ng-if="params.source.page > 3 && pages.source.total > 5">&hellip;</li>
+                      <li ng-repeat="page in range(pages.source.start, pages.source.end)" ng-class="{'current': page == params.source.page}" ng-if="pages.source.total > 2">
+                        <a href="" ng-click="goToPage('source', page)">{{ page }}</a>
+                      </li>
+                      <li class="unavailable" data-ng-if="pages.source.total - params.source.page > 2 && pages.source.total > 5">&hellip;</li>
+                      <li ng-class="{'current': params.source.page == pages.source.total}">
+                        <a href="" ng-click="goToPage('source', pages.source.total)">{{ pages.source.total }}</a>
+                      </li>
+                      <li class="arrow" ng-class="{'unavailable': params.source.page == pages.source.total}">
+                        <a href="" ng-click="nextPage('source')">&raquo;</a>
+                      <li>
+                    </ul>
+                  </td>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="data-content" ng-class="{active: selected.target}">
+          <div class="history row">
+            <div class="small-12 columns">
+              <table class="history target">
+                <thead>
+                  <tr>
+                    <th class="name">Receiver</th>
+                    <th class="amount">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="event in history.target">
+                    <td class="name"><a href="/user/{{ event.target }}">{{ event.target_name }}</a></td>
+                    <td class="amount text-center">{{ event.amount }}</td>
+                  </tr>
+                </tbody>
+                <tfoot ng-if="pages.target.total > 1">
+                  <td colspan="5" class="pagination-centered">
+                    <ul class="pagination">
+                      <li class="arrow" ng-class="{'unavailable': params.target.page == 1}">
+                        <a href="" ng-click="prevPage('target')">&laquo;</a>
+                      </li>
+                      <li ng-class="{'current': params.target.page == 1}">
+                        <a href="" ng-click="goToPage('target', 1)">1</a>
+                      </li>
+                      <li class="unavailable" data-ng-if="params.target.page > 3 && pages.target.total > 5">&hellip;</li>
+                      <li ng-repeat="page in range(pages.target.start, pages.target.end)" ng-class="{'current': page == params.target.page}" ng-if="pages.target.total > 2">
+                        <a href="" ng-click="goToPage('target', page)">{{ page }}</a>
+                      </li>
+                      <li class="unavailable" data-ng-if="pages.target.total - params.target.page > 2 && pages.target.total > 5">&hellip;</li>
+                      <li ng-class="{'current': params.target.page == pages.target.total}">
+                        <a href="" ng-click="goToPage('target', pages.target.total)">{{ pages.target.total }}</a>
+                      </li>
+                      <li class="arrow" ng-class="{'unavailable': params.target.page == pages.target.total}">
+                        <a href="" ng-click="nextPage('target')">&raquo;</a>
+                      <li>
+                    </ul>
+                  </td>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="data-content" ng-class="{active: selected.type}">
+          <div class="history row">
+            <div class="small-12 columns">
+              <table class="history type">
+                <thead>
+                  <tr>
+                    <th class="type">Type</th>
+                    <th class="amount">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="event in history.type">
+                    <td class="type">{{ types[event.type] }}</td>
+                    <td class="amount text-center">{{ event.amount }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

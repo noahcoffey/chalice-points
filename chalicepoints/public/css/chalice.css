@@ -1,48 +1,25 @@
 /* chalice.scss */
-/* _chart.scss */
-#circle circle {
-  fill: none;
-  pointer-events: all;
-}
-#circle:hover path.fade {
-  display: none;
-}
-
-.group path {
-  fill-opacity: 0.5;
-}
-
-path.chord {
-  stroke: #000;
-  stroke-width: 0.25px;
-}
-
-.chord svg {
-  margin: 0 auto 50px auto;
-  display: block;
-}
-
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
 }
 
 .receive {
-  color: #e33605;
+  color: #E33605;
 }
 
 .give {
-  color: #5da423;
+  color: #5DA423;
 }
 
 .edit a {
-  color: #5da423;
+  color: #5DA423;
 }
 .edit a:hover {
   color: #457a1a;
 }
 
 .delete a {
-  color: #e33605;
+  color: #E33605;
 }
 .delete a:hover {
   color: #b12a04;
@@ -137,9 +114,9 @@ path.chord {
   margin: 20px inherit;
   text-align: center;
   border: 1px solid #888;
-  -webkit-box-shadow: 5px 5px 10px #333333;
-  -moz-box-shadow: 5px 5px 10px #333333;
-  box-shadow: 5px 5px 10px #333333;
+  -moz-box-shadow: 5px 5px 10px #333;
+  -webkit-box-shadow: 5px 5px 10px #333;
+  box-shadow: 5px 5px 10px #333;
 }
 .events .event .amount {
   font-weight: 600;
@@ -197,9 +174,9 @@ path.chord {
   overflow: hidden;
   position: absolute;
   z-index: 10;
-  -webkit-box-shadow: 0 -5px 0 white, 0 0 0 1px #dddddd;
-  -moz-box-shadow: 0 -5px 0 white, 0 0 0 1px #dddddd;
-  box-shadow: 0 -5px 0 white, 0 0 0 1px #dddddd;
+  -moz-box-shadow: 0 -5px 0 #fff, 0 0 0 1px #ddd;
+  -webkit-box-shadow: 0 -5px 0 #fff, 0 0 0 1px #ddd;
+  box-shadow: 0 -5px 0 #fff, 0 0 0 1px #ddd;
 }
 
 .winners .winner {
@@ -208,9 +185,9 @@ path.chord {
   text-align: center;
   border: 1px solid #888;
   line-height: 1.3;
-  -webkit-box-shadow: 5px 5px 10px #333333;
-  -moz-box-shadow: 5px 5px 10px #333333;
-  box-shadow: 5px 5px 10px #333333;
+  -moz-box-shadow: 5px 5px 10px #333;
+  -webkit-box-shadow: 5px 5px 10px #333;
+  box-shadow: 5px 5px 10px #333;
 }
 .winners .winner .date {
   font-style: italic;
@@ -228,6 +205,9 @@ path.chord {
   text-align: center;
 }
 
+.tabs .tab-box {
+  height: 57px;
+}
 .tabs .tab-box .tab-title {
   border-style: solid;
   border-width: 1px 0 1px 1px;
@@ -258,4 +238,35 @@ path.chord {
 }
 .tabs .data-content.active {
   display: block;
+}
+
+table.history {
+  width: 100%;
+}
+table.history.all .name {
+  width: 20%;
+}
+table.history.all .type {
+  width: 33%;
+}
+table.history.all .amount {
+  width: 10%;
+}
+table.history.all .time {
+  width: 17%;
+}
+table.history.source .name, table.history.target .name, table.history.type .name {
+  width: 80%;
+}
+table.history.source .amount, table.history.target .amount, table.history.type .amount {
+  width: 20%;
+}
+
+.pagination {
+  margin-bottom: 0.5em;
+}
+
+.tabs .tab-box .tab-title {
+  min-width: 100px;
+  text-align: center;
 }

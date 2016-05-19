@@ -1,17 +1,22 @@
 'use strict';
 
-var LeaderboardCtrl = ['$scope', 'flash', 'users', 'leaderboardWeek', 'leaderboardAll', 'CPEvent', 'Leaderboard',
-  function($scope, flash, users, leaderboardWeek, leaderboardAll, CPEvent, Leaderboard) {
+var LeaderboardCtrl = ['$scope', 'flash', 'users', 'leaderboardWeek', 'leaderboardMonth', 'leaderboardAll', 'CPEvent', 'Leaderboard', 'Types', 'TypeOrder',
+  function($scope, flash, users, leaderboardWeek, leaderboardMonth, leaderboardAll, CPEvent, Leaderboard, Types, TypeOrder) {
 
   $scope.leaderboard = {
     week: leaderboardWeek,
+    month: leaderboardMonth,
     all: leaderboardAll
   };
 
   $scope.users = users;
 
+  $scope.types = Types;
+  $scope.typeOrder = TypeOrder;
+
   $scope.selected = {
     week: true,
+    month: false,
     all: false
   };
 
@@ -19,6 +24,7 @@ var LeaderboardCtrl = ['$scope', 'flash', 'users', 'leaderboardWeek', 'leaderboa
     for (var ctype in $scope.selected) {
       $scope.selected[ctype] = false;
     }
+
     $scope.selected[type] = true;
   };
 
@@ -35,7 +41,8 @@ var LeaderboardCtrl = ['$scope', 'flash', 'users', 'leaderboardWeek', 'leaderboa
     var cpEvent = new CPEvent({
       target: $scope.pointsTarget,
       amount: $scope.pointsAmount,
-      message: $scope.pointsMessage
+      message: $scope.pointsMessage,
+      type: $scope.pointsType
     });
 
     cpEvent.$save(function(data) {
@@ -44,11 +51,18 @@ var LeaderboardCtrl = ['$scope', 'flash', 'users', 'leaderboardWeek', 'leaderboa
       $scope.pointsAmount = 1;
       $scope.pointsTarget = '';
       $scope.pointsMessage = '';
+      $scope.pointsType = '';
 
       var weekResult = Leaderboard.get({
         type: 'week'
       }, function() {
         $scope.leaderboard.week = weekResult;
+      });
+
+      var monthResult = Leaderboard.get({
+        type: 'month'
+      }, function() {
+        $scope.leaderboard.month = monthResult;
       });
 
       var allResult = Leaderboard.get({
@@ -65,6 +79,15 @@ LeaderboardCtrl.resolve = {
     var deferred = $q.defer();
     var res = Leaderboard.get({
       type: 'week'
+    }, function() {
+      deferred.resolve(res);
+    });
+    return deferred.promise;
+  },
+  leaderboardMonth: function($q, Leaderboard) {
+    var deferred = $q.defer();
+    var res = Leaderboard.get({
+      type: 'month'
     }, function() {
       deferred.resolve(res);
     });
@@ -94,25 +117,181 @@ LeaderboardCtrl.resolve = {
   }
 };
 
-var ChartCtrl = ['$scope', '$routeParams', function($scope, $routeParams) {
-  $scope.mode = $routeParams.mode ? $routeParams.mode.toLowerCase() : 'received';
-  ChalicePoints.Chord($scope.mode);
-}];
+var HistoryCtrl = ['$scope', 'History', 'Types', function($scope, History, Types) {
+  var loadHistory = function(type) {
+    History.load(type, $scope.params).then(function(result) {
+      if (!result || !result.history || !('count' in result)) {
+        // Error
+        return false;
+      }
 
-var WinnersCtrl = ['$scope', 'winners', function($scope, winners) {
-  $scope.winners = winners;
-}];
+      $scope.history[type] = result.history;
+      $scope.pages[type].total = Math.ceil(result.count / $scope.params[type].limit);
 
-WinnersCtrl.resolve = {
-  winners: function($q, Winner, $route) {
-    var deferred = $q.defer();
-    var res = Winner.query(function() {
-      deferred.resolve(res);
+      if ($scope.pages[type].total <= 5) {
+        $scope.pages[type].start = 2;
+        $scope.pages[type].end = $scope.pages[type].total - 1;
+      } else {
+        $scope.pages[type].start = Math.max(2, $scope.params[type].page - 1);
+        $scope.pages[type].end = Math.min($scope.pages[type].total - 1, $scope.params[type].page + 1);
+      }
     });
+  };
 
-    return deferred.promise;
-  }
-};
+  $scope.history = {
+    all: [],
+    source: [],
+    target: [],
+    type: []
+  };
+
+  $scope.pages = {
+    all: {
+      total: 1,
+      start: 1,
+      end: 1
+    },
+    source: {
+      total: 1,
+      start: 1,
+      end: 1
+    },
+    target: {
+      total: 1,
+      start: 1,
+      end: 1
+    },
+    type: {
+      total: 1,
+      start: 1,
+      end: 1
+    }
+  };
+
+  $scope.selected = {
+    all: true,
+    source: false,
+    target: false,
+    type: false
+  };
+
+  $scope.select = function(type) {
+    for (var ctype in $scope.selected) {
+      $scope.selected[ctype] = false;
+    }
+
+    $scope.selected[type] = true;
+  };
+
+  $scope.range = function(start, end, step) {
+    if (typeof end == 'undefined') {
+      end = start;
+      start = 1;
+    }
+
+    step = typeof step == 'undefined' ? 1 : step;
+
+    var result = [];
+
+    for (var i = start; i <= end; i += step) { 
+      result.push(i);
+    }
+
+    console.log(start, end, step, result);
+
+    return result;
+  };
+
+  $scope.types = Types;
+
+  var minDate = moment().startOf('month');
+  var maxDate = moment().endOf('month');
+
+  $scope.params = {
+    common: {
+      minDate: minDate.format('YYYY-MM-DD'),
+      maxDate: maxDate.format('YYYY-MM-DD'),
+    },
+    all: {
+      sort: {
+        direction: 'DESC',
+        field: 'created_at'
+      },
+      page: 1,
+      limit: 10
+    },
+    source: {
+      page: 1,
+      limit: 10
+    },
+    target: {
+      page: 1,
+      limit: 10 
+    },
+    type: {
+      page: 1,
+      limit: 10 
+    }
+  };
+
+  loadHistory('all');
+  loadHistory('source');
+  loadHistory('target');
+  loadHistory('type');
+
+  $scope.$watch('params.common', function(newVal, oldVal) {
+    if (newVal === oldVal) {
+      return;
+    }
+
+    if (!newVal) {
+      return;
+    }
+
+    for (var type in $scope.history) {
+      $scope.params[type].page = 1;
+      loadHistory(type);
+    }
+  }, true);
+
+  $scope.prevPage = function(type) {
+    if ($scope.params[type].page == 1) {
+      return;
+    }
+
+    $scope.params[type].page--;
+    loadHistory(type);
+  };
+
+  $scope.nextPage = function(type) {
+    if ($scope.params[type].page == $scope.pages[type].total) {
+      return;
+    }
+
+    $scope.params[type].page++;
+    loadHistory(type);
+  };
+
+  $scope.goToPage = function(type, page) {
+    if (page < 1 || page > $scope.pages[type]) {
+      return;
+    }
+
+    $scope.params[type].page = page;
+    loadHistory(type);
+  };
+
+  $scope.toggleSort = function(type, field) {
+    if ($scope.params[type].sort.field == field) {
+      $scope.params[type].sort.direction = $scope.params[type].sort.direction == 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      $scope.params[type].sort.field = field;
+      $scope.params[type].sort.direction = 'ASC';
+    }
+
+    loadHistory(type);
+  };
+}];
 
 var TimelineCtrl = ['$scope', 'timeline', function($scope, timeline) {
   $scope.timeline = timeline;

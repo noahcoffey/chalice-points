@@ -1,6 +1,8 @@
 import os, string
-import json
+import simplejson as json
+from flask import current_app
 from peewee import *
+from playhouse.shortcuts import *
 from chalicepoints import db
 import datetime
 
@@ -22,10 +24,7 @@ class BaseModel(db.Model):
         return res
 
     def to_array(self):
-        props = dict((key, getattr(self, key)) for key in dir(self) if key not in dir(self.__class__) and not key.startswith('_'))
-        data = self.__dict__.get('_data')
-
-        return dict(data.items() + props.items())
+        return model_to_dict(self)
 
     def to_json(self):
         return json.dumps(self.to_array(), cls=BaseModelJSONEncoder)
