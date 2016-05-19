@@ -1,7 +1,6 @@
 (function() {
   'use strict';
 
-
   $(document).foundation();
 
   var routeConfig = {
@@ -12,28 +11,14 @@
         controller: LeaderboardCtrl,
         resolve: LeaderboardCtrl.resolve
       },
-      '/chart': {
-        templateUrl: '/public/partials/chart.html',
-        controller: ChartCtrl
-      },
-      '/chart/:mode': {
-        templateUrl: '/public/partials/chart.html',
-        controller: ChartCtrl
-      },
       '/user/:id': { 
         templateUrl: '/public/partials/profile.html',
         controller: UserCtrl,
         resolve: UserCtrl.resolve
       },
-      '/winners': {
-        templateUrl: '/public/partials/winners.html',
-        controller: WinnersCtrl,
-        resolve: WinnersCtrl.resolve
-      },
-      '/timeline': {
-        templateUrl: '/public/partials/timeline.html',
-        controller: TimelineCtrl,
-        resolve: TimelineCtrl.resolve
+      '/history': {
+        templateUrl: '/public/partials/history.html',
+        controller: HistoryCtrl
       },
       '/users': {
         templateUrl: '/public/partials/elder/users.html',
