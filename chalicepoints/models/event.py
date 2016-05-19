@@ -1,8 +1,9 @@
 import os
-import json
+import simplejson as json
 import urllib, urllib2
 
 from datetime import datetime, timedelta
+from calendar import monthrange
 
 from flask import abort, jsonify, Response, current_app
 from flask.ext.login import current_user
@@ -17,6 +18,7 @@ class Event(BaseModel):
     source = ForeignKeyField(User, db_column='source', related_name='given')
     target = ForeignKeyField(User, db_column='target', related_name='received')
     amount = IntegerField()
+    type = CharField()
     message = CharField()
 
     def add(self):
@@ -78,7 +80,7 @@ class Event(BaseModel):
         return timeline
 
     @staticmethod
-    def get_points(week=False):
+    def get_points(type='all'):
         #q = Event.select()
         given = Event.select(Event, fn.Sum(Event.amount).alias('given'))
         given = given.group_by(Event.source)
@@ -86,7 +88,7 @@ class Event(BaseModel):
         received = Event.select(Event, fn.Sum(Event.amount).alias('received'))
         received = received.group_by(Event.target)
 
-        if week:
+        if type == 'week':
             now = datetime.now().date()
             dow = now.weekday()
 
@@ -95,6 +97,13 @@ class Event(BaseModel):
 
             last_delta = timedelta(days=6 - dow)
             last_day = now + last_delta
+
+            given = given.where(fn.Date(Event.created_at) >= first_day, fn.Date(Event.created_at) <= last_day)
+            received = received.where(fn.Date(Event.created_at) >= first_day, fn.Date(Event.created_at) <= last_day)
+        elif type == 'month':
+            now = datetime.now().date()
+            first_day = now.replace(day = 1)
+            last_day = now.replace(day = monthrange(now.year, now.month)[1])
 
             given = given.where(fn.Date(Event.created_at) >= first_day, fn.Date(Event.created_at) <= last_day)
             received = received.where(fn.Date(Event.created_at) >= first_day, fn.Date(Event.created_at) <= last_day)
