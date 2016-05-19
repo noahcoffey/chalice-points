@@ -197,8 +197,6 @@ var HistoryCtrl = ['$scope', 'History', 'Types', function($scope, History, Types
       result.push(i);
     }
 
-    console.log(start, end, step, result);
-
     return result;
   };
 
