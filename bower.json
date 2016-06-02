@@ -5,11 +5,11 @@
     "angular-cookies": "~1.2.29",
     "angular-resource": "~1.2.29",
     "angular-route": "~1.2.29",
+    "angular-animate": "~1.2.29",
     "angular": "~1.2.29",
     "momentjs": "~2.13.0",
     "modernizr": "~2.8.3",
     "foundation": "~5.5.3",
-    "d3": "~3.4.6",
     "jquery-ui": "^1.11.4"
   },
   "version": "0.4.0",
