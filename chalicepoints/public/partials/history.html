@@ -1,4 +1,4 @@
-<div>
+<div class="history">
   <div class="row">
     <div class="small-12 text-center columns"><h2 class="pagetitle">History</h2></div>
   </div>
@@ -22,6 +22,14 @@
           <input type="text" ng-model="params.common.maxDate" datepicker>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="small-12 columns">
+      <fieldset>
+        <legend>Filters</legend>
+        <input type="checkbox" ng-model="params.common.filters.other" ng-true-value="1" ng-false-value="0" /> Exclude High Five Points
+      </fieldset>
     </div>
   </div>
   <div class="row">
