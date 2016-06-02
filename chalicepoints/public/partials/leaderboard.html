@@ -1,4 +1,10 @@
-<div class="row">
+<div class="row" ng-cloak ng-show="loading.targets">
+  <div class="small-8 small-centered text-center columns">
+    <i class="fa fa-spinner fa-5x fa-spin"></i>
+  </div>
+</div>
+</div>
+<div class="row" ng-cloak ng-show="!loading.targets">
   <div class="add-points small-8 small-centered columns">
     <form name="addEventForm">
       <div class="row">
@@ -8,7 +14,7 @@
       </div>
       <div class="row">
         <div class="small-9 columns">
-          <select name="target" ng-model="pointsTarget" ng-options="u.id as u.name for u in users" required>
+          <select name="target" ng-model="pointsTarget" ng-options="u.id as u.name for u in users | orderBy:'name'" required>
             <option value="">-- To --</option>
           </select>
         </div>
@@ -48,7 +54,12 @@
       </div>
 
       <div class="data-content active" ng-class="{active: selected.week}">
-        <div class="row">
+        <div class="row" ng-cloak ng-show="loading.leaderboard.week">
+          <div class="small-12 text-center columns">
+            <i class="fa fa-spinner fa-4x fa-spin"></i>
+          </div>
+        </div>
+        <div class="row" ng-cloak ng-show="!loading.leaderboard.week">
           <div class="small-6 columns">
             <h3>Received</h3>
             <ul>
@@ -70,7 +81,12 @@
         </div>
       </div>
       <div class="data-content" ng-class="{active: selected.month}">
-        <div class="row">
+        <div class="row" ng-cloak ng-show="loading.leaderboard.month">
+          <div class="small-12 text-center columns">
+            <i class="fa fa-spinner fa-4x fa-spin"></i>
+          </div>
+        </div>
+        <div class="row" ng-cloak ng-show="!loading.leaderboard.month">
           <div class="small-6 columns">
             <h3>Received</h3>
             <ul>
@@ -92,7 +108,12 @@
         </div>
       </div>
       <div class="data-content" ng-class="{active: selected.all}">
-        <div class="row">
+        <div class="row" ng-cloak ng-show="loading.leaderboard.all">
+          <div class="small-12 text-center columns">
+            <i class="fa fa-spinner fa-4x fa-spin"></i>
+          </div>
+        </div>
+        <div class="row" ng-cloak ng-show="!loading.leaderboard.all">
           <div class="small-6 columns">
             <h3>Received</h3>
             <ul>
