@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en" ng-app="chalicepoints">
   <head>
-      <title>{% block title %}Chalice Points{% endblock %}</title>
+    <title>{% block title %}Chalice Points{% endblock %}</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='bower_components/jquery-ui/themes/base/jquery-ui.min.css') }}" />
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
   </head>
-  <body>
+  <body ng-controller="AppController">
     <div class="contain-to-grid">
       <nav class="top-bar" data-topbar>
         <ul class="title-area">
@@ -29,7 +29,13 @@
             </li>
             <li><a href="/leaderboard">Leaderboard</a></li>
             <li><a href="/history">History</a></li>
-            <li><a ng:href="/user/{{ current_user.id }}">Profile</a></li>
+            <li class="has-dropdown ng-cloak">
+              <a href="" ng-bind="current_user.name"></a>
+              <ul class="dropdown">
+                <li><a href="/user/{{ current_user.id }}">Profile</a></li>
+                <li><a href="" ng-click="openUserSettings()">Settings</a></li>
+              </ul>
+            </li>
             <li><a href="/logout">Logout</a></li>
           </ul>
         </section>
@@ -45,6 +51,7 @@
     <script src="{{ url_for('static', filename='bower_components/angular-route/angular-route.min.js') }}"></script>
     <script src="{{ url_for('static', filename='bower_components/angular-resource/angular-resource.min.js') }}"></script>
     <script src="{{ url_for('static', filename='bower_components/angular-cookies/angular-cookies.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bower_components/angular-animate/angular-animate.min.js') }}"></script>
 
     <script src="{{ url_for('static', filename='bower_components/momentjs/min/moment.min.js') }}"></script>
     <script src="{{ url_for('static', filename='bower_components/foundation/js/foundation.min.js') }}"></script>
@@ -57,8 +64,6 @@
     <script src="{{ url_for('static', filename='js/directives.js') }}"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
-    <script src="{{ url_for('static', filename='bower_components/d3/d3.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
     <div id="user" style="display: none;">{{ user_json | safe }}</div>
   </body>
 </html>
