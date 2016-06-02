@@ -1,120 +1,125 @@
 import simplejson as json
 
+from flask import current_app
 from flask.ext.login import UserMixin, current_user
 from peewee import *
+from playhouse.shortcuts import model_to_dict
 
 import chalicepoints
 from chalicepoints.models.base import BaseModel, BaseModelJSONEncoder
 
 class User(BaseModel, UserMixin):
-    name = CharField()
-    email = CharField()
-    api_key = CharField()
-    gravatar = CharField()
-    max_points = IntegerField()
-    disabled = BooleanField(default=False)
-    url = CharField()
-    elder = BooleanField(default=False)
+  name = CharField()
+  email = CharField()
+  gravatar = CharField()
+  max_points = IntegerField()
+  disabled = BooleanField(default=False)
+  url = CharField()
+  settings = TextField()
+  elder = BooleanField(default=False)
 
-    def to_array(self, for_public=False):
-        data = super(User, self).to_array()
+  def to_array(self, for_public=False):
+    data = super(User, self).to_array()
 
-        if for_public:
-            data.pop('url', None)
-            data.pop('api_key', None)
+    data['settings'] = self.get_settings()
 
-        return data
+    if for_public:
+      data.pop('url', None)
 
-    def to_json(self, for_public=False):
-        data = self.to_array(for_public)
-        return json.dumps(data, cls=UserModelJSONEncoder)
+    return data
 
-    def get_given(self):
-        return [event for event in self.given]
+  def to_json(self, for_public=False):
+    data = self.to_array(for_public)
+    return json.dumps(data, cls=UserModelJSONEncoder)
 
-    def get_received(self):
-        return [event for event in self.received]
+  def get_settings(self):
+    if self.settings is None or len(self.settings) == 0:
+      return {}
 
-    def get_timeline(self):
-        from chalicepoints.models.event import Event
+    try:
+      settings = json.loads(self.settings)
+    except ValueError:
+      settings = {}
 
-        q = Event.select()
-        q = q.where((Event.source == self.id) | (Event.target == self.id))
-        q = q.order_by(Event.created_at.desc())
+    return settings
 
-        timeline = []
-        for event in q:
-            if event.target.id == self.id:
-                event.type = 'receive'
-            else:
-                event.type = 'give'
+  def get_timeline(self):
+    from chalicepoints.models.event import Event
 
-            event.source_user = User.get(User.id == event.source)
-            event.target_user = User.get(User.id == event.target)
+    query = Event.select()
+    query = query.where((Event.source == self.id) | (Event.target == self.id))
+    query = query.order_by(Event.created_at.desc())
 
-            timeline.append(event)
+    timeline = []
 
-        return timeline
+    for event in query:
+      if event.target.id == self.id:
+        event.type = 'receive'
+      else:
+        event.type = 'give'
 
-    def get_points(self, type='all'):
-        from chalicepoints.models.event import Event
+      timeline.append(event)
 
-        given_query = Event.select(fn.Sum(Event.amount).alias('total'))
-        given_query = given_query.where(Event.source == self.id)
+    return timeline
 
-        received_query = Event.select(fn.Sum(Event.amount).alias('total'))
-        received_query = received_query.where(Event.target == self.id)
+  @staticmethod
+  def get_user(user_id, include_points=False):
+    from chalicepoints.models.event import Event
 
-        if type == 'week':
-            now = datetime.now()
-            dow = now.weekday()
+    given_query = Event.select(Event.target, fn.Sum(Event.amount).alias('total')).group_by(Event.target).alias('GIVEN')
+    received_query = Event.select(Event.source, fn.Sum(Event.amount).alias('total')).group_by(Event.source).alias('RECEIVED')
 
-            first_delta = timedelta(days=dow)
-            first_day = now - first_delta
+    query = User.select()
 
-            last_delta = timedelta(days=6 - dow)
-            last_day = now + last_delta
+    if include_points:
+      query = User.select(User, given_query.c.total.alias('given'), received_query.c.total.alias('received'))
 
-            given_query = given_query.where(Event.created_at >= first_day, Event.created_at <= last_day)
-            received_query = received_query.where(Event.created_at >= first_day, Event.created_at <= last_day)
-        elif type == 'month':
-            now = datetime.now().date()
-            first_day = now.replace(day = 1)
-            last_day = now.replace(day = monthrange(now.year, now.month)[1])
+      query = query.join(
+        given_query, on=(User.id == given_query.c.target)
+      ).switch(User).join(
+        received_query, on=(User.id == received_query.c.source)
+      ).switch(User)
 
-            given_query = given_query.where(Event.created_at >= first_day, Event.created_at <= last_day)
-            received_query = received_query.where(Event.created_at >= first_day, Event.created_at <= last_day)
+    query = query.where(User.id == user_id)
 
-        given = given_query.get()
-        received = received_query.get()
+    return query.get()
 
-        return {
-            'given': given.total or 0,
-            'received': received.total or 0
-        }
+  @staticmethod
+  def get_users(include_self=True, include_points=False, exclude_disabled=False):
+    from chalicepoints.models.event import Event
 
-    @staticmethod
-    def get_users(include_self=True, include_points=False, include_events=False):
-        q = User.select()
-        q = q.order_by(User.name)
+    given_query = Event.select(Event.target, fn.Sum(Event.amount).alias('total')).group_by(Event.target).alias('GIVEN')
+    received_query = Event.select(Event.source, fn.Sum(Event.amount).alias('total')).group_by(Event.source).alias('RECEIVED')
 
-        if not include_self:
-            q = q.where(User.id != current_user.id)
+    query = User.select()
 
-        users = []
-        for user in q:
-            if include_events:
-                user.events = user.get_timeline()
+    if include_points:
+      query = User.select(User, given_query.c.total.alias('given'), received_query.c.total.alias('received'))
 
-            if include_points:
-                user.points = user.get_points()
+      query = query.join(
+        given_query, on=(User.id == given_query.c.target)
+      ).switch(User).join(
+        received_query, on=(User.id == received_query.c.source)
+      ).switch(User)
 
-            users.append(user)
-        return users
+    if not include_self:
+      query = query.where(User.id != current_user.id)
+
+    if exclude_disabled:
+      query = query.where(User.disabled == False)
+
+    query = query.order_by(User.name.desc())
+
+    users = []
+
+    for user in query:
+      users.append(user)
+
+    return users
 
 class UserModelJSONEncoder(BaseModelJSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, User):
-            return obj.to_array(for_public=True)
-        else:
-            return super(UserModelJSONEncoder, self).default(obj)
+  def default(self, obj):
+    if isinstance(obj, User):
+      return obj.to_array(for_public=True)
+    else:
+      return super(UserModelJSONEncoder, self).default(obj)
