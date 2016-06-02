@@ -3,7 +3,7 @@
     <form name="addEventForm">
       <div class="row">
         <div class="small-9 columns">
-          <select name="target" ng-model="event.target" ng-options="u.id as u.name for u in users" required>
+          <select name="target" ng-model="event.target.id" ng-options="u.id as u.name for u in users" required>
             <option value="">-- To --</option>
           </select>
         </div>
