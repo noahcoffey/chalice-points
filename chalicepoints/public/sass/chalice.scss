@@ -128,23 +128,6 @@ $weight-heavy: 600;
     line-height: $gravatar-size;
     display: inline-block;
   }
-
-  .winner {
-    display: inline-block;
-    font: {
-      size: 1.1em;
-      weight: $weight-heavy;
-    }
-    line-height: $gravatar-size;
-    vertical-align: text-bottom;
-  }
-}
-
-.apikey {
-  font-size: 0.9rem;
-  font-weight: 200;
-  padding-top: 10px;
-  color: #888;
 }
 
 .events {
@@ -190,73 +173,6 @@ $weight-heavy: 600;
 
   input[name="message"] {
     height: 3em;
-  }
-}
-
-.styled-select {
-  border: 1px solid #ccc;
-  padding: 5px;
-  margin: 0 0 1em 0;
-  height: 42px;
-  float: left;
-  width: 100%;
-
-  .base {
-    width: 100%;
-    float: left;
-
-    .active {
-      background-color: white;
-      border: 1px solid #ccc;
-      font-size: 0.875em;
-      padding: 0.5em;
-      background: {
-        image: url("../images/selector.png");
-        repeat: no-repeat;
-        position: 98% center;
-      }
-    }
-
-    .list {
-      display: none;
-
-      ul {
-        margin: 0 0 1em 0;
-        padding: 0;
-        overflow: hidden;
-        position: absolute;
-        z-index: 10;
-
-        @include box-shadow(0 -5px 0 #fff, 0 0 0 1px #ddd);
-      }
-    }
-  }
-}
-
-.winners {
-  .winner {
-    padding: 10px;
-    margin: 20px inherit;
-
-    text-align: center;
-    border: 1px solid #888;
-
-    line-height: 1.3;
-
-    @include box-shadow(5px 5px 10px #333);
-
-    .date {
-      font-style: italic;
-      font-size: 1.2rem;
-      padding-bottom: 10px;
-    }
-
-    .name {
-      font-weight: $weight-heavy;
-    }
-    .amount {
-      font-weight: $weight-heavy;
-    }
   }
 }
 
@@ -313,34 +229,44 @@ $weight-heavy: 600;
   }
 }
 
-table.history {
-  width: 100%;
-
-  &.all {
-    .name {
-      width: 20%;
-    }
-  
-    .type {
-      width: 31%;
-    }
-  
-    .amount {
-      width: 12%;
-    }
-  
-    .time {
-      width: 17%;
-    }
+.history {
+  fieldset {
+    margin-top: 0;
   }
 
-  &.source, &.target, &.type {
-    .name {
-      width: 80%;
+  table.history {
+    width: 100%;
+  
+    th {
+      white-space: nowrap;
+    } 
+  
+    &.all {
+      .name {
+        width: 20%;
+      }
+    
+      .type {
+        width: 31%;
+      }
+    
+      .amount {
+        width: 12%;
+      }
+    
+      .time {
+        width: 17%;
+      }
     }
-
-    .amount {
-      width: 20%;
+  
+    &.source, &.target, &.type {
+      .name {
+        width: 80%;
+      }
+  
+      .amount {
+        width: 20%;
+      }
     }
   }
 }
@@ -352,4 +278,21 @@ table.history {
 .tabs .tab-box .tab-title {
   min-width: 100px;
   text-align: center;
+}
+
+.fade.ng-hide {
+  opacity: 0;
+}
+
+.fade.ng-hide-remove,
+.fade.ng-hide-add {
+  display: block !important;
+}
+
+.fade.ng-hide-remove {
+  transition: all linear 1000ms;
+}
+
+.fade.ng-hide-add {
+  transition: all linear 500ms;
 }
