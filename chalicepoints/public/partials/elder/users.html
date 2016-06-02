@@ -8,17 +8,15 @@
         <tr>
           <th><a href="" ng-click="predicate='name'; reverse=!reverse;">Name</a></th>
           <th><a href="" ng-click="predicate='email'; reverse=!reverse;">Email</a></th>
-          <th><a href="" ng-click="predicate='points.received'; reverse=!reverse">Received</a></th>
-          <th><a href="" ng-click="predicate='points.given'; reverse=!reverse">Given</a></th>
+          <th><a href="" ng-click="predicate='disabled'; reverse=!reverse;">Disabled</a></th>
           <th>&nbsp;</th>
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="user in users | orderBy:predicate:reverse">
+        <tr ng-repeat="user in users | orderBy:[predicate, 'name']:reverse">
           <td><a href="/user/{{ user.id }}">{{ user.name }}</a></td>
           <td>{{ user.email }}</td>
-          <td class="receive">{{ user.points.received }}</td>
-          <td class="give">{{ user.points.given }}</td>
+          <td><i class="fa fa-check" ng-if="user.disabled"></i></td>
           <td class="text-right">
             <span class="edit"><a href="" data-tooltip title="Edit User" ng-click="editUser(user)"><i class="fa fa-pencil"></i></a></span>
             <span class="delete"><a href="" data-tooltip title="Delete User" ng-click="removeUser(user)"><i class="fa fa-trash-o"></i></a></span>
