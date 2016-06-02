@@ -1,4 +1,9 @@
-<div class="profile row">
+<div class="profile row" ng-cloak ng-show="loading.user">
+  <div class="meta small-12 text-center columns">
+    <i class="fa fa-spinner fa-5x fa-spin"></i>
+  </div>
+</div>
+<div class="profile row" ng-cloak ng-show="!loading.user">
   <div class="meta small-12 columns">
     <img ng-src="http://gravatar.com/avatar/{{ user.gravatar }}?s=50&d=mm" class="picture" alt="{{ user.name }}" />
     <div class="name">{{ user.name }}</div>
@@ -6,14 +11,14 @@
     <div class="give total noradius" title="Points Given" data-tooltip data-width="105">{{ user.points.given }}</div>
   </div>
 </div>
-<div ng:if="current_user.id == user.id || current_user.elder" class="api row">
-  <div class="small-7 small-centered columns text-center">
-  {{ user.api_key }}
+<div class="events row" ng-cloak ng-show="loading.events">
+  <div class="small-7 small-centered text-center columns">
+    <i class="fa fa-spinner fa-5x fa-spin"></i>
   </div>
 </div>
-<div class="events row">
+<div class="events row" ng-cloak ng-show="!loading.events">
   <div class="small-7 small-centered columns">
-    <div class="event row" ng-repeat="event in user.events | orderBy:'-created_at'">
+    <div class="event row" ng-repeat="event in events | orderBy:'-created_at'">
       <div class="event__header row">
         <div class="small-12 columns">
           <span class="type {{ event.type }}" ng-switch on="event.type">
@@ -30,8 +35,8 @@
             <span ng-switch-when="receive">from</span>
           </span>
           <span class="user">
-            <a ng:if="event.type == 'give'" href="/user/{{ event.target_user.id }}">{{ event.target_user.name }}</a>
-            <a ng:if="event.type == 'receive'" href="/user/{{ event.source_user.id }}">{{ event.source_user.name }}</a>
+            <a ng-if="event.type == 'give'" href="/user/{{ event.target.id }}">{{ event.target.name }}</a>
+            <a ng-if="event.type == 'receive'" href="/user/{{ event.source.id }}">{{ event.source.name }}</a>
           </span>
           at
           <span class="date">{{ event.created_at | dateMoment:'M/d/yyyy h:mma' }}</span>
