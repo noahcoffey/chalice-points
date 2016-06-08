@@ -169,28 +169,31 @@
   display: block;
 }
 
-table.history {
+.history fieldset {
+  margin-top: 0;
+}
+.history table.history {
   width: 100%;
 }
-table.history th {
+.history table.history th {
   white-space: nowrap;
 }
-table.history.all .name {
+.history table.history.all .name {
   width: 20%;
 }
-table.history.all .type {
+.history table.history.all .type {
   width: 31%;
 }
-table.history.all .amount {
+.history table.history.all .amount {
   width: 12%;
 }
-table.history.all .time {
+.history table.history.all .time {
   width: 17%;
 }
-table.history.source .name, table.history.target .name, table.history.type .name {
+.history table.history.source .name, .history table.history.target .name, .history table.history.type .name {
   width: 80%;
 }
-table.history.source .amount, table.history.target .amount, table.history.type .amount {
+.history table.history.source .amount, .history table.history.target .amount, .history table.history.type .amount {
   width: 20%;
 }
 
