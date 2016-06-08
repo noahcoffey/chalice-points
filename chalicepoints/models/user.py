@@ -63,6 +63,28 @@ class User(BaseModel, UserMixin):
     return timeline
 
   @staticmethod
+  def get_digest_weekly():
+    query = User.select()
+    query = query.where(User.settings % '%%"weekly": true%%')
+
+    users = []
+    for user in query:
+      users.append((user.name, user.email))
+
+    return users
+
+  @staticmethod
+  def get_digest_monthly():
+    query = User.select()
+    query = query.where(User.settings % '%%"monthly": true%%')
+
+    users = []
+    for user in query:
+      users.append((user.name, user.email))
+
+    return users
+
+  @staticmethod
   def get_user(user_id, include_points=False):
     from chalicepoints.models.event import Event
 
