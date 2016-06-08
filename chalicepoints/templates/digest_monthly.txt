@@ -1,0 +1,5 @@
+Here is the summary of Chalice Points for the month:
+{{ start_date}} - {{ end_date }}
+
+{% for entry in events %}{{ entry.source_name }} gave {{ entry.target_name }} {{ entry.amount}} Chalice Points: {{ entry.type }} - {{ entry.message }}
+{% endfor %}

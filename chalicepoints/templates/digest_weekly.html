@@ -1,0 +1,19 @@
+{% extends "email_layout.html" %}
+{% block body %}
+<h4 style="font-weight: 500; font-size: 23px; line-height: 1.1; margin: 0; margin-bottom: 15px; padding: 0;">Here is a summary of Chalice Points for the week:</h4>
+<h4 class="lead" style="font-weight: 500; font-size: 17px; line-height: 1.1; margin: 0; margin-bottom: 15px; padding: 0;">{{ start_date }} - {{ end_date }}</h4>
+
+<table style="width: 100%; border-collapse: collapse; margin: 0; padding: 0;">
+  <tr style="margin: 0; padding: 0;">
+    <td style="margin: 0; padding: 0;"></td>
+    <td style="margin: 0; padding: 0;">
+      <ul style="margin: 0; padding: 0; margin-bottom: 10px; font-weight: normal; font-size: 14px; line-height: 1.6; list-style: none;">{% for entry in events %}
+        <li class="event" style="padding: 10px; margin: 0; margin-top: 20px; text-align: center; border: 1px solid #888; margin-left: 5px; list-style-position: inside;">
+          <a class="user" style="color: #2BA6CB; text-decoration: none; margin: 0; padding: 0;" href="{{ base_url }}/user/{{ entry.source.id }}">{{ entry.source.name }}</a> <span class="gave" style="color: #5DA423; margin: 0; padding: 0; text-align: center;">Gave</span> <span class="amount" style="font-weight: bold; margin: 0; padding: 0; text-align: center;">{{ entry.amount }}</span> Points to <a class="user" style="color: #2BA6CB; text-decoration: none; margin: 0; padding: 0;" href="{{ base_url }}/user/{{ entry.target.id }}">{{ entry.target.name }}</a> at {{ entry.created_at }}<br>
+          {{ entry.type }}: {{ entry.message }}
+        </li>{% endfor %}
+      </ul>
+    </td>
+  </tr>
+</table>
+{% endblock %}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Chalice Points</title>
+    <link href="{{ url_for('static', filename='css/email.css', _external=True) }}" rel="stylesheet" type="text/css" />
+  </head>
+  <body bgcolor="#FFFFFF" style="color: #000000;">
+    <table class="head-wrap" bgcolor="#222222" style="width: 100%; border-collapse: collapse; margin: 0; padding: 0;">
+      <tr style="margin: 0; padding: 0;">
+        <td style="margin: 0; padding: 0"></td>
+        <td class="header container" style="color: #FFFFFF; display: block; max-width: 600px; margin: 0 auto; clear: both; padding: 0;">
+          <div class="content" style="padding: 10px; max-width: 600px; margin: 0 auto; display: block;">
+            <table style="width: 100%; border-collapse: collapse; margin: 0; padding: 0;">
+              <tr style="margin: 0; padding: 0;">
+                <td style="margin: 0; padding: 0;">
+                  <p class="text-left" style="margin-bottom: 0; text-align: left; font-weight: normal; font-size: 14px; line-height: 1.6, list-style: none; margin: 0; padding: 0;">
+                    <img src="{{ url_for('static', filename='images/chalice.png', _external=True) }}" width="16" height="16" style="width: 16px; height: 16px; vertical-align: middle; max-width: 100%; margin: 0; padding: 0;">
+                    Chalice Points
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <table class="body-wrap" style="width: 100%; border-collapse: collapse; margin: 0; padding: 0;">
+      <tr style="margin: 0; padding: 0;">
+        <td style="margin: 0; padding: 0;"></td>
+        <td class="container" bgcolor="#FFFFFF" style="background-color: #FFFFFF; display: block; max-width: 600px; margin: 0 auto; clear: both; padding: 0;">
+          <div class="content" style="padding: 15px; max-width: 600px; margin: 0 auto; display: block;">
+            <table style="width: 100%; margin: 0; padding: 0;">
+              <tr style="margin: 0; padding: 0;">
+                <td style="margin: 0; padding: 0;">
+                  {% block body %}{% endblock %}
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
