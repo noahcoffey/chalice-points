@@ -22,6 +22,7 @@ CREATE TABLE `user` (
   `disabled` tinyint(1) DEFAULT '0',
   `elder` tinyint(1) DEFAULT '0',
   `url` varchar(255) DEFAULT NULL,
+  `settings` longtext DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
