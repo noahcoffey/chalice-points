@@ -21,6 +21,19 @@ class Event(BaseModel):
   type = CharField()
   message = CharField()
 
+  types = {
+    'peer': 'Approach everyone as a peer, regardless of title',
+    'agile': 'Be agile and iterate',
+    'communication': 'Communicate Status',
+    'transparency': 'Default to transparency with each other',
+    'problemsolving': 'Get to work on solving problems',
+    'helpothers': 'Help others succeed',
+    'positivity': 'Inject positivity into all of your interactions',
+    'results': 'Results matter',
+    'growth': 'Seek growth',
+    'other': 'High Five',
+  }
+
   def add(self):
     self.save()
     self.hipchat()
