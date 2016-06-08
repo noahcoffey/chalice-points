@@ -32,11 +32,11 @@ def digest_weekly():
 
   start_delta = timedelta(days=dow)
   start_date = now - start_delta
-  start_text = start_date.strftime('%m/%d/%Y')
+  start_text = start_date.strftime('%b %-d, %Y')
 
   end_delta = timedelta(days=6 - dow)
   end_date = now + end_delta
-  end_text = end_date.strftime('%m/%d/%Y')
+  end_text = end_date.strftime('%b %-d, %Y')
 
   history = history.where(Event.created_at >= start_date)
   history = history.where(Event.created_at <= end_date)
@@ -61,10 +61,10 @@ def digest_monthly():
   now = datetime.now().date()
 
   start_date = now.replace(day = 1)
-  start_text = start_date.strftime('%m/%d/%Y')
+  start_text = start_date.strftime('%b %-d, %Y')
 
   end_date = now.replace(day = monthrange(now.year, now.month)[1])
-  end_text = end_date.strftime('%m/%d/%Y')
+  end_text = end_date.strftime('%b %-d, %Y')
 
   history = history.where(Event.created_at >= start_date)
   history = history.where(Event.created_at <= end_date)
