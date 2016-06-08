@@ -1,0 +1,258 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "HelveticaNeue", "Helvetica Neue", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  line-height: 1.1;
+  margin-bottom: 15px;
+}
+
+h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
+  font-size: 60%;
+  color: #6f6f6f;
+  line-height: 0;
+  text-transform: none;
+}
+
+p, ul, ol {
+  margin-bottom: 10px;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 1.6;
+  list-style: none;
+}
+
+ul li {
+  margin-left: 5px;
+  list-style-position: inside;
+}
+
+ol li {
+  margin-left: 22px;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+h1 {
+  font-weight: 200;
+  font-size: 44px;
+}
+
+h2 {
+  font-weight: 200;
+  font-size: 37px;
+}
+
+h3 {
+  font-weight: 500;
+  font-size: 27px;
+}
+
+h4 {
+  font-weight: 500;
+  font-size: 23px;
+}
+
+h5 {
+  font-weight: 900;
+  font-size: 17px;
+}
+
+h6 {
+  font-weight: 900;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #444;
+}
+
+body * {
+  font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+.collapse {
+  margin: 0;
+  padding: 0;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+a {
+  color: #2BA6CB;
+  text-decoration: none;
+}
+
+.btn {
+  text-decoration: none;
+  color: #FFF;
+  background-color: #666;
+  padding: 10px 16px;
+  font-weight: bold;
+  margin-right: 10px;
+  text-align: center;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.title .column td {
+  padding: 0;
+}
+.title h4 {
+  margin-bottom: 0;
+  font-weight: bold;
+}
+.title p {
+  color: #808F99;
+  margin-bottom: 0;
+}
+.title td {
+  padding: 0;
+}
+
+.btns {
+  width: 145px;
+  border-collapse: collapse;
+  float: right;
+}
+
+.cta {
+  background: #6C7A85;
+}
+.cta h5, .cta a {
+  color: #FFF;
+}
+.cta .btns {
+  float: left;
+  margin-bottom: 1em;
+}
+.cta .btns td {
+  padding: 0;
+}
+
+.head-wrap, .body-wrap, .footer-wrap {
+  width: 100%;
+}
+
+.header .logo {
+  padding: 15px;
+}
+.header .label {
+  padding: 15px 15px 15px 0;
+}
+.header h3, .header h6 {
+  color: #EFEFEF;
+}
+
+.footer-wrap {
+  clear: both;
+}
+.footer-wrap .legal p {
+  font-size: .75em;
+  line-height: 1.25;
+}
+
+.lead {
+  font-size: 17px;
+}
+
+.last {
+  margin-bottom: 0;
+}
+
+.cta .column, .title .column {
+  width: 280px;
+  min-width: 279px;
+  float: left;
+}
+
+pre {
+  font-family: monospace;
+  white-space: normal;
+  margin: 1em 0;
+}
+
+/* ---------------------------------------------------
+    RESPONSIVENESS
+    Nuke it from orbit. It's the only way to be sure. 
+------------------------------------------------------ */
+.container {
+  display: block;
+  max-width: 600px;
+  margin: 0 auto;
+  clear: both;
+}
+
+.content {
+  padding: 15px;
+  max-width: 600px;
+  margin: 0 auto;
+  display: block;
+}
+.content table {
+  width: 100%;
+}
+
+.column {
+  width: 50%;
+  float: left;
+}
+.column table {
+  width: 100%;
+}
+.column tr td {
+  padding: 15px;
+}
+.column.column--full-width {
+  width: 100%;
+  float: none;
+}
+
+.column-wrap {
+  padding: 0;
+  margin: 0;
+  max-width: 600px;
+}
+
+.amount {
+  font-weight: bold;
+}
+
+.event {
+  padding: 10px;
+  margin-top: 20px;
+  text-align: center;
+  border: 1px solid #888;
+  box-shadow: 5px 5px 10px #333;
+}
+
+.gave {
+  color: #5DA423;
+}
+
+.header {
+  color: #FFFFFF;
+}
+.header img {
+  vertical-align: middle;
+}
+.header p {
+  margin-bottom: 0;
+}
+.header .content {
+  padding: 10px;
+}
