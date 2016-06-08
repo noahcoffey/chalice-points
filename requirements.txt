@@ -1,11 +1,14 @@
 Flask==0.10.1
 Flask-Login==0.3.2
+Flask-Mail==0.9.1
+Flask-Script==2.0.5
 Jinja2==2.8
 MarkupSafe==0.23
 MySQL-python==1.2.5
 WTForms==2.1
 Werkzeug==0.11.9
 argparse==1.2.1
+blinker==1.4
 flask-peewee==0.6.7
 httplib2==0.9.2
 itsdangerous==0.24
