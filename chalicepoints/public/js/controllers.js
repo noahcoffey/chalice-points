@@ -367,12 +367,14 @@
     }
   ])
 
-  .controller('UserController', ['$scope', '$routeParams', '$modal', 'CPEvent', 'User',
-    function($scope, $routeParams, $modal, CPEvent, User) {
+  .controller('UserController', ['$scope', '$routeParams', '$modal', 'CPEvent', 'User', 'Types',
+    function($scope, $routeParams, $modal, CPEvent, User, Types) {
       $scope.loading = {
         user: true,
         events: true
       };
+
+      $scope.types = Types;
 
       User.get({
         id: $routeParams.id
@@ -387,6 +389,15 @@
         id: $routeParams.id
       }, function(result) {
         $scope.events = result;
+
+        for (var i = 0, length = $scope.events.length; i < length; i++) {
+          if ($scope.events[i].target.id == $scope.current_user.id) {
+            $scope.events[i].direction = 'receive';
+          } else {
+            $scope.events[i].direction = 'give';
+          }
+        }
+
         $scope.loading.events = false;
       }, function(result) {
         $scope.loading.events = false;
