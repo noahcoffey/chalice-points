@@ -62,7 +62,7 @@ class Event(BaseModel):
 
     url = '%s/user/%s' % (siteUrl, self.target.id)
     points = 'Point' if self.amount == 1 else 'Points'
-    message = '(chalicepoint) %s gave %s %d Chalice %s: %s (%s)' % (self.source.name, self.target.name, self.amount, points, self.message, url)
+    message = '(chalicepoint) %s gave %s %d Chalice %s: %s - %s (%s)' % (self.source.name, self.target.name, self.amount, points, self.types[self.type], self.message, url)
 
     args = {
       'room_id': room,
