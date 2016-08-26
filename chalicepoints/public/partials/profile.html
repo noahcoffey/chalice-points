@@ -21,7 +21,7 @@
     <div class="event row" ng-repeat="event in events | orderBy:'-created_at'">
       <div class="event__header row">
         <div class="small-12 columns">
-          <span class="type {{ event.type }}" ng-switch on="event.type">
+          <span class="type {{ event.direction }}" ng-switch on="event.direction">
             <span ng-switch-when="give">Gave</span>
             <span ng-switch-when="receive">Received</span>
           </span>
@@ -30,13 +30,13 @@
             <span ng-switch-when="1">Point</span>
             <span ng-switch-default>Points</span>
           </span>
-          <span ng-switch on="event.type">
+          <span ng-switch on="event.direction">
             <span ng-switch-when="give">to</span>
             <span ng-switch-when="receive">from</span>
           </span>
           <span class="user">
-            <a ng-if="event.type == 'give'" href="/user/{{ event.target.id }}">{{ event.target.name }}</a>
-            <a ng-if="event.type == 'receive'" href="/user/{{ event.source.id }}">{{ event.source.name }}</a>
+            <a ng-if="event.direction == 'give'" href="/user/{{ event.target.id }}">{{ event.target.name }}</a>
+            <a ng-if="event.direction == 'receive'" href="/user/{{ event.source.id }}">{{ event.source.name }}</a>
           </span>
           at
           <span class="date">{{ event.created_at | dateMoment:'M/d/yyyy h:mma' }}</span>
@@ -44,7 +44,7 @@
       </div>
 
       <div class="event__message row">
-        <div class="small-12 columns">{{ event.message }}</div>
+        <div class="small-12 columns">{{ types[event.type] }}: {{ event.message }}</div>
       </div>
       <div class="event__action row ng-cloak" ng-if="event.source_user.id == current_user.id || current_user.elder">
         <div class="small-9 columns"></div>
