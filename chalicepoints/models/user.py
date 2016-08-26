@@ -53,11 +53,6 @@ class User(BaseModel, UserMixin):
     timeline = []
 
     for event in query:
-      if event.target.id == self.id:
-        event.type = 'receive'
-      else:
-        event.type = 'give'
-
       timeline.append(event)
 
     return timeline
