@@ -6,6 +6,7 @@ import simplejson as json
 
 from datetime import datetime, timedelta
 from calendar import monthrange
+from slackclient import SlackClient
 
 from flask import current_app
 
@@ -53,7 +54,7 @@ class Event(BaseModel):
     if not authToken or not room or not siteUrl:
       return False
 
-    sender = 'ChalicePoints'
+    sender = 'Chalice Points'
     if 'SLACK_SENDER' in current_app.config:
       sender = current_app.config['SLACK_SENDER']
 
@@ -65,35 +66,31 @@ class Event(BaseModel):
     points = 'Point' if self.amount == 1 else 'Points'
     message = ':chalicepoint: %s gave %s %d Chalice %s: %s - %s (%s)' % (self.source.name, self.target.name, self.amount, points, self.types[self.type], self.message, url)
 
-    args = {
-      'token': authToken,
-      'channel': room,
-      'attachments': {
-        'fallback': message,
-        'color': color,
-        'author_name': self.source.name,
-        'author_link': '%s/user/%s' % (siteUrl, self.source.id),
-        'author_icon': 'http://gravatar.com/avatar/%s?s=48&d=mm' % (self.source.gravatar),
-        'title': 'Gave %s %d Chalice %s' % (self.target.name, self.amount, points),
-        'title_link': url,
-        'text': self.message,
-        'fields': {
-          'title': self.types[self.type],
-          'short': False,
-        },
-        'footer': 'Chalice Points',
-        'footer_icon': 'http://chalicepoints.formstack.com/public/images/chalice-48x48.png',
-      },
-      'username': sender,
-      'as_user': False,
-      'icon_url': 'http://chalicepoints.formstack.com/public/images/chalice-48x48.png',
-    }
+    attachments = [{
+      'fallback': message,
+      'color': color,
+      'author_name': self.source.name,
+      'author_link': '%s/user/%s' % (siteUrl, self.source.id),
+      'author_icon': 'http://gravatar.com/avatar/%s?s=48&d=mm' % (self.source.gravatar),
+      'title': 'Gave %s %d Chalice %s' % (self.target.name, self.amount, points),
+      'title_link': url,
+      'text': self.message,
+      'fields': [{
+        'title': self.types[self.type],
+        'short': False,
+      }],
+      'footer': 'Chalice Points',
+      'footer_icon': 'http://chalicepoints.formstack.com/public/images/chalice-48x48.png',
+    }]
 
-    data = urllib.urlencode(args)
-
-    apiUrl = 'https://slack.com/api/chat.postMessage'
-    request = urllib2.Request(apiUrl, data)
-    urllib2.urlopen(request)
+    slack_client = SlackClient(authToken)
+    slack_client.api_call(
+      'chat.postMessage',
+      channel=room,
+      username=sender,
+      icon_url='http://chalicepoints.formstack.com/public/images/chalice-48x48.png',
+      attachments=json.dumps(attachments)
+    )
 
   def hipchat(self):
     if 'HIPCHAT_AUTH_TOKEN' not in current_app.config:
