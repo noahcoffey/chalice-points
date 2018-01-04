@@ -6,3 +6,4 @@ chalicepoints/public/bower_components
 *.sass-cache*
 node_modules
 Gemfile.lock
+.idea
