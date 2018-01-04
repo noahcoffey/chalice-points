@@ -25,9 +25,10 @@
     }
   ])
 
-  .controller('LeaderboardController', ['$scope', 'flash', 'User', 'Leaderboard', 'CPEvent', 'Types', 'TypeGroups',
-    function($scope, flash, User, Leaderboard, CPEvent, Types, TypeGroups) {
+  .controller('LeaderboardController', ['$scope', 'flash', 'User', 'Leaderboard', 'CPEvent', 'Types', 'TypeGroups', 'GroupOrder',
+    function($scope, flash, User, Leaderboard, CPEvent, Types, TypeGroups, GroupOrder) {
       $scope.types = Types;
+      $scope.groupOrder = GroupOrder;
       $scope.typeGroups = TypeGroups;
 
       $scope.selected = {
