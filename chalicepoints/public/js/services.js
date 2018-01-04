@@ -13,6 +13,11 @@
     'growth': 'Seek growth',
     'other': 'High Five'
   })
+  .constant('GroupOrder', [
+      'Results Matter',
+      'Relationships Matter',
+      'Other'
+  ])
   .constant('TypeGroups', {
     'Results Matter': [
       'agile',
@@ -27,7 +32,7 @@
     'Other': [
       'other'
     ]
-  });
+  })
   .factory('Leaderboard', function($resource) {
     return $resource('/api/1.0/leaderboard/:type', {
       type: 'all'
