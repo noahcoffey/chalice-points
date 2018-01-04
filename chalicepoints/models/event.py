@@ -37,7 +37,6 @@ class Event(BaseModel):
 
   def add(self):
     self.save()
-    self.hipchat()
     self.slack()
 
   def slack(self):
@@ -91,47 +90,6 @@ class Event(BaseModel):
       icon_url='http://chalicepoints.formstack.com/public/images/chalice-48x48.png',
       attachments=json.dumps(attachments)
     )
-
-  def hipchat(self):
-    if 'HIPCHAT_AUTH_TOKEN' not in current_app.config:
-      return False
-
-    if 'HIPCHAT_ROOM' not in current_app.config:
-      return False
-
-    authToken = current_app.config['HIPCHAT_AUTH_TOKEN']
-    room = current_app.config['HIPCHAT_ROOM']
-    siteUrl = current_app.config['SITE_URL']
-
-    if not authToken or not room or not siteUrl:
-      return False
-
-    sender = 'ChalicePoints'
-    if 'HIPCHAT_SENDER' in current_app.config:
-      sender = current_app.config['HIPCHAT_SENDER']
-
-    color = 'green'
-    if 'HIPCHAT_COLOR' in current_app.config:
-      color = current_app.config['HIPCHAT_COLOR']
-
-    url = '%s/user/%s' % (siteUrl, self.target.id)
-    points = 'Point' if self.amount == 1 else 'Points'
-    message = '(chalicepoint) %s gave %s %d Chalice %s: %s - %s (%s)' % (self.source.name, self.target.name, self.amount, points, self.types[self.type], self.message, url)
-
-    args = {
-      'room_id': room,
-      'message': message,
-      'from': sender,
-      'color': color,
-      'message_format': 'text',
-      'notice': 0,
-    }
-
-    data = urllib.urlencode(args)
-
-    apiUrl = 'https://api.hipchat.com/v1/rooms/message?auth_token=%s' % (authToken)
-    request = urllib2.Request(apiUrl, data)
-    urllib2.urlopen(request)
 
   @staticmethod
   def get_points(type='all'):
