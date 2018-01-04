@@ -26,8 +26,8 @@
         <div class="small-12 columns">
           <select name="type" ng-model="pointsType" required>
             <option value="">-- Type --</option>
-            <optgroup label="{{group}}" ng-repeat="(group,groupOrder) in typeGroups">
-              <option value="{{ type }}" ng-repeat="type in typeGroups">{{ types[type] }}</option>
+            <optgroup label="{{ group }}" ng-repeat="group in groupOrder">
+              <option value="{{ type }}" ng-repeat="type in typeGroups[group]">{{ types[type] }}</option>
             </optgroup>
           </select>
         </div>
