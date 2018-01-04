@@ -25,10 +25,10 @@
     }
   ])
 
-  .controller('LeaderboardController', ['$scope', 'flash', 'User', 'Leaderboard', 'CPEvent', 'Types', 'TypeOrder',
-    function($scope, flash, User, Leaderboard, CPEvent, Types, TypeOrder) {
+  .controller('LeaderboardController', ['$scope', 'flash', 'User', 'Leaderboard', 'CPEvent', 'Types', 'TypeGroups',
+    function($scope, flash, User, Leaderboard, CPEvent, Types, TypeGroups) {
       $scope.types = Types;
-      $scope.typeOrder = TypeOrder;
+      $scope.typeGroups = TypeGroups;
 
       $scope.selected = {
         week: true,

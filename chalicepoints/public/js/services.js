@@ -7,27 +7,27 @@
   .constant('Types', {
     'peer': 'Approach everyone as a peer, regardless of title',
     'agile': 'Be agile and iterate',
-    'communication': 'Communicate Status',
     'transparency': 'Default to transparency with each other',
     'problemsolving': 'Get to work on solving problems',
     'helpothers': 'Help others succeed',
-    'positivity': 'Inject positivity into all of your interactions',
-    'results': 'Results matter',
     'growth': 'Seek growth',
     'other': 'High Five'
   })
-  .constant('TypeOrder', [
-    'peer',
-    'agile',
-    'communication',
-    'transparency',
-    'problemsolving',
-    'helpothers',
-    'positivity',
-    'results',
-    'growth',
-    'other'
-  ])
+  .constant('TypeGroups', {
+    'Results Matter': [
+      'agile',
+      'problemsolving',
+      'growth'
+    ],
+    'Relationships Matter': [
+      'peer',
+      'transparency',
+      'helpothers'
+    ],
+    'Other': [
+      'other'
+    ]
+  });
   .factory('Leaderboard', function($resource) {
     return $resource('/api/1.0/leaderboard/:type', {
       type: 'all'
